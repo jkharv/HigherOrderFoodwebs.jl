@@ -37,26 +37,6 @@ function Node(edge, species::String, role::Symbol)
 end
 
 """
-    species(n::Node)
-
-Returns the species represented by a node.
-"""
-function EcologicalNetworks.species(n::Node)
-    # TODO Move out of declarations file.
-    return n.species
-end
-
-"""
-    role(n::Node)
-
-Returns the role played by a node.
-"""
-function role(n::Node)
-    # TODO Move out of declarations file.
-    return n.role
-end
-
-"""
 Represents a hyperedge in EcologicalHypergraph.
 
 """
@@ -68,46 +48,6 @@ mutable struct Edge
     function Edge(hypergraph, nodes::Vector{Node})
         new(hypergraph, nodes)
     end
-end
-
-"""
-    nodes(e::Edge)
-
-Returns a `vector` of the `Node`s in an `Edge`.
-"""
-function nodes(e::Edge)
-    # TODO Move out of declarations file.   
-    return e.nodes
-end
-
-"""
-   subject(e::Edge)::Node 
-
-Returns the `Node` playing the role of `:subject` in an `Edge`
-"""
-function subject(e::Edge)
-    # TODO Move out of declarations file.   
-    return filter(x-> x.role == :subject, nodes(e))[1]
-end
-
-"""
-   object(e::Edge)::Node 
-
-Returns the `Node` playing the role of `:object` in an `Edge`
-"""
-function object(e::Edge)
-    # TODO Move out of declarations file.
-    return filter(x-> x.role == :object, nodes(e))[1]
-end
-
-"""
-    modifiers(e::Edge)::Vector{Node}
-
-Returns a vector of all the modifier nodes in an edge.
-"""
-function modifiers(e::Edge)
-    # TODO Move out of declarations file.
-    return filter(x -> x.role != :subject && x.role != :object, nodes(e))
 end
 
 """
@@ -161,23 +101,6 @@ function EcologicalHypergraph(adjm::AbstractMatrix, spp::Vector{String})
 end
 
 """
-    add_modifier!(h::EcologicalHypergraph, e::Edge, n::Node)
-
-Adds a modifier node `n` to an edge `e` in hypergraph `h`
-"""
-function add_modifier!(e::Edge, sp::String, role::Symbol = :modifier)
-    # TODO Move out of declarations file.
-    # TODO add checks to keep the state of the hg consistent.
-    # All spp in hg spp set and so on.
-
-    n = Node(WeakRef(e), sp, role)
-
-    append!(e.nodes, [n]) 
-
-    return e
-end
-
-"""
     EcologicalHypergraph(network::UnipartiteNetwork{Bool, String}, add_self = true)
 
 Constructor for `EcologicalHypergraph`
@@ -199,50 +122,4 @@ function EcologicalHypergraph(network::UnipartiteNetwork{Bool, String}; add_self
     end
 
     return EcologicalHypergraph(edges, species(network))
-end
-
-"""
-    species(hg::EcologicalHypergraph)::Vector{String}
-
-Returns a vector of all the species represented in an EcologicalHypergraph.
-"""
-function EcologicalNetworks.species(hg::EcologicalHypergraph)
-    # TODO Move out of declarations file.
-    return hg.species
-end
-
-"""
-    interactions(hg::EcologicalHypergraph)::Vector{Edge}
-
-Returns a vector of all the edges represented in an `EcologicalHypergraph`
-"""
-function EcologicalNetworks.interactions(hg::EcologicalHypergraph)
-    # TODO Move out of declarations file.
-    return hg.edges
-end
-
-# Pretty printing overides for EcologicalHypergraphs.jl types
-function Base.show(io::IO, hg::EcologicalHypergraph)
-    # TODO Move out of declarations file.   
-    print(io, "EcologicalHypergraph
-    • Species: $(length(species(hg))) 
-    • Interactions: $(length(interactions(hg)))"
-    )
-end
-
-function Base.show(io::IO, e::Edge)
-    # TODO Move out of declarations file.
-    sub = subject(e)  
-    obj = object(e)
-    mods = modifiers(e)
-    mods = map(x -> x.species, mods)
-
-    print(io, "Edge \
-    $(obj.species) → $(sub.species); Modified by: $(join(mods, ", "))" 
-    )
-end
-
-function Base.show(io::IO, n::Node)
-    # TODO Move out of declarations file.
-    print(io, "Node • $(n.species) as a $(n.role)")
 end
