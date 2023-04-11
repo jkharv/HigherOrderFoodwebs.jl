@@ -178,13 +178,12 @@ function add_modifier!(e::Edge, sp::String, role::Symbol = :modifier)
 end
 
 """
-    EcologicalHypergraph(network::UnipartiteNetwork{Bool, String})
+    EcologicalHypergraph(network::UnipartiteNetwork{Bool, String}, add_self = true)
 
 Constructor for `EcologicalHypergraph`
 Convert a network from `EcologicalNetworks.jl` into an EcologicalHypergraph.
 """
-function EcologicalHypergraph(network::UnipartiteNetwork{Bool, String}, 
-    add_self = true)
+function EcologicalHypergraph(network::UnipartiteNetwork{Bool, String}; add_self = true)
 
     edges = Matrix(network.edges)
 
