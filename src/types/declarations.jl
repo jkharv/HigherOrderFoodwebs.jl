@@ -15,7 +15,7 @@ mutable struct Node
     func_backwards::Num
 
     params::Vector{Num}
-    param_vals::Vector{Union{Num, Distribution}}
+    param_vals::Vector{Union{Num, Distribution, Missing}}
 
     var::Num
     var_val::Num
@@ -31,10 +31,10 @@ mutable struct Node
         var = @variables $var_name(edge.hypergraph.t)
 
         new(
-            edge, species, role,                               # Basic info
-            Num(1), Num(1),                                    # Func defaults
-            Vector{Num}(), Vector{Union{Num, Distribution}}(), # params and params default
-            var[1], Num(0)                                     # var and var default
+            edge, species, role, # Basic info
+            Num(1), Num(1),      # Func defaults
+            [], [],              # params and params default
+            var[1], Num(0)       # var and var default
             )
     end
 end

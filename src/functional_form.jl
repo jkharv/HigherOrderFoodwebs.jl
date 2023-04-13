@@ -31,12 +31,57 @@ macro functional_form(node, ex, params...)
     ex = unblock(ex)
     ex = prewalk(rmlines, ex)
 
+    params = parse_parameter_block(params)
+
     fn = parse_function_block(ex)
 
     return quote
         
         add_func_to_nodes!($(esc(node)), $fn, $params)
     end
+end
+
+function parse_parameter_block(ex)
+
+    ex = unblock(ex)
+    ex = prewalk(rmlines, ex)
+
+    params = []
+
+    for p ∈ ex 
+
+        if p isa Symbol 
+            
+            push!(params, (param = p, val = missing))
+        end
+
+        if p isa Expr
+        
+            param = p.args[2]            
+
+            if p.args[3] isa Number
+                val = Num(p.args[3])
+            end
+
+            if p.args[3] isa Expr 
+
+                res = eval(p.args[3])
+
+                if typeof(res) <: Distribution
+                    val = res 
+                elseif typeof(res) <: Number
+                    val = Num(res)
+                else
+                    error("The expression for parameters must evaluate 
+                           to either a Number or a Distribution.")
+                end
+            end
+
+            push!(params, (param = param, val = val))
+        end 
+    end
+
+    return params
 end
 
 function add_func_to_nodes!(nodes, fn, params)
@@ -49,43 +94,55 @@ function add_func_to_node!(node, fn, params)
     # Replace the placeholder var with the proper one
     mod_func = rename_symbols(fn, [fn.var], [node.var])
 
+    param_symbols = [p.param for p in params]
+
     if length(params) > 0
 
         new_params = disambiguate_parameters(node, params)
         add_parameters_to_node!(node, new_params)
-        mod_func = rename_symbols(mod_func, params, node.params)
+        mod_func = rename_symbols(mod_func, param_symbols, node.params)
     end
     
     node.func_forwards = eval(mod_func.ff)
     node.func_backwards = eval(mod_func.bf)
 end
 
-function disambiguate_parameters(node, params)
+function disambiguate_parameters(node::Node, params)
 
     sbj = species(subject(node.edge))
     obj = species(object(node.edge))
 
-    new_params = Symbol.(params, "_" ,Ref(sbj), "_",Ref(obj))
-    #new_params = gensym.(new_params)
-    
+    new_params = []
+
+    for param in params
+
+        new_param = Symbol(param.param, "_" , sbj, "_", obj)
+        push!(new_params, (param = new_param, val = param.val))
+    end
+
     return new_params
 end
 
-function add_parameters_to_node!(node::Node, params::Tuple{Vararg{Symbol}})
-   
+function add_parameters_to_node!(node::Node, params)
+
     # Symbolics let's you interpolate in a runtime generated Symbol, but not a
     # tuple of runtime generated Symbols like you can with compile time Symbols.
     new_params = []
+    vals = []
 
     for p in params
 
         # Using the @parameters macro directly caused problems.
-        param = @variables $p
+        pp = p.param
+        param = @variables $pp
         param = ModelingToolkit.toparam(param[1])
-        append!(new_params, param)
+
+        push!(new_params, param)
+        push!(vals, p.val)
     end
 
     node.params = new_params
+    node.param_vals = vals
 end
 
 function parse_function_block(ex::Expr)
