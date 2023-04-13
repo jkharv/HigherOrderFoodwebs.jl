@@ -13,11 +13,14 @@ mutable struct Node
 
     func_forwards::Num
     func_backwards::Num
+
     params::Vector{Num}
+    param_vals::Vector{Union{Num, Distribution}}
+
     var::Num
+    var_val::Num
     
-    function Node(edge, species::String, role::Symbol, forwards_func::Num, 
-                  backwards_func::Num, params::Vector{Num})
+    function Node(edge, species::String, role::Symbol)
 
 
         if edge isa WeakRef
@@ -27,13 +30,13 @@ mutable struct Node
         var_name = Symbol(species)
         var = @variables $var_name(edge.hypergraph.t)
 
-        new(edge, species, role, forwards_func, backwards_func, params, var[1])
+        new(
+            edge, species, role,                               # Basic info
+            Num(1), Num(1),                                    # Func defaults
+            Vector{Num}(), Vector{Union{Num, Distribution}}(), # params and params default
+            var[1], Num(0)                                     # var and var default
+            )
     end
-end
-
-function Node(edge, species::String, role::Symbol)
-
-    Node(edge, species, role, Num(1), Num(1), Vector{Num}())
 end
 
 """
@@ -60,6 +63,7 @@ mutable struct EcologicalHypergraph
     edges::Vector{Edge}
     species::Vector{String}
     roles::Vector{Symbol}
+
     t::Num # Single time_var for representing t w/ ModelingToolkit.
 
     function EcologicalHypergraph(edges::Vector{Edge}, 
