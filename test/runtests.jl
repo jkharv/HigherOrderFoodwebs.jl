@@ -4,5 +4,6 @@ using EcologicalHypergraphs
 
 @testset "EcologicalHypergraph" verbose=true begin
 
+    include("../examples/test.jl")
 
 end
