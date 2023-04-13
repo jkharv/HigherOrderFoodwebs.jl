@@ -5,6 +5,7 @@ using EcologicalNetworks
 using ModelingToolkit
 using Symbolics
 using LinearAlgebra
+using Distributions
 
 include(joinpath(".", "types", "declarations.jl"))
 export EcologicalHypergraph, Node, Edge
@@ -18,6 +19,7 @@ include(joinpath(".", "utilities", "getters_setters.jl"))
 export species, role, nodes, subject, object, modifiers, add_modifier!
 
 include(joinpath(".", "utilities", "utilities.jl"))
+include(joinpath(".", "utilities", "overloads.jl"))
 
 include(joinpath(".", "functional_form.jl"))
 export @functional_form
