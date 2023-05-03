@@ -1,8 +1,10 @@
-using DifferentialEquations
-using Plots
+using OrdinaryDiffEq
+using ModelingToolkit
+using EcologicalNetworks 
+using EcologicalHypergraphs
+using Plots; gr()
 
 web = nichemodel(20, 0.2)
-
 hg = EcologicalHypergraph(web)
 
 tl = trophic_level(web)
@@ -11,8 +13,8 @@ producers = collect(keys(filter(x -> last(x) == 1.0, tl)))
 consumers = collect(keys(filter(x -> last(x) > 1.0, tl)))
 loops = filter(isloop, hg.edges)
 
-producer_growth = filter(x -> contains(x, producers, [:subject]), loops)
-consumer_growth = filter(x -> contains(x, consumers, [:subject]), loops)
+producer_growth = filter(x -> EcologicalHypergraphs.contains(x, producers, [:subject]), loops)
+consumer_growth = filter(x -> EcologicalHypergraphs.contains(x, consumers, [:subject]), loops)
 
 trophic = filter(!isloop, hg.edges)
 
@@ -22,19 +24,19 @@ trophic = filter(!isloop, hg.edges)
 
 @functional_form subject.(producer_growth) begin
     
-    x -> r*x*(1-x/k)
-end r k
+    x -> r*x*(1 - x/k)
+end r ~ Normal(0.7, 0.25) k ~ Uniform(0.5, 10.0) 
 
 @functional_form subject.(consumer_growth) begin
     
-    x -> -r * x
-end r
+    x -> r * x
+end r ~ Uniform(-0.2, -0.05)
 
 @functional_form subject.(trophic) begin
 
     x -> a*e*x
     x -> -a*x
-end a e
+end a ~ Normal(0.7, 0.25) e ~ Normal(0.1, 0.15)
 
 @functional_form object.(trophic) begin
     
@@ -45,31 +47,19 @@ end
 # Add some modifiers
 #----------------------------------------
 
-mods = add_modifier!.(rand(hg.edges, 8), rand(species(hg), 8))
-mods = first.(modifiers.(mods))
+# mods = add_modifier!.(rand(hg.edges, 40), rand(species(hg), 40))
+# mods = first.(modifiers.(mods))
 
-@functional_form mods begin
+# @functional_form mods begin
    
-    x -> exp(m)*100*sin(x + m)
+#     x -> 1/x*m
     
-end m
+# end m ~ Normal(0.5, 0.2)
 
-#---------------------------------------- 
-# Do something with the hypergraph
-#----------------------------------------
+# #---------------------------------------- 
+# # Do something with the hypergraph
+# #----------------------------------------
 
-cm = community_matrix(hg)
-
-sys = build_system(hg)
-
-vars = convert(Vector{Symbol}, sys.states)
-vars = Dict(vars .=> rand(length(vars)))
-
-params = convert(Vector{Symbol}, sys.ps)
-params = Dict(params .=> rand(length(params)))
-
-prob = ODEProblem(sys, vars, [0, 1000], params)
-
-sol = solve(prob, Tsit5())
-
+sys = build_numerical_system(hg, (0,500))
+sol = solve(sys, Tsit5())
 plot(sol)

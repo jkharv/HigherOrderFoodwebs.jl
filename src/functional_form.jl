@@ -50,6 +50,7 @@ function parse_parameter_block(ex)
 
     for p ∈ ex 
 
+        # If no param val is given. TBH prob should be illegal.
         if p isa Symbol 
             
             push!(params, (param = p, val = missing))
@@ -58,24 +59,7 @@ function parse_parameter_block(ex)
         if p isa Expr
         
             param = p.args[2]            
-
-            if p.args[3] isa Number
-                val = Num(p.args[3])
-            end
-
-            if p.args[3] isa Expr 
-
-                res = eval(p.args[3])
-
-                if typeof(res) <: Distribution
-                    val = res 
-                elseif typeof(res) <: Number
-                    val = Num(res)
-                else
-                    error("The expression for parameters must evaluate 
-                           to either a Number or a Distribution.")
-                end
-            end
+            val = DistributionOption(eval(p.args[3])) 
 
             push!(params, (param = param, val = val))
         end 

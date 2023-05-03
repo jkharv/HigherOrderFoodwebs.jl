@@ -7,7 +7,8 @@ using Symbolics
 using LinearAlgebra
 using Distributions
 
-include(joinpath(".", "types", "declarations.jl"))
+include(joinpath(".", "types", "distribution_option.jl"))
+include(joinpath(".", "types", "ecological_hypergraph.jl"))
 export EcologicalHypergraph, Node, Edge
 
 include(joinpath(".", "types", "conversions.jl"))
@@ -25,6 +26,6 @@ include(joinpath(".", "functional_form.jl"))
 export @functional_form
 
 include(joinpath(".", "build_system.jl"))
-export community_matrix, build_system
+export community_matrix, build_symbolic_system, build_numerical_system
 
 end

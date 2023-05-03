@@ -48,44 +48,94 @@ function backwards_function(e::Edge)
 end
 
 """
-    get_hypergraph_variables(hg::EcologicalHypergraph)
+Returns a list with exactly one node for each species.
 
-Returns a `Vector{Num}` containing references to all species variables in the same order
-as the species were defined when the hypergraph was created.
+p much just used to eliminate code duplication in the implemenation
+of `get_hypergraph_variables` and `get_hypergraph_variable_dict`.
 """
-function get_hypergraph_variables(hg::EcologicalHypergraph)::Vector{Num}
+function get_minimal_node_vec(hg::EcologicalHypergraph)::Vector{Node}
 
     spp = species(hg)
-    vars = zeros(Num ,length(spp))
+    nodes = [] 
 
     for (i, sp) in enumerate(spp)
 
         e_ind = findfirst(x -> species(subject(x)) == sp, hg.edges)
-        var = subject(hg.edges[e_ind]).var
-        vars[i] = var
+        node = subject(hg.edges[e_ind])
+        
+        push!(nodes, node)
     end
     
-    return vars
+    return nodes
+end
+
+function get_hypergraph_variables(hg::EcologicalHypergraph)::Vector{Num}
+
+    nodes = get_minimal_node_vec(hg)
+    f(x) = x.var
+    return f.(nodes)
+end
+
+function get_hypergraph_variable_dict(hg::EcologicalHypergraph)::Dict{Num, Float64}
+
+    nodes = get_minimal_node_vec(hg)
+
+    var(x) = x.var
+    #var0(x) = x.var_val.val
+    var0(x) = rand() # TEMP until I make @functional_form set u0.     
+
+    return Dict(var.(nodes) .=> var0.(nodes))
+end
+
+function get_hypergraph_parameter_dict(hg::EcologicalHypergraph)::Dict{Num, Float64}
+
+    params = Dict{Num, Float64}()
+
+    for e in interactions(hg)
+        for n in nodes(e)
+
+            syms = n.params
+            vals = reify.(n.param_vals)
+
+            pairs = syms .=> vals
+            
+            for p in pairs
+
+                push!(params, p)
+            end
+        end
+    end
+
+    return(params)
 end
 
 """
-    build_system(hg::EcologicalHypergraph)::ODESystem
+    build_symbolic_system(hg::EcologicalHypergraph)::ODESystem
 
 Takes an `EcologicalHypergraph` and returns an `ODESystem` object from `Symbolics.jl`.
-This object can then be given to the `ODEProblem` constructor supplied by `Symbolics.jl`
-which creates a numeric system which can be integrated using `solve` from
-`DifferentialEquations.jl`
+The equations in this object all remain in symbolic form.
+
+TODO: function to substitute in the params defined in the hg.
 """
-function build_system(hg::EcologicalHypergraph)::ODESystem
+function build_symbolic_system(hg::EcologicalHypergraph)::ODESystem
 
     cm = community_matrix(hg)
-    
-    funcs = mapslices(sum, cm; dims = 2)
     vars = get_hypergraph_variables(hg)
-    
+    funcs = mapslices(sum, cm; dims = 2)
+
     D = Differential(hg.t)
     dbs = D.(vars) 
     eqs = Equation.(dbs, funcs)
 
     return ODESystem(eqs, name = :Hypergraph)
+end
+
+function build_numerical_system(hg::EcologicalHypergraph, tspan)::ODEProblem
+
+    sym_sys = build_symbolic_system(hg)
+    
+    var_dict = get_hypergraph_variable_dict(hg)
+    param_dict = get_hypergraph_parameter_dict(hg)
+
+    return ODEProblem(sym_sys, var_dict, tspan, param_dict)
 end
