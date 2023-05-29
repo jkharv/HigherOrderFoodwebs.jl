@@ -43,7 +43,7 @@ function add_modifier!(e::Edge, sp::Vector{String}, role::Symbol = :modifier)
 
     append!(e.nodes, [n]) 
 
-    return e
+    return n
 end
 
 """

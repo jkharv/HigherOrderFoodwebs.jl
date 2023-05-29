@@ -12,6 +12,49 @@ function isloop(e::Edge)::Bool
 end
 
 """
+    isproducer(node::Node, trophic_levels::Dict{String, Float64})::Bool
+
+Returns true if the node `node` is a producer (trophic level == 1).
+"""
+function isproducer(node::Node, trophic_levels::Dict{String, Float64})::Bool
+
+    sp_tl = trophic_levels[species(node)]
+
+    return sp_tl == 1.0 
+end
+
+"""
+    isconsumer(node::Node, trophic_levels::Dict{String, Float64})::Bool
+
+Returns true if the node `node` is a consumer (trophic level > 1.0).
+"""
+function isconsumer(node::Node, trophic_levels::Dict{String, Float64})::Bool
+
+    sp_tl = trophic_levels[species(node)]
+    return sp_tl > 1.0 
+end
+
+"""
+    subject_is_producer(edge::Edge, trophic_levels::Dict{String, Float64})::Bool
+
+Returns true if the subject of the edge `edge` is a producer.
+"""
+function subject_is_producer(edge::Edge, trophic_levels::Dict{String, Float64})::Bool
+
+    return isproducer(subject(edge), trophic_levels)
+end
+
+"""
+    subject_is_consumer(edge::Edge, trophic_levels::Dict{String, Float64})::Bool
+
+Returns true if the subject of the edge `edge` is a consumer.
+"""
+function subject_is_consumer(edge::Edge, trophic_levels::Dict{String, Float64})::Bool
+
+    return isconsumer(subject(edge), trophic_levels)
+end
+
+"""
     contains(e::Edge, spp::Vector{String}, r::Vector{Symbol})::Bool
 
 Returns true if the edge `e` contains a species in spp which fulfills a role in `r`.

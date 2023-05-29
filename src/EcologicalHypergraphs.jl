@@ -14,13 +14,17 @@ export EcologicalHypergraph, Node, Edge
 include(joinpath(".", "types", "conversions.jl"))
 
 include(joinpath(".", "utilities", "predicates.jl"))
-export isloop, contains
+export isloop, contains, isproducer, isconsumer,
+       subject_is_consumer, subject_is_producer
 
 include(joinpath(".", "utilities", "getters_setters.jl"))
 export species, role, nodes, subject, object, modifiers, add_modifier!
 
 include(joinpath(".", "utilities", "utilities.jl"))
 include(joinpath(".", "utilities", "overloads.jl"))
+
+include(joinpath(".", "NTE_models", "optimal_foraging.jl"))
+export add_optimal_foraging_modifiers!
 
 include(joinpath(".", "functional_form.jl"))
 export @functional_form

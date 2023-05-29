@@ -5,40 +5,46 @@ using EcologicalNetworks
 using EcologicalHypergraphs
 using Plots
 
-web = nichemodel(20, 0.2)
+#----------------------------------------
+# Creating a foodweb and hypergraph
+#----------------------------------------
+
+web = nichemodel(15, 0.2)
 hg = EcologicalHypergraph(web)
 
 tl = trophic_level(web)
+producer_filter = x -> subject_is_producer(x, tl)
+consumer_filter = x -> subject_is_consumer(x, tl)
 
-producers = collect(keys(filter(x -> last(x) == 1.0, tl)))
-consumers = collect(keys(filter(x -> last(x) > 1.0, tl)))
-loops = filter(isloop, hg.edges)
-
-producer_growth = filter(x -> EcologicalHypergraphs.contains(x, producers, [:subject]), loops)
-consumer_growth = filter(x -> EcologicalHypergraphs.contains(x, consumers, [:subject]), loops)
-
-trophic = filter(!isloop, hg.edges)
+# Make groups of interactions.
+producer_growth = filter(x -> isloop(x) & producer_filter(x), interactions(hg))
+consumer_growth = filter(x -> isloop(x) & consumer_filter(x), interactions(hg))
+trophic = filter(!isloop, interactions(hg))
 
 #----------------------------------------
 # Basic foodweb model
 #----------------------------------------
 
-@functional_form test_node begin
+# Growth function for producers
+@functional_form subject.(producer_growth) begin
     
-    (x, y) -> r*x*(1 - y/k)
-end r ~ Normal(0.7, 0.25) k ~ Uniform(0.5, 10.0) 
+    x -> r*x*(1 - x/k)
+end r ~ Normal(0.8, 0.25) k ~ Uniform(0.1, 10.0) 
 
+# Growth function for consumers
 @functional_form subject.(consumer_growth) begin
     
     x -> r * x
 end r ~ Uniform(-0.2, -0.05)
 
+# Trophic interaction function pt.1
 @functional_form subject.(trophic) begin
 
     x -> a*e*x
     x -> -a*x
 end a ~ Normal(0.7, 0.25) e ~ Normal(0.1, 0.15)
 
+# Trophic interaction function pt.2
 @functional_form object.(trophic) begin
     
     x -> x
@@ -48,19 +54,31 @@ end
 # Add some modifiers
 #----------------------------------------
 
-# mods = add_modifier!.(rand(hg.edges, 40), rand(species(hg), 40))
-# mods = first.(modifiers.(mods))
+# Nothing is being modified right now.
+interactions(hg)
 
-# @functional_form mods begin
+# Add some modifiers
+mods = add_optimal_foraging_modifiers!(hg)
+
+# Now there's lots of modifiers
+interactions(hg)
+
+# Add the modifier functions
+@functional_form mods begin
    
-#     x -> 1/x*m
+    x -> 1/(1+(x/m)^2)
     
-# end m ~ Normal(0.5, 0.2)
+end m ~ Uniform(0.75, 1.0)
 
-# #---------------------------------------- 
-# # Do something with the hypergraph
-# #----------------------------------------
+#---------------------------------------- 
+# Do something with the hypergraph
+#----------------------------------------
 
+# Turn our hypergraph into a numerical ODE system.
 sys = build_numerical_system(hg, (0,500))
+
+# Hand it over to an ODE solver
 sol = solve(sys, Tsit5())
-plot(sol)
+
+# Plot the solution.
+plot(sol, legend = false)
