@@ -1,7 +1,7 @@
 using Revise
 using OrdinaryDiffEq
 using ModelingToolkit
-using EcologicalNetworks 
+using EcologicalNetworks
 using EcologicalHypergraphs
 using Plots
 

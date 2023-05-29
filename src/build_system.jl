@@ -1,5 +1,4 @@
-"""
-    community_matrix(hg::EcologicalHypergraph)::Matrix{Num}
+""" community_matrix(hg::EcologicalHypergraph)::Matrix{Num}
 
 Creates a community matrix out of an `EcologicalHypergraph`. The elements of the matrix
 are `Num` allowing symbolic manipulations of the matrix using `Symbolics.jl`.
@@ -13,8 +12,8 @@ function community_matrix(hg::EcologicalHypergraph)::Matrix{Num}
 
     for e in hg.edges
 
-        r = indices[species(subject(e))]
-        c = indices[species(object(e))]
+        r = indices[species(subject(e))[1]]
+        c = indices[species(object(e))[1]]
 
         cm[r,c] = forwards_function(e)
         cm[c,r] = backwards_function(e)
@@ -58,9 +57,9 @@ function get_minimal_node_vec(hg::EcologicalHypergraph)::Vector{Node}
     spp = species(hg)
     nodes = [] 
 
-    for (i, sp) in enumerate(spp)
+    for sp ∈ spp
 
-        e_ind = findfirst(x -> species(subject(x)) == sp, interactions(hg))
+        e_ind = findfirst(x -> species(subject(x))[1] == sp, interactions(hg))
         node = subject(interactions(hg)[e_ind])
         
         push!(nodes, node)
@@ -89,7 +88,7 @@ end
 
 function get_hypergraph_parameter_dict(hg::EcologicalHypergraph)::Dict{Num, Float64}
 
-    params = Dict{Num, Float64}()
+    parameters = Dict{Num, Float64}()
 
     for e in interactions(hg)
         for n in nodes(e)
@@ -101,12 +100,12 @@ function get_hypergraph_parameter_dict(hg::EcologicalHypergraph)::Dict{Num, Floa
             
             for p in pairs
 
-                push!(params, p)
+                push!(parameters, p)
             end
         end
     end
 
-    return(params)
+    return(parameters)
 end
 
 """

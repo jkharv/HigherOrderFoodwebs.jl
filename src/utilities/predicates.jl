@@ -18,7 +18,12 @@ Returns true if the node `node` is a producer (trophic level == 1).
 """
 function isproducer(node::Node, trophic_levels::Dict{String, Float64})::Bool
 
-    sp_tl = trophic_levels[species(node)]
+    if length(species(node)) > 1
+
+        error("The node must represent a single species to use this.")
+    end
+
+    sp_tl = trophic_levels[species(node)[1]]
 
     return sp_tl == 1.0 
 end
@@ -30,7 +35,12 @@ Returns true if the node `node` is a consumer (trophic level > 1.0).
 """
 function isconsumer(node::Node, trophic_levels::Dict{String, Float64})::Bool
 
-    sp_tl = trophic_levels[species(node)]
+    if length(species(node)) > 1
+
+        error("The node must represent a single species to use this.")
+    end
+
+    sp_tl = trophic_levels[species(node)[1]]
     return sp_tl > 1.0 
 end
 
