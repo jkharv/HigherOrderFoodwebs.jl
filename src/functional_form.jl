@@ -50,10 +50,9 @@ function parse_parameter_block(ex)
 
     for p ∈ ex 
 
-        # If no param val is given. TBH prob should be illegal.
         if p isa Symbol 
             
-            push!(params, (param = p, val = missing))
+            error("Parameter $p is used but not given any value.")
         end
 
         if p isa Expr
@@ -70,31 +69,36 @@ end
 
 function add_func_to_nodes!(nodes, fn, params)
 
-    add_func_to_node!.(nodes, Ref(fn), Ref(params))
+    # eg. Not a Vector{Node}
+    if nodes isa Node
+        add_func_to_node!(nodes, fn, params)
+    else
+        add_func_to_node!.(nodes, Ref(fn), Ref(params))
+    end
 end
 
-function add_func_to_node!(node, fn, params)
+function add_func_to_node!(node, fn, parameters)
 
     # Replace the placeholder var with the proper one
-    mod_func = rename_symbols(fn, [fn.var], [node.var])
+    mod_func = rename_symbols(fn, fn.vars, vars(node))
 
-    param_symbols = [p.param for p in params]
+    param_symbols = [p.param for p in parameters]
 
-    if length(params) > 0
+    if length(parameters) > 0
 
-        new_params = disambiguate_parameters(node, params)
+        new_params = disambiguate_parameters(node, parameters)
         add_parameters_to_node!(node, new_params)
-        mod_func = rename_symbols(mod_func, param_symbols, node.params)
+        mod_func = rename_symbols(mod_func, param_symbols, params(node))
     end
-    
-    node.func_forwards = eval(mod_func.ff)
-    node.func_backwards = eval(mod_func.bf)
+
+    set_forwards_function!(node, eval(mod_func.ff))
+    set_backwards_function!(node, eval(mod_func.bf))
 end
 
 function disambiguate_parameters(node::Node, params)
 
-    sbj = species(subject(node.edge))
-    obj = species(object(node.edge))
+    sbj = species(subject(node.edge))[1]
+    obj = species(object(node.edge))[1]
 
     new_params = []
 
@@ -111,8 +115,8 @@ function add_parameters_to_node!(node::Node, params)
 
     # Symbolics let's you interpolate in a runtime generated Symbol, but not a
     # tuple of runtime generated Symbols like you can with compile time Symbols.
-    new_params = []
-    vals = []
+    new_params = Vector{Num}()
+    vals = Vector{DistributionOption}()
 
     for p in params
 
@@ -125,8 +129,8 @@ function add_parameters_to_node!(node::Node, params)
         push!(vals, p.val)
     end
 
-    node.params = new_params
-    node.param_vals = vals
+    set_params!(node, new_params)
+    set_param_vals!(node, vals)
 end
 
 function parse_function_block(ex::Expr)
@@ -145,19 +149,36 @@ function parse_function_block(ex::Expr)
         bf = parse_function(ex)
     end
 
-    return (ff = ff.func, bf = bf.func, var = ff.var)
+    return (ff = ff.func, bf = bf.func, vars = ff.vars)
 end
 
 function parse_function(ex)
 
     lhs = unblock(ex.args[1])
     rhs = unblock(ex.args[2])
-    return (var = lhs, func = rhs) 
+
+    # One variable case
+    if lhs isa Symbol
+
+        lhs = [lhs]
+    # Mulivariable case
+    else
+
+        lhs = lhs.args
+    end
+
+    return (vars = lhs, func = rhs) 
 end
      
 function rename_symbols(fn, old_syms, new_syms)
 
     nsyms = length(old_syms)
+
+    if nsyms != length(new_syms)
+
+        error("The number of symbols given on the left hand side is not the same as the
+        number of species in the node.")
+    end
 
     for i in 1:nsyms
 

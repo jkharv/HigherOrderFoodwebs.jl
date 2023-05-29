@@ -1,8 +1,9 @@
+using Revise
 using OrdinaryDiffEq
 using ModelingToolkit
 using EcologicalNetworks 
 using EcologicalHypergraphs
-using Plots; gr()
+using Plots
 
 web = nichemodel(20, 0.2)
 hg = EcologicalHypergraph(web)
@@ -22,9 +23,9 @@ trophic = filter(!isloop, hg.edges)
 # Basic foodweb model
 #----------------------------------------
 
-@functional_form subject.(producer_growth) begin
+@functional_form test_node begin
     
-    x -> r*x*(1 - x/k)
+    (x, y) -> r*x*(1 - y/k)
 end r ~ Normal(0.7, 0.25) k ~ Uniform(0.5, 10.0) 
 
 @functional_form subject.(consumer_growth) begin

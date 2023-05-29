@@ -1,3 +1,31 @@
+mutable struct FunctionalForm
+    
+    func_forwards::Num
+    func_backwards::Num
+
+    params::Vector{Num}
+    param_vals::Vector{DistributionOption}
+
+    vars::Vector{Num}
+    var_vals::Vector{DistributionOption}
+
+    function FunctionalForm(edge, species)
+
+        var_names = Symbol.(species)
+        vars = Vector{Num}()
+
+        for v in var_names
+
+            var = @variables $v(edge.hypergraph.t)
+            append!(vars, var)
+        end
+
+        def_vars = [DistributionOption(0.0) for i in 1:length(vars)]
+
+        new(Num(1), Num(1), [], [], vars, def_vars) 
+    end
+end
+
 """
 Represents a node in the annotated hypergraph. Stores the species and the role
 it plays in it's edge.
@@ -8,35 +36,22 @@ mutable struct Node
     # circularly defined types will be possible.
     edge::Any
 
-    species::String
+    species::Vector{String}
     role::Symbol
 
-    func_forwards::Num
-    func_backwards::Num
+    func::FunctionalForm
+       
+    function Node(edge, species::Vector{String}, role::Symbol)
 
-    params::Vector{Num}
-    param_vals::Vector{DistributionOption}
+        func = FunctionalForm(edge, species)
 
-    var::Num
-    var_val::DistributionOption
-    
-    function Node(edge, species::String, role::Symbol)
-
-
-        if edge isa WeakRef
-            edge = edge.value
-        end
-
-        var_name = Symbol(species)
-        var = @variables $var_name(edge.hypergraph.t)
-
-        new(
-            edge, species, role,            # Basic info
-            Num(1), Num(1),                 # Func defaults
-            [], [],                         # params and params default
-            var[1], DistributionOption(0.0)   # var and var default
-            )
+        new(edge, species, role, func)
     end
+end
+
+function Node(edge, species::String, role::Symbol)
+
+    Node(edge, [species], role)
 end
 
 """
@@ -49,6 +64,7 @@ mutable struct Edge
     nodes::Vector{Node}
 
     function Edge(hypergraph, nodes::Vector{Node})
+
         new(hypergraph, nodes)
     end
 end

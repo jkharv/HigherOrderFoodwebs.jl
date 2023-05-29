@@ -29,7 +29,7 @@ function forwards_function(e::Edge)
 
     for n in e.nodes
 
-        f = f * n.func_forwards
+        f = f * forwards_function(n)
     end
 
     return f
@@ -41,7 +41,7 @@ function backwards_function(e::Edge)
 
     for n in e.nodes
 
-        f = f * n.func_backwards
+        f = f * backwards_function(n)
     end
 
     return f
@@ -60,8 +60,8 @@ function get_minimal_node_vec(hg::EcologicalHypergraph)::Vector{Node}
 
     for (i, sp) in enumerate(spp)
 
-        e_ind = findfirst(x -> species(subject(x)) == sp, hg.edges)
-        node = subject(hg.edges[e_ind])
+        e_ind = findfirst(x -> species(subject(x)) == sp, interactions(hg))
+        node = subject(interactions(hg)[e_ind])
         
         push!(nodes, node)
     end
@@ -72,7 +72,7 @@ end
 function get_hypergraph_variables(hg::EcologicalHypergraph)::Vector{Num}
 
     nodes = get_minimal_node_vec(hg)
-    f(x) = x.var
+    f(x) = vars(x)[1]
     return f.(nodes)
 end
 
@@ -80,7 +80,7 @@ function get_hypergraph_variable_dict(hg::EcologicalHypergraph)::Dict{Num, Float
 
     nodes = get_minimal_node_vec(hg)
 
-    var(x) = x.var
+    var(x) = vars(x)[1]
     #var0(x) = x.var_val.val
     var0(x) = rand() # TEMP until I make @functional_form set u0.     
 
@@ -94,8 +94,8 @@ function get_hypergraph_parameter_dict(hg::EcologicalHypergraph)::Dict{Num, Floa
     for e in interactions(hg)
         for n in nodes(e)
 
-            syms = n.params
-            vals = reify.(n.param_vals)
+            syms = params(n)
+            vals = reify.(param_vals(n))
 
             pairs = syms .=> vals
             
