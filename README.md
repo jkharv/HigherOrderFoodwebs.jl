@@ -30,8 +30,8 @@ in the package.
 
 ### Symbolics.jl
 
-Dynamical models done in `EcologicalHypergraphs.jl` are specified using `Symbolics.jl` you
-can do anything that `Symbolics.jl` allows you to do to the resultant model.
+Dynamical models done in `EcologicalHypergraphs.jl` are specified using `Symbolics.jl`.
+You can do anything that `Symbolics.jl` allows you to do to the resultant model.
 
 ### ModelingToolkit.jl
 
