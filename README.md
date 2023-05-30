@@ -6,6 +6,14 @@ non-trophic effects. In the future, it will support statistical study of these h
 as well. It may also support embedding these hypergraphs in spatial networks in the
 future to facilitate metacommunity models.
 
+## Getting started
+
+TODO
+
+## Examples
+
+TODO
+
 ## Integration with other packages
 
 * `SimpleHypergraphs.jl`
