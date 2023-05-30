@@ -34,14 +34,14 @@ end
 old docs
 Adds a modifier node `n` to an edge `e` with role `role`.
 """
-function add_modifier!(e::Edge, sp::Vector{String}, role::Symbol = :modifier)
+function add_modifier!(e::Edge, spp::Vector{String}, role::Symbol = :modifier)
 
     # TODO add checks to keep the state of the hg consistent.
     # All spp in hg spp set and so on.
 
-    n = Node(e, sp, role)
+    n = Node(e, spp, role)
 
-    append!(e.nodes, [n]) 
+    push!(e.nodes, n) 
 
     return n
 end
@@ -52,7 +52,7 @@ end
 Returns a `vector` of the `Node`s in an `Edge`.
 """
 function nodes(e::Edge)
-    # TODO Move out of declarations file.   
+  
     return e.nodes
 end
 
@@ -62,7 +62,7 @@ end
 Returns the `Node` playing the role of `:subject` in an `Edge`
 """
 function subject(e::Edge)
-    # TODO Move out of declarations file.   
+
     return filter(x-> x.role == :subject, nodes(e))[1]
 end
 
@@ -72,7 +72,7 @@ end
 Returns the `Node` playing the role of `:object` in an `Edge`
 """
 function object(e::Edge)
-    # TODO Move out of declarations file.
+
     return filter(x-> x.role == :object, nodes(e))[1]
 end
 
@@ -82,7 +82,7 @@ end
 Returns a vector of all the modifier nodes in an edge.
 """
 function modifiers(e::Edge)
-    # TODO Move out of declarations file.
+
     return filter(x -> x.role != :subject && x.role != :object, nodes(e))
 end
 
@@ -92,7 +92,7 @@ end
 Returns the role played by a node.
 """
 function role(n::Node)
-    # TODO Move out of declarations file.
+
     return n.role
 end
 

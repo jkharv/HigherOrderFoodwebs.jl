@@ -4,35 +4,38 @@
 Given a species, this function will return all the interations it has with all its
 resources.
 """
-function get_resource_interactions(sp::String, 
-    hg::EcologicalHypergraph)
+function get_resource_interactions(sp::String, hg::EcologicalHypergraph)
 
     ints = interactions(hg)
-    filter(x -> (species(subject(x)) == sp) & !isloop(x), ints)
-    
+   
+    ints = filter(x -> species(subject(x))[1] == sp, ints)
+    ints = filter(x -> !isloop(x), ints)
+
+    return ints
 end
 
-function add_optimal_foraging_modifiers!(hg)
+function optimal_foraging!(edge::Edge)
 
-        modifiers = Vector{Node}()
+    focal_resource = species(object(edge))[1]
+    consumer = species(subject(edge))[1]
 
-    # Yuck, there must be a better way of doing this.
-    for sp in species(hg)
-    
-        resource_interactions = get_resource_interactions(sp, hg)
-        for ri ∈ resource_interactions
-            for mod ∈ resource_interactions   
-                resource = species(object(mod))
-                focal_resource = species(object(ri))
+    resources = get_resource_interactions(consumer, edge.hypergraph)
+    f(x) = species(object(x))[1]
+    resources = f.(resources)
 
-                # Add modifier nodes only representing _alternative_ resources.
-                if resource != focal_resource
+    alternate_resources = filter(x -> x != focal_resource, resources)
 
-                    n = add_modifier!(ri, resource)    
-                    push!(modifiers, n)
-                end
-            end
-        end
+    # Ensure that the focal resource is always listed first.
+    add_modifier!(edge, vcat(focal_resource, alternate_resources))
+end
+
+function optimal_foraging!(hg::EcologicalHypergraph)
+
+    mods = Vector{Node}()
+
+    for interaction in interactions(hg)
+
+        push!(mods, optimal_foraging!(interaction))
     end
-    return modifiers
+    return mods
 end

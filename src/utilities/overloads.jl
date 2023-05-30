@@ -19,14 +19,16 @@ function Base.show(io::IO, e::Edge)
     )
 end
 
-function Base.show(io::IO, n::Node)
+function Base.show(io::IO, node::Node)
     
     if length(species(node)) > 1 
-        
+
+        print(io, "Node • ")
         print(io, "(")
         print(io, join(species(node), ", "))
         print(io, ")")
+        print(io, " as a $(role(node))")
     else
-        print(io, "Node • $(species(node)[1]) as a $(role(n))")
+        print(io, "Node • $(species(node)[1]) as a $(role(node))")
     end
 end

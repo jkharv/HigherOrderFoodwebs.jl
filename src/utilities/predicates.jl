@@ -8,7 +8,7 @@ Returns false otherwise.
 """
 function isloop(e::Edge)::Bool
 
-    return species(subject(e)) == species(object(e))
+    return species(subject(e))[1] == species(object(e))[1]
 end
 
 """

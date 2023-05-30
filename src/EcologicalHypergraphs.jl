@@ -18,13 +18,16 @@ export isloop, contains, isproducer, isconsumer,
        subject_is_consumer, subject_is_producer
 
 include(joinpath(".", "utilities", "getters_setters.jl"))
-export species, role, nodes, subject, object, modifiers, add_modifier!
+export species, role, nodes, subject, object, modifiers, add_modifier!,
+       forwards_function, set_forwards_function!, backwards_function,
+       set_backwards_function!, vars, set_vars!, params, set_params!,
+       var_vals, set_var_vals!, param_vals, set_param_vals!
 
 include(joinpath(".", "utilities", "utilities.jl"))
 include(joinpath(".", "utilities", "overloads.jl"))
 
 include(joinpath(".", "NTE_models", "optimal_foraging.jl"))
-export add_optimal_foraging_modifiers!
+export optimal_foraging!
 
 include(joinpath(".", "functional_form.jl"))
 export @functional_form

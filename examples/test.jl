@@ -58,7 +58,7 @@ end
 interactions(hg)
 
 # Add some modifiers
-mods = add_optimal_foraging_modifiers!(hg)
+mods = optimal_foraging!(hg)
 
 # Now there's lots of modifiers
 interactions(hg)
