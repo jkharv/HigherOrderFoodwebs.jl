@@ -35,6 +35,6 @@ You can do anything that `Symbolics.jl` allows you to do to the resultant model.
 
 ### ModelingToolkit.jl
 
-`Symbolics.jl` is used via `ModelingToolkit.jl` meaning parameters are tagged differently
-than variables and when creating numerical systems `ModelingToolkit.jl` does all of its
-usual symbolic manipulations on the system.
+`Symbolics.jl` is used via `ModelingToolkit.jl` meaning that parameters are tagged
+differently than variables and creating numerical systems `ModelingToolkit.jl` does
+all of its usual symbolic manipulations on the system.
