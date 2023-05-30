@@ -79,8 +79,18 @@ end
 
 function add_func_to_node!(node, fn, parameters)
 
-    # Replace the placeholder var with the proper one
-    mod_func = rename_symbols(fn, fn.vars, vars(node))
+    # Replace the placeholder var(s) with the proper one.
+    if fn.index
+        # Implicit multivariable case.
+        # x[] -> f(x[])
+        # The symbols replaced should be the _vector itself_.
+        mod_func = rename_symbol(fn, fn.vars, vars(node))
+    else
+        # Explicit single or multivariable case.
+        # x -> f(x) or (x,y,...) -> f(x,y,...)
+        # The symbols replaced should be the _contents_ of the vector.
+        mod_func = rename_symbols(fn, fn.vars, vars(node))
+    end
 
     param_symbols = [p.param for p in parameters]
 
@@ -149,7 +159,7 @@ function parse_function_block(ex::Expr)
         bf = parse_function(ex)
     end
 
-    return (ff = ff.func, bf = bf.func, vars = ff.vars)
+    return (ff = ff.func, bf = bf.func, vars = ff.vars, index = ff.index)
 end
 
 function parse_function(ex)
@@ -157,17 +167,25 @@ function parse_function(ex)
     lhs = unblock(ex.args[1])
     rhs = unblock(ex.args[2])
 
-    # One variable case
     if lhs isa Symbol
 
+        # One variable case
+        # x -> f(x)
         lhs = [lhs]
-    # Mulivariable case
-    else
+        return (vars = lhs, func = rhs, index = false) 
+    elseif lhs.head == :tuple
 
+        # Explicit mulivariable case
+        # (x, y) = f(x,y)
         lhs = lhs.args
-    end
+        return (vars = lhs, func = rhs, index = false) 
+    elseif lhs.head == :ref
 
-    return (vars = lhs, func = rhs) 
+        # Implicit multivariable case
+        # x[] -> f(x[])
+        lhs = lhs.args[1]     
+        return (vars = lhs, func = rhs, index = true) 
+    end
 end
      
 function rename_symbols(fn, old_syms, new_syms)
@@ -177,7 +195,7 @@ function rename_symbols(fn, old_syms, new_syms)
     if nsyms != length(new_syms)
 
         error("The number of symbols given on the left hand side is not the same as the
-        number of species in the node.")
+               number of species in the node.")
     end
 
     for i in 1:nsyms

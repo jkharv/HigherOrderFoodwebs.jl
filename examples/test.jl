@@ -66,9 +66,8 @@ interactions(hg)
 # Add the modifier functions
 @functional_form mods begin
    
-    x -> 1/(1+(x/m)^2)
-    
-end m ~ Uniform(0.75, 1.0)
+    x[] -> x[1]/sum(x[1:end])
+end p ~ 1.0
 
 #---------------------------------------- 
 # Do something with the hypergraph
