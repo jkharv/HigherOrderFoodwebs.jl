@@ -8,11 +8,14 @@ future to facilitate metacommunity models.
 
 ## Getting started
 
-TODO
+This package isn't yet in the Julia general registry. You can still install it directly
+from this git repository.
+
+    ] add github.com/jkharv/EcologicalHypergraphs.jl
 
 ## Examples
 
-TODO
+There are examples in the example directory of this repository.
 
 ## Integration with other packages
 
