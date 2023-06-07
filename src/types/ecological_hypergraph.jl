@@ -3,11 +3,11 @@ mutable struct FunctionalForm
     func_forwards::Num
     func_backwards::Num
 
-    params::Vector{Num}
-    param_vals::Vector{DistributionOption}
+    params::Vector{Union{Num, Vector{Num}}}
+    param_vals::Vector{Union{DistributionOption, Vector{DistributionOption}}}
 
     vars::Vector{Num}
-    var_vals::Vector{DistributionOption}
+    var_vals::Vector{Union{DistributionOption, Vector{DistributionOption}}}
 
     function FunctionalForm(edge, species)
 

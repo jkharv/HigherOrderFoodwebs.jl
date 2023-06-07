@@ -16,7 +16,7 @@ the second function is the "backwards function" which represents the amount of b
 being removed from the object of the interaction. The difference between these two
 functions is the loss from the system.
 
-When this assymetry is not required, you only need to define one function. In this case
+When this asymmetry is not required, you only need to define one function. In this case
 both the forwards and backwards function of the node are identical. This is the case
 for loops, such as growth, where deaths and growth can be collected into the same 
 expression (net growth). 
@@ -32,7 +32,6 @@ macro functional_form(node, ex, params...)
     ex = prewalk(rmlines, ex)
 
     params = parse_parameter_block(params)
-
     fn = parse_function_block(ex)
 
     return quote
@@ -48,20 +47,26 @@ function parse_parameter_block(ex)
 
     params = []
 
-    for p ∈ ex 
+    for p ∈ ex
 
-        if p isa Symbol 
-            
-            error("Parameter $p is used but not given any value.")
+        p isa Symbol  ? error("Parameter $p is used but not given any value.") :
+        !(p isa Expr) ? error("Parameter $p is declared with invalid syntax.") :
+
+        # Simple scalar parameter. eg. p
+        if p.args[2] isa Symbol 
+        
+            param = p.args[2]
+            val = DistributionOption(eval(p.args[3]))
+            push!(params, (param = param, val = val, vector = false))
         end
 
-        if p isa Expr
-        
-            param = p.args[2]            
-            val = DistributionOption(eval(p.args[3])) 
+        # Vector of parameters. eg. p[]
+        if p.args[2] isa Expr
 
-            push!(params, (param = param, val = val))
-        end 
+            param = p.args[2].args[1]
+            val = DistributionOption(eval(p.args[3]))
+            push!(params, (param = param, val = val, vector = true))   
+        end
     end
 
     return params
@@ -75,6 +80,30 @@ function add_func_to_nodes!(nodes, fn, params)
     else
         add_func_to_node!.(nodes, Ref(fn), Ref(params))
     end
+end
+
+function create_parameter_vector(sym::Symbol, length::Int)::Vector{Num}
+
+    syms = Vector{Symbol}()
+    pars = Vector{Num}()
+
+    # Create symbol names.
+    for i in 1:length
+
+        new_sym = Symbol(String(sym) * "_$i")
+        push!(syms, new_sym)
+    end
+
+    # Make variables with those names.
+    for sym in syms
+
+        x = @variables $sym
+        push!(pars, x[1])
+    end
+
+    # Tag those variables as parameters and return.
+    pars = ModelingToolkit.toparam.(pars)
+    return pars
 end
 
 function add_func_to_node!(node, fn, parameters)
@@ -112,10 +141,10 @@ function disambiguate_parameters(node::Node, params)
 
     new_params = []
 
-    for param in params
+    for param ∈ params
 
         new_param = Symbol(param.param, "_" , sbj, "_", obj)
-        push!(new_params, (param = new_param, val = param.val))
+        push!(new_params, (param = new_param, val = param.val, vector = param.vector))
     end
 
     return new_params
@@ -125,18 +154,25 @@ function add_parameters_to_node!(node::Node, params)
 
     # Symbolics let's you interpolate in a runtime generated Symbol, but not a
     # tuple of runtime generated Symbols like you can with compile time Symbols.
-    new_params = Vector{Num}()
-    vals = Vector{DistributionOption}()
+    new_params = Vector{Union{Num, Vector{Num}}}()
+    vals = Vector{Union{DistributionOption, Vector{DistributionOption}}}()
 
     for p in params
 
-        # Using the @parameters macro directly caused problems.
-        pp = p.param
-        param = @variables $pp
-        param = ModelingToolkit.toparam(param[1])
+        if p.vector
+
+            n_vars = length(vars(node))
+            param = create_parameter_vector(p.param, n_vars)
+            push!(vals, [p.val for i ∈ 1:n_vars])
+        else
+
+            pp = p.param
+            param = @variables $pp
+            param = ModelingToolkit.toparam(param[1])
+            push!(vals, p.val)
+        end
 
         push!(new_params, param)
-        push!(vals, p.val)
     end
 
     set_params!(node, new_params)
@@ -187,7 +223,7 @@ function parse_function(ex)
         return (vars = lhs, func = rhs, index = true) 
     end
 end
-     
+
 function rename_symbols(fn, old_syms, new_syms)
 
     nsyms = length(old_syms)

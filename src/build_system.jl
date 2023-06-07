@@ -93,11 +93,34 @@ function get_hypergraph_parameter_dict(hg::EcologicalHypergraph)::Dict{Num, Floa
     for e in interactions(hg)
         for n in nodes(e)
 
+            if length(params(n)) != length(param_vals(n))
+                error("params and param vals differ in length")
+            end
+
             syms = params(n)
-            vals = reify.(param_vals(n))
+            if length(syms) > 0
+
+                syms = reduce(vcat, syms)
+                # reduce(vcat, x) will return a scalar if x contains only a single.
+                # scalar. This should be avoided.
+                if syms isa Num
+                    syms = [syms]
+                end
+            end
+
+            vals = param_vals(n)
+            if length(vals) > 0
+
+                vals = reduce(vcat, vals)
+                
+                if vals isa DistributionOption 
+                    vals = [vals]
+                end
+            end 
+            vals = reify.(vals)
 
             pairs = syms .=> vals
-            
+
             for p in pairs
 
                 push!(parameters, p)

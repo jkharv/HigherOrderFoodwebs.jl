@@ -135,7 +135,7 @@ function params(node::Node)
     return node.func.params
 end
 
-function set_params!(node::Node, params::Vector{Num})
+function set_params!(node::Node, params::Vector{Union{Num, Vector{Num}}})
 
     node.func.params = params
 end
@@ -152,10 +152,10 @@ end
 
 function param_vals(node::Node)
 
-    return node.func.var_vals
+    return node.func.param_vals
 end
 
 function set_param_vals!(node::Node, vals)
 
-    node.func.var_vals = vals
+    node.func.param_vals = vals
 end
