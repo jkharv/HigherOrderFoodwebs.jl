@@ -151,7 +151,14 @@ function build_symbolic_system(hg::EcologicalHypergraph)::ODESystem
     return ODESystem(eqs, name = :Hypergraph)
 end
 
-function build_numerical_system(hg::EcologicalHypergraph, tspan)::ODEProblem
+"""
+    build_symbolic_system(hg::EcologicalHypergraph, tspan::Tuple{Int, Int})::ODESystem
+
+Takes an `EcologicalHypergraph` and returns an `ODEProblem` object from
+`DifferentialEquations.jl`.
+"""
+function build_numerical_system(hg::EcologicalHypergraph, 
+                                tspan::Tuple{Int, Int})::ODEProblem
 
     sym_sys = build_symbolic_system(hg)
     
