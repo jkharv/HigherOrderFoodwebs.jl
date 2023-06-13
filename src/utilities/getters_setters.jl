@@ -9,6 +9,16 @@ function EcologicalNetworks.species(hg::EcologicalHypergraph)::Vector{String}
 end
 
 """
+    species(hg::EcologicalHypergraph)::Vector{String}
+
+Returns a vector of all the species represented in an edge.
+"""
+function EcologicalNetworks.species(e::Edge)::Vector{String}
+    
+    return e.species
+end
+
+"""
     species(n::Node)
 
 Returns the species represented by a node.
@@ -29,12 +39,13 @@ function EcologicalNetworks.interactions(hg::EcologicalHypergraph)
 end
 
 """
-    add_modifier!(e::Edge, n::Node, role::Symbol = :modifier)
+    add_modifier!(e::Edge, n::Node, role::Symbol = :modifier)::Node
 
-old docs
-Adds a modifier node `n` to an edge `e` with role `role`.
+Add a modifier to `e` representing species `spp`. The optional role argument defaults to
+`:modifier`. Once finished, this function also returns a reference to the node that was
+added.
 """
-function add_modifier!(e::Edge, spp::Vector{String}, role::Symbol = :modifier)
+function add_modifier!(e::Edge, spp::Vector{String}, role::Symbol = :modifier)::Node
 
     # TODO add checks to keep the state of the hg consistent.
     # All spp in hg spp set and so on.
@@ -51,7 +62,7 @@ end
 
 Returns a `vector` of the `Node`s in an `Edge`.
 """
-function nodes(e::Edge)
+function nodes(e::Edge)::Vector{Node}
   
     return e.nodes
 end
@@ -61,7 +72,7 @@ end
 
 Returns the `Node` playing the role of `:subject` in an `Edge`
 """
-function subject(e::Edge)
+function subject(e::Edge)::Node
 
     return filter(x-> x.role == :subject, nodes(e))[1]
 end
@@ -71,7 +82,7 @@ end
 
 Returns the `Node` playing the role of `:object` in an `Edge`
 """
-function object(e::Edge)
+function object(e::Edge)::Node
 
     return filter(x-> x.role == :object, nodes(e))[1]
 end
@@ -81,17 +92,17 @@ end
 
 Returns a vector of all the modifier nodes in an edge.
 """
-function modifiers(e::Edge)
+function modifiers(e::Edge)::Vector{Node}
 
     return filter(x -> x.role != :subject && x.role != :object, nodes(e))
 end
 
 """
-    role(n::Node)
+    role(n::Node)::Symbol
 
-Returns the role played by a node.
+Returns the role played by a node in it's edge.
 """
-function role(n::Node)
+function role(n::Node)::Symbol
 
     return n.role
 end

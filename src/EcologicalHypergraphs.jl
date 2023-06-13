@@ -14,14 +14,14 @@ export EcologicalHypergraph, Node, Edge
 include(joinpath(".", "types", "conversions.jl"))
 
 include(joinpath(".", "utilities", "predicates.jl"))
-export isloop, contains, isproducer, isconsumer,
-       subject_is_consumer, subject_is_producer
+export isloop, contains_species, isproducer, isconsumer, subject_is_consumer, 
+       subject_is_producer
 
 include(joinpath(".", "utilities", "getters_setters.jl"))
-export species, role, nodes, subject, object, modifiers, add_modifier!,
-       forwards_function, set_forwards_function!, backwards_function,
-       set_backwards_function!, vars, set_vars!, params, set_params!,
-       var_vals, set_var_vals!, param_vals, set_param_vals!
+export species, interactions, role, nodes, subject, object, modifiers, add_modifier!,
+       forwards_function, set_forwards_function!, backwards_function, 
+       set_backwards_function!, vars, set_vars!, params, set_params!, var_vals, 
+       set_var_vals!, param_vals, set_param_vals!
 
 include(joinpath(".", "utilities", "utilities.jl"))
 include(joinpath(".", "utilities", "overloads.jl"))

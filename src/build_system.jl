@@ -1,4 +1,5 @@
-""" community_matrix(hg::EcologicalHypergraph)::Matrix{Num}
+"""
+    community_matrix(hg::EcologicalHypergraph)::Matrix{Num}
 
 Creates a community matrix out of an `EcologicalHypergraph`. The elements of the matrix
 are `Num` allowing symbolic manipulations of the matrix using `Symbolics.jl`.
@@ -136,8 +137,6 @@ end
 
 Takes an `EcologicalHypergraph` and returns an `ODESystem` object from `Symbolics.jl`.
 The equations in this object all remain in symbolic form.
-
-TODO: function to substitute in the params defined in the hg.
 """
 function build_symbolic_system(hg::EcologicalHypergraph)::ODESystem
 

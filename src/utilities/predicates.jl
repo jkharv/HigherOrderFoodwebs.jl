@@ -65,11 +65,12 @@ function subject_is_consumer(edge::Edge, trophic_levels::Dict{String, Float64}):
 end
 
 """
-    contains(e::Edge, spp::Vector{String}, r::Vector{Symbol})::Bool
+    contains_species(e::Edge, spp::Vector{String}, r::Vector{Symbol})::Bool
 
-Returns true if the edge `e` contains a species in spp which fulfills a role in `r`.
+Returns true if `e` contains a species in `spp` which plays a role in `r`, otherwise
+false.
 """
-function contains(e::Edge, spp::Vector{String}, r::Vector{Symbol})
+function contains_species(e::Edge, spp::Vector{String}, r::Vector{Symbol})
 
     for n in e.nodes
 
@@ -82,12 +83,11 @@ function contains(e::Edge, spp::Vector{String}, r::Vector{Symbol})
 end
 
 """
-    contains(e::Edge, sp::String, r::Symbol)
+    contains_species(e::Edge, sp::String, r::Symbol)::Bool
 
-Returns true if the edge `e` contains species `sp` playig role `r.
-Returns false otherwise.
+Returns true if `e` contains species `sp` playig role `r`, otherwise false.
 """
-function contains(e::Edge, sp::String, r::Symbol)
+function contains_species(e::Edge, sp::String, r::Symbol)::Bool
 
     return contains(e, [sp], [r])
 end

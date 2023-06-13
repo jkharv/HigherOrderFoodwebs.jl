@@ -96,7 +96,6 @@ function add_optimal_foraging(hg)
     return build_numerical_system(hg, (0, 500))
 end
 
-
 # Make some stable communities
 comms = [10 for i ∈ 1:20];
 comms = stable_community_factory.(comms);
