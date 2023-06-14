@@ -32,6 +32,6 @@ include(joinpath(".", "functional_form.jl"))
 export @functional_form
 
 include(joinpath(".", "build_system.jl"))
-export community_matrix, ODESystem
+export community_matrix, get_var_dict, get_param_dict
 
 end

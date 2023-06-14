@@ -132,6 +132,19 @@ function get_hypergraph_parameter_dict(hg::EcologicalHypergraph)::Dict{Num, Floa
     return(parameters)
 end
 
+# These functions are here temporarilly until I rework the Hypergraph type to use a Dict
+# directly, get rid of most of the code in this file, and lose most of the accessors that
+# will no longer be necessary.
+function get_var_dict(hg)::Dict{Num, Float64}
+
+    return get_hypergraph_variable_dict(hg)
+end
+
+function get_param_dict(hg)::Dict{Num, Float64}
+
+    return get_hypergraph_parameter_dict(hg);
+end
+
 """
     ODESystem(hg::EcologicalHypergraph)
 
