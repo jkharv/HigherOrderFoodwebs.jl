@@ -1,5 +1,8 @@
 # EcologicalHypergraphs.jl
 
+[![](https://img.shields.io/badge/docs-dev-orange.svg)](
+    https://jakeharvey.science/EcologicalHypergraphs.jl/dev)
+
 `EcologicalHypergraphs.jl` allows you to do ecology using hypergraphs. Currently, it 
 supports using hypergraphs do create large dynamical foodweb models which can incorporate
 non-trophic effects. In the future, it will support statistical study of these hypergraphs
