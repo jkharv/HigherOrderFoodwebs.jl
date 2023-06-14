@@ -17,6 +17,5 @@ functions to systems of differential equations for use in either
 `DifferentialEquations.jl` or `Symbolics.jl`
 
 ```@docs
-build_symbolic_system
-build_numerical_system
+ODESystem
 ```

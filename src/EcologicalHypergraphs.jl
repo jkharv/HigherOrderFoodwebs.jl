@@ -33,6 +33,6 @@ include(joinpath(".", "functional_form.jl"))
 export @functional_form
 
 include(joinpath(".", "build_system.jl"))
-export community_matrix, build_symbolic_system, build_numerical_system
+export community_matrix, ODESystem
 
 end

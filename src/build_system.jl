@@ -133,12 +133,13 @@ function get_hypergraph_parameter_dict(hg::EcologicalHypergraph)::Dict{Num, Floa
 end
 
 """
-    build_symbolic_system(hg::EcologicalHypergraph)::ODESystem
+    ODESystem(hg::EcologicalHypergraph)
 
-Takes an `EcologicalHypergraph` and returns an `ODESystem` object from `Symbolics.jl`.
-The equations in this object all remain in symbolic form.
+Constructor for an ODESystem from `ModelingToolkit.jl` which takes an
+`EcologicalHypergraph`. This can be passed to `DifferentialEquations.jl` for numerical
+solving.
 """
-function build_symbolic_system(hg::EcologicalHypergraph)::ODESystem
+function ModelingToolkit.ODESystem(hg::EcologicalHypergraph)::ODESystem
 
     cm = community_matrix(hg)
     vars = get_hypergraph_variables(hg)
@@ -149,21 +150,4 @@ function build_symbolic_system(hg::EcologicalHypergraph)::ODESystem
     eqs = Equation.(dbs, funcs)
 
     return ODESystem(eqs, name = :Hypergraph)
-end
-
-"""
-    build_symbolic_system(hg::EcologicalHypergraph, tspan::Tuple{Int, Int})::ODESystem
-
-Takes an `EcologicalHypergraph` and returns an `ODEProblem` object from
-`DifferentialEquations.jl`.
-"""
-function build_numerical_system(hg::EcologicalHypergraph, 
-                                tspan::Tuple{Int, Int})::ODEProblem
-
-    sym_sys = build_symbolic_system(hg)
-    
-    var_dict = get_hypergraph_variable_dict(hg)
-    param_dict = get_hypergraph_parameter_dict(hg)
-
-    return ODEProblem(sym_sys, var_dict, tspan, param_dict)
 end
