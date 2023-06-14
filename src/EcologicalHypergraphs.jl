@@ -4,7 +4,6 @@ using MacroTools: prewalk, postwalk, unblock, rmlines
 using EcologicalNetworks
 using ModelingToolkit
 using Symbolics
-using LinearAlgebra
 using Distributions
 
 include(joinpath(".", "types", "distribution_option.jl"))

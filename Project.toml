@@ -6,7 +6,6 @@ version = "0.1.0"
 [deps]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 EcologicalNetworks = "f03a62fe-f8ab-5b77-a061-bb599b765229"
-LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
