@@ -28,6 +28,7 @@ expression (net growth).
 """
 macro functional_form(node, ex, params...)
 
+    # Clean up the structure a little bit.
     ex = unblock(ex)
     ex = prewalk(rmlines, ex)
 
@@ -127,7 +128,17 @@ function add_func_to_node!(node, fn, parameters)
 
         new_params = disambiguate_parameters(node, parameters)
         add_parameters_to_node!(node, new_params)
+
+        println(param_symbols)
+
+        println("\n\n\n")
+       
+        println(params(node))        
+
         mod_func = rename_symbols(mod_func, param_symbols, params(node))
+
+
+
     end
 
     set_forwards_function!(node, eval(mod_func.ff))
@@ -154,29 +165,29 @@ function add_parameters_to_node!(node::Node, params)
 
     # Symbolics let's you interpolate in a runtime generated Symbol, but not a
     # tuple of runtime generated Symbols like you can with compile time Symbols.
-    new_params = Vector{Union{Num, Vector{Num}}}()
-    vals = Vector{Union{DistributionOption, Vector{DistributionOption}}}()
+    new_params = Dict{Num, DistributionOption}()
 
     for p in params
 
         if p.vector
 
-            n_vars = length(vars(node))
-            param = create_parameter_vector(p.param, n_vars)
-            push!(vals, [p.val for i ∈ 1:n_vars])
+            nvars = length(vars(node))
+            pnums = create_parameter_vector(p.param, nvars)
+            pvals = [p.val for i ∈ 1:nvars]
+            p = Dict(pnums .=> pvals)
+
+            merge!(new_params, p)
         else
 
             pp = p.param
             param = @variables $pp
             param = ModelingToolkit.toparam(param[1])
-            push!(vals, p.val)
-        end
 
-        push!(new_params, param)
+            new_params[param] = p.val
+        end
     end
 
     set_params!(node, new_params)
-    set_param_vals!(node, vals)
 end
 
 function parse_function_block(ex::Expr)
@@ -230,8 +241,8 @@ function rename_symbols(fn, old_syms, new_syms)
 
     if nsyms != length(new_syms)
 
-        error("The number of symbols given on the left hand side is not the same as the
-               number of species in the node.")
+        error("The number of symbols given on the left hand side is not the same as the \
+        number of species in the node.")
     end
 
     for i in 1:nsyms
