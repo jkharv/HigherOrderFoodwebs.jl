@@ -133,40 +133,30 @@ end
 
 function vars(node::Node)
 
-    return node.func.vars
+    return collect(keys(node.func.vars))
 end
 
-function set_vars!(node::Node, vars::Vector{Node})
+function set_vars!(node::Node, var::Pair{Num, DistributionOption})
 
-    node.func.vars = vars
+    # I should probably add a check that the user never introduces new keys to the var
+    # dict (only setting values) and throw an error if they try to.
+    # The variables themselves in a Node should be defined at initialization and never
+    # added to or redifined later.
+
+    node.func.var[var[1]] = var[2]
 end
 
 function params(node::Node)
 
-    return node.func.params
+    return collect(keys(node.func.params))
 end
 
-function set_params!(node::Node, params::Vector{Union{Num, Vector{Num}}})
+function set_params!(node::Node, param::Pair{Num, DistributionOption})
 
-    node.func.params = params
+    node.func.params[param[1]] = param[2]
 end
 
-function var_vals(node::Node)
+function set_params!(node::Node, params::Dict{Num, DistributionOption})
 
-    return node.func.var_vals
-end
-
-function set_var_vals!(node::Node, vals)
-
-    node.func.var_vals = vals
-end
-
-function param_vals(node::Node)
-
-    return node.func.param_vals
-end
-
-function set_param_vals!(node::Node, vals)
-
-    node.func.param_vals = vals
+    merge!(node.func.params, params)
 end

@@ -3,26 +3,24 @@ mutable struct FunctionalForm
     func_forwards::Num
     func_backwards::Num
 
-    params::Vector{Union{Num, Vector{Num}}}
-    param_vals::Vector{Union{DistributionOption, Vector{DistributionOption}}}
-
-    vars::Vector{Num}
-    var_vals::Vector{Union{DistributionOption, Vector{DistributionOption}}}
+    params::Dict{Num, DistributionOption}
+    vars::Dict{Num, DistributionOption}
 
     function FunctionalForm(edge, species)
 
-        var_names = Symbol.(species)
+        varnames = Symbol.(species)
         vars = Vector{Num}()
 
-        for v in var_names
+        for v in varnames
 
             var = @variables $v(edge.hypergraph.t)
             append!(vars, var)
         end
 
-        def_vars = [DistributionOption(0.0) for i in 1:length(vars)]
+        defaultvars = [DistributionOption(0.0) for i in 1:length(vars)]
+        vardict = Dict(vars .=> defaultvars)
 
-        new(Num(1), Num(1), [], [], vars, def_vars) 
+        new(Num(1), Num(1), Dict(), vardict) 
     end
 end
 
