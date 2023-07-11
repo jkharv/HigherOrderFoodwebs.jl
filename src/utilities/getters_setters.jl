@@ -131,27 +131,75 @@ function set_backwards_function!(node::Node, f::Num)
     node.func.func_backwards = f
 end
 
-function vars(node::Node)
+function vars(node::Node)::Dict{Num, DistributionOption}
 
-    return collect(keys(node.func.vars))
+    return node.func.vars
+end
+
+function vars(edge::Edge)::Dict{Num, DistributionOption}
+
+    v = Dict{Num, DistributionOption}()
+
+    for n ∈ nodes(edge)
+
+        merge!(v, vars(n))
+    end
+
+    return v
+end
+
+function vars(hg::EcologicalHypergraph)::Dict{Num, DistributionOption}
+
+    v = Dict{Num, DistributionOption}()
+
+    for e ∈ interactions(hg)
+
+        merge!(v, vars(e))
+    end
+
+    return v
 end
 
 function set_vars!(node::Node, var::Pair{Num, DistributionOption})
 
-    # I should probably add a check that the user never introduces new keys to the var
-    # dict (only setting values) and throw an error if they try to.
-    # The variables themselves in a Node should be defined at initialization and never
-    # added to or redifined later.
+    if var[1] ∉ node.func.var
+
+        error("You can only set the value of existing variables with set_vars!")
+    end
 
     node.func.var[var[1]] = var[2]
 end
 
-function params(node::Node)
+function params(node::Node)::Dict{Num, DistributionOption}
 
-    return collect(keys(node.func.params))
+    return node.func.params
 end
 
-function set_params!(node::Node, param::Pair{Num, DistributionOption})
+function params(edge::Edge)::Dict{Num, DistributionOption}
+
+    p = Dict{Num, DistributionOption}()
+
+    for n ∈ nodes(edge)
+
+        merge!(p, params(n))
+    end
+
+    return p
+end
+
+function params(hg::EcologicalHypergraph)::Dict{Num, DistributionOption}
+
+    p = Dict{Num, DistributionOption}()
+
+    for e ∈ interactions(hg)
+
+        merge!(p, params(e))
+    end
+
+    return p
+end
+
+function set_param!(node::Node, param::Pair{Num, DistributionOption})
 
     node.func.params[param[1]] = param[2]
 end
