@@ -131,42 +131,80 @@ function set_backwards_function!(node::Node, f::Num)
     node.func.func_backwards = f
 end
 
-function vars(node::Node)
+function vars(node::Node)::Dict{Num, DistributionOption}
 
     return node.func.vars
 end
 
-function set_vars!(node::Node, vars::Vector{Node})
+function vars(edge::Edge)::Dict{Num, DistributionOption}
 
-    node.func.vars = vars
+    v = Dict{Num, DistributionOption}()
+
+    for n ∈ nodes(edge)
+
+        merge!(v, vars(n))
+    end
+
+    return v
 end
 
-function params(node::Node)
+function vars(hg::EcologicalHypergraph)::Dict{Num, DistributionOption}
+
+    v = Dict{Num, DistributionOption}()
+
+    for e ∈ interactions(hg)
+
+        merge!(v, vars(e))
+    end
+
+    return v
+end
+
+function set_vars!(node::Node, var::Pair{Num, DistributionOption})
+
+    if var[1] ∉ node.func.var
+
+        error("You can only set the value of existing variables with set_vars!")
+    end
+
+    node.func.var[var[1]] = var[2]
+end
+
+function params(node::Node)::Dict{Num, DistributionOption}
 
     return node.func.params
 end
 
-function set_params!(node::Node, params::Vector{Union{Num, Vector{Num}}})
+function params(edge::Edge)::Dict{Num, DistributionOption}
 
-    node.func.params = params
+    p = Dict{Num, DistributionOption}()
+
+    for n ∈ nodes(edge)
+
+        merge!(p, params(n))
+    end
+
+    return p
 end
 
-function var_vals(node::Node)
+function params(hg::EcologicalHypergraph)::Dict{Num, DistributionOption}
 
-    return node.func.var_vals
+    p = Dict{Num, DistributionOption}()
+
+    for e ∈ interactions(hg)
+
+        merge!(p, params(e))
+    end
+
+    return p
 end
 
-function set_var_vals!(node::Node, vals)
+function set_param!(node::Node, param::Pair{Num, DistributionOption})
 
-    node.func.var_vals = vals
+    node.func.params[param[1]] = param[2]
 end
 
-function param_vals(node::Node)
+function set_params!(node::Node, params::Dict{Num, DistributionOption})
 
-    return node.func.param_vals
-end
-
-function set_param_vals!(node::Node, vals)
-
-    node.func.param_vals = vals
+    merge!(node.func.params, params)
 end

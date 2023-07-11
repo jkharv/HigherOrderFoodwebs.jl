@@ -29,26 +29,26 @@ trophic = filter(!isloop, interactions(hg));
 @functional_form subject.(producer_growth) begin
     
     x -> r*x*(1 - x/k)
-end r ~ Normal(0.8, 0.25) k ~ Uniform(0.1, 10.0);
+end r ~ Normal(0.8, 0.25) k ~ Uniform(0.1, 10.0)
 
 # Growth function for consumers
 @functional_form subject.(consumer_growth) begin
     
     x -> r * x
-end r ~ Uniform(-0.2, -0.05);
+end r ~ Uniform(-0.2, -0.05)
 
 # Trophic interaction function pt.1
 @functional_form subject.(trophic) begin
 
     x -> a*e*x
     x -> -a*x
-end a ~ Normal(0.7, 0.25) e ~ Normal(0.1, 0.15);
+end a ~ Normal(0.7, 0.25) e ~ Normal(0.1, 0.15)
 
 # Trophic interaction function pt.2
 @functional_form object.(trophic) begin
     
     x -> x
-end;
+end
 
 #---------------------------------------- 
 # Add some modifiers
@@ -70,10 +70,10 @@ end p[] ~ Uniform(0.2, 0.3);
 
 # Turn our hypergraph into a numerical ODE system.
 sys = ODESystem(hg);
-num_sys = ODEProblem(sys, get_var_dict(hg), (0, 500), get_param_dict(hg));
+num_sys = ODEProblem(sys);
 
 # Hand it over to an ODE solver
-sol = solve(num_sys, Tsit5());
+sol = solve(num_sys, Tsit5(), tspan = (0, 500));
 
 # Plot the solution.
 plot(sol, legend = false)
