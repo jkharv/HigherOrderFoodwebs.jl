@@ -10,6 +10,9 @@ include(joinpath(".", "types", "distribution_option.jl"))
 include(joinpath(".", "types", "ecological_hypergraph.jl"))
 export EcologicalHypergraph, Node, Edge, DistributionOption
 
+include(joinpath(".", "types", "community_matrix.jl"))
+export CommunityMatrix
+
 include(joinpath(".", "types", "conversions.jl"))
 
 include(joinpath(".", "utilities", "predicates.jl"))

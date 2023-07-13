@@ -1,29 +1,3 @@
-"""
-    community_matrix(hg::EcologicalHypergraph)::Matrix{Num}
-
-Creates a community matrix out of an `EcologicalHypergraph`. The elements of the matrix
-are `Num` allowing symbolic manipulations of the matrix using `Symbolics.jl`.
-"""
-function community_matrix(hg::EcologicalHypergraph)::Matrix{Num}
-
-    s = length(hg.species)
-    cm = zeros(Num, s, s)
-
-    indices = Dict(hg.species .=> 1:s)
-
-    # This orders the matrix in the same way as the species vec in hg
-    for e in hg.edges
-
-        r = indices[species(subject(e))[1]]
-        c = indices[species(object(e))[1]]
-
-        cm[r,c] = forwards_function(e)
-        cm[c,r] = backwards_function(e)
-    end
-
-    return cm
-end
-
 function forwards_function(e::Edge)
 
     f = Num(1)
@@ -58,6 +32,15 @@ function reify!(d::Dict{Num, DistributionOption})::Dict{Num, Real}
 end
 
 function string_to_var(hg::EcologicalHypergraph, s::String)
+  
+    k = collect(keys(d))
+    v = values(d)
+    v = reify.(v)
+
+    return Dict(k .=> v)
+end
+
+function string_to_var(hg::EcologicalHypergraph, s::String)
 
     x = findfirst(x -> subject(x).species[1] == s, interactions(hg))
     spp = subject(interactions(hg)[x])
@@ -75,7 +58,7 @@ solving.
 """
 function ModelingToolkit.ODESystem(hg::EcologicalHypergraph)
 
-    cm = community_matrix(hg)
+    cm = CommunityMatrix(hg)
     funcs = mapslices(sum, cm; dims = 2)
 
     p = reify!(params(hg))
