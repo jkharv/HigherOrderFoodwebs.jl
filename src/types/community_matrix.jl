@@ -15,6 +15,32 @@ mutable struct CommunityMatrix{T} <: AbstractMatrix{T}
     end
 end
 
+"""
+    CommunityMatrix(hg::EcologicalHypergraph)::CommunityMatrix{Num}
+
+Creates a community matrix out of an `EcologicalHypergraph`. The elements of the matrix
+are `Num` allowing symbolic manipulations of the matrix using `Symbolics.jl`.
+"""
+function CommunityMatrix(hg::EcologicalHypergraph)::CommunityMatrix{Num}
+
+    s = length(species(hg))
+    cm = zeros(Num, s, s)
+
+    indices = Dict(hg.species .=> 1:s)
+
+    # This orders the matrix in the same way as the species vec in hg
+    for e ∈ interactions(hg) 
+
+        r = indices[species(subject(e))[1]]
+        c = indices[species(object(e))[1]]
+
+        cm[r,c] = forwards_function(e)
+        cm[c,r] = backwards_function(e)
+    end
+
+    return CommunityMatrix(cm, species(hg), vars(hg), params(hg))
+end
+
 function Base.size(cm::CommunityMatrix)
 
     return size(cm.m)
