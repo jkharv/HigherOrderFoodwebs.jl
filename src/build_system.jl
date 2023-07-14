@@ -32,15 +32,6 @@ function reify!(d::Dict{Num, DistributionOption})::Dict{Num, Real}
 end
 
 function string_to_var(hg::EcologicalHypergraph, s::String)
-  
-    k = collect(keys(d))
-    v = values(d)
-    v = reify.(v)
-
-    return Dict(k .=> v)
-end
-
-function string_to_var(hg::EcologicalHypergraph, s::String)
 
     x = findfirst(x -> subject(x).species[1] == s, interactions(hg))
     spp = subject(interactions(hg)[x])
