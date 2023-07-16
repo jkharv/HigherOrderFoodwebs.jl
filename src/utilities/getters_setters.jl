@@ -133,7 +133,10 @@ end
 
 function vars(node::Node)::Dict{Num, DistributionOption}
 
-    return node.func.vars
+    vs = node.func.vars
+    hg = node.edge.hypergraph
+
+    return filter(k -> k[1] ∈ vs , hg.vars)
 end
 
 function vars(edge::Edge)::Dict{Num, DistributionOption}
@@ -150,14 +153,7 @@ end
 
 function vars(hg::EcologicalHypergraph)::Dict{Num, DistributionOption}
 
-    v = Dict{Num, DistributionOption}()
-
-    for e ∈ interactions(hg)
-
-        merge!(v, vars(e))
-    end
-
-    return v
+    return hg.vars
 end
 
 function set_vars!(node::Node, var::Pair{Num, DistributionOption})

@@ -49,7 +49,7 @@ end
 
 function create_replacement_symbol(node::Node, sym::TemplateScalarVariable)::Num
 
-    var = collect(keys(node.func.vars))
+    var = collect(keys(vars(node)))
 
     length(var) > 1 ? error("Must use multivariable function on multivariable node") :
 
@@ -67,7 +67,7 @@ end
 
 function create_replacement_symbol(node::Node, sym::TemplateVectorParameter)::Vector{Num}
 
-    nvars = length(node.func.vars)
+    nvars = length(vars(node))
     params = Vector{Num}(undef, nvars)
 
     for i in 1:nvars
@@ -83,7 +83,7 @@ end
 
 function create_replacement_symbol(node::Node, sym::TemplateVectorVariable)::Vector{Num}
 
-    var = collect(keys(node.func.vars))
+    var = collect(keys(vars(node)))
     return var
 end
 
@@ -93,13 +93,6 @@ function disambiguate_symbol(node::Node, sym::Symbol)::Symbol
     obj = species(object(node.edge))[1]
 
     return Symbol(sym, "_" , sbj, "_", obj)
-end
-
-function create_var(sym::Symbol)::Num
-
-    x = @variables $sym
-    
-    return x[1]
 end
 
 function create_param(sym::Symbol)::Num

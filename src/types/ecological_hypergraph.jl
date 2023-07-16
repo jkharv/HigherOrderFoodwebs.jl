@@ -4,23 +4,22 @@ mutable struct FunctionalForm
     func_backwards::Num
 
     params::Dict{Num, DistributionOption}
-    vars::Dict{Num, DistributionOption}
+    vars::Vector{Num}
 
     function FunctionalForm(edge, species)
 
         varnames = Symbol.(species)
+        
         vars = Vector{Num}()
+        sizehint!(vars, length(varnames))
 
         for v in varnames
 
             var = @variables $v(edge.hypergraph.t)
             append!(vars, var)
         end
-
-        defaultvars = [DistributionOption(0.0) for i in 1:length(vars)]
-        vardict = Dict(vars .=> defaultvars)
-
-        new(Num(1), Num(1), Dict(), vardict) 
+       
+        new(Num(1), Num(1), Dict(), vars) 
     end
 end
 
@@ -80,6 +79,8 @@ mutable struct EcologicalHypergraph
 
     t::Num # Single time_var for representing t w/ ModelingToolkit.
 
+    vars::Dict{Num, DistributionOption}
+
     function EcologicalHypergraph(edges::Vector{Edge}, 
                                   species::Vector{String}, 
                                   roles::Vector{Symbol})
@@ -89,7 +90,9 @@ mutable struct EcologicalHypergraph
         time_var = :t 
         time_var = @variables $time_var
 
-        new(edges, species, roles, time_var[1])
+        vars = Dict{Num, DistributionOption}()
+
+        new(edges, species, roles, time_var[1], vars)
     end
 end
 
@@ -109,10 +112,16 @@ function EcologicalHypergraph(adjm::AbstractMatrix, spp::Vector{String})
     for l in 1:L
         
         sub, obj = Tuple(non_zero_indices[l])
-
         edges[l] = Edge(H, Vector{Node}(undef, 2))
-        edges[l].nodes = [Node(edges[l], spp[sub], :subject), 
-                          Node(edges[l], spp[obj], :object)] 
+        n1 = Node(edges[l], spp[sub], :subject)
+        n2 = Node(edges[l], spp[obj], :object)
+        edges[l].nodes = [n1, n2] 
+
+        vn1 = Dict(n1.func.vars .=> [DistributionOption(2.0)])
+        vn2 = Dict(n1.func.vars .=> [DistributionOption(2.0)])
+
+        merge!(H.vars, vn1)
+        merge!(H.vars, vn2)
     end
 
     return H
