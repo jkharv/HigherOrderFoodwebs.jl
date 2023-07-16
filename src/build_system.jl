@@ -31,15 +31,6 @@ function reify!(d::Dict{Num, DistributionOption})::Dict{Num, Real}
     return Dict(k .=> v)
 end
 
-function string_to_var(hg::EcologicalHypergraph, s::String)
-
-    x = findfirst(x -> subject(x).species[1] == s, interactions(hg))
-    spp = subject(interactions(hg)[x])
-    var = collect(keys(vars(spp)))[1]
-
-    return var
-end
-
 """
     ODESystem(hg::EcologicalHypergraph)
 
@@ -53,9 +44,7 @@ function ModelingToolkit.ODESystem(hg::EcologicalHypergraph)
     funcs = mapslices(sum, cm; dims = 2)
 
     p = reify!(params(hg))
-    vals = rand(Uniform(0,1), length(vars(hg)))
-    v = collect(keys(vars(hg)))
-    v = Dict(v .=> vals)
+    v = reify!(vars(hg)) 
 
     D = Differential(hg.t)
     dbs = D.(string_to_var.(Ref(hg), species(hg))) 

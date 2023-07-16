@@ -131,6 +131,13 @@ function set_backwards_function!(node::Node, f::Num)
     node.func.func_backwards = f
 end
 
+function set_initial_condition!(hg::EcologicalHypergraph, sp::String, 
+    val::Union{Distribution, Real})
+    
+    var = string_to_var(hg, sp) 
+    hg.vars[var] = DistributionOption(val)
+end
+
 function vars(node::Node)::Dict{Num, DistributionOption}
 
     vs = node.func.vars

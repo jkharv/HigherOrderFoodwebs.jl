@@ -117,8 +117,8 @@ function EcologicalHypergraph(adjm::AbstractMatrix, spp::Vector{String})
         n2 = Node(edges[l], spp[obj], :object)
         edges[l].nodes = [n1, n2] 
 
-        vn1 = Dict(n1.func.vars .=> [DistributionOption(2.0)])
-        vn2 = Dict(n1.func.vars .=> [DistributionOption(2.0)])
+        vn1 = Dict(n1.func.vars .=> [DistributionOption(1.0)])
+        vn2 = Dict(n1.func.vars .=> [DistributionOption(1.0)])
 
         merge!(H.vars, vn1)
         merge!(H.vars, vn2)

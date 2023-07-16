@@ -22,7 +22,8 @@ export isloop, contains_species, isproducer, isconsumer, subject_is_consumer,
 include(joinpath(".", "utilities", "getters_setters.jl"))
 export species, interactions, role, nodes, subject, object, modifiers, add_modifier!,
        forwards_function, set_forwards_function!, backwards_function, 
-       set_backwards_function!, vars, set_vars!, params, set_param!
+       set_backwards_function!, vars, set_vars!, params, set_param!, 
+       set_initial_condition!
 
 include(joinpath(".", "utilities", "utilities.jl"))
 include(joinpath(".", "utilities", "overloads.jl"))
