@@ -8,25 +8,25 @@ abstract type TemplateParameter <: TemplateObject end
 struct TemplateScalarParameter <: TemplateParameter
 
     sym::Symbol
-    val::Union{Missing, DistributionOption}
+    val::TermValue
 end
 
 struct TemplateVectorParameter <: TemplateParameter
 
     sym::Symbol
-    val::Union{Missing, DistributionOption}   
+    val::TermValue
 end
 
 struct TemplateScalarVariable <:TemplateVariable
 
     sym::Symbol
-    val::Union{Missing, DistributionOption}
+    val::TermValue
 end
 
 struct TemplateVectorVariable <: TemplateVariable
 
     sym::Symbol
-    val::Union{Missing, DistributionOption}
+    val::TermValue
 end
 
 const RenameDict = Dict{TemplateObject, Union{Num, Vector{Num}, Missing}}

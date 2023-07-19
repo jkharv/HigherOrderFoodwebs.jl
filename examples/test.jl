@@ -3,13 +3,14 @@ using OrdinaryDiffEq
 using ModelingToolkit
 using EcologicalNetworks
 using EcologicalHypergraphs
+using Distributions
 using Plots
 
 #----------------------------------------
 # Creating a foodweb and hypergraph
 #----------------------------------------
 
-web = nichemodel(15, 0.2);
+web = nichemodel(25, 0.2);
 hg = EcologicalHypergraph(web);
 
 tl = trophic_level(web);
@@ -67,6 +68,8 @@ end p[] ~ Uniform(0.2, 0.3);
 #---------------------------------------- 
 # Do something with the hypergraph
 #----------------------------------------
+
+set_initial_condition!.(Ref(hg), species(hg), Uniform(0.5,1))
 
 # Turn our hypergraph into a numerical ODE system.
 sys = ODESystem(hg);

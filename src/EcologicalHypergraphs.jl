@@ -6,9 +6,11 @@ using ModelingToolkit
 using Symbolics
 using Distributions
 
-include(joinpath(".", "types", "distribution_option.jl"))
+# The allowable types for giving values to parameters and variables.
+const TermValue = Union{Missing, T, W} where {T<:Real, W<:UnivariateDistribution}
+
 include(joinpath(".", "types", "ecological_hypergraph.jl"))
-export EcologicalHypergraph, Node, Edge, DistributionOption
+export EcologicalHypergraph, Node, Edge
 
 include(joinpath(".", "types", "community_matrix.jl"))
 export CommunityMatrix
@@ -31,17 +33,9 @@ include(joinpath(".", "utilities", "overloads.jl"))
 include(joinpath(".", "NTE_models", "optimal_foraging.jl"))
 export optimal_foraging!
 
-module FunctionTemplates
-
-       using ..EcologicalHypergraphs
-       using ModelingToolkit
-
-       include(joinpath("function_templates", "FunctionTemplates.jl"))
-
-end
-
-include(joinpath(".", "function_templates", "FunctionTemplates.jl"))
-using .FunctionTemplates
+# In a world where Julia'as module system was nicer, I'd have this as an actual module.
+# We'll just pretend it is for now.
+include(joinpath("function_templates", "FunctionTemplates.jl"))
 export @functional_form
 
 include(joinpath(".", "build_system.jl"))

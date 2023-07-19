@@ -3,7 +3,7 @@ mutable struct FunctionalForm
     func_forwards::Num
     func_backwards::Num
 
-    params::Dict{Num, DistributionOption}
+    params::Dict{Num, TermValue}
     vars::Vector{Num}
 
     function FunctionalForm(edge, species)
@@ -79,7 +79,7 @@ mutable struct EcologicalHypergraph
 
     t::Num # Single time_var for representing t w/ ModelingToolkit.
 
-    vars::Dict{Num, DistributionOption}
+    vars::Dict{Num, TermValue}
 
     function EcologicalHypergraph(edges::Vector{Edge}, 
                                   species::Vector{String}, 
@@ -90,7 +90,7 @@ mutable struct EcologicalHypergraph
         time_var = :t 
         time_var = @variables $time_var
 
-        vars = Dict{Num, DistributionOption}()
+        vars = Dict{Num, TermValue}()
 
         new(edges, species, roles, time_var[1], vars)
     end
@@ -117,8 +117,8 @@ function EcologicalHypergraph(adjm::AbstractMatrix, spp::Vector{String})
         n2 = Node(edges[l], spp[obj], :object)
         edges[l].nodes = [n1, n2] 
 
-        vn1 = Dict(n1.func.vars .=> [DistributionOption(1.0)])
-        vn2 = Dict(n1.func.vars .=> [DistributionOption(1.0)])
+        vn1 = Dict(n1.func.vars .=> [missing])
+        vn2 = Dict(n1.func.vars .=> [missing])
 
         merge!(H.vars, vn1)
         merge!(H.vars, vn2)

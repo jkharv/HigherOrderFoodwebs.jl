@@ -22,13 +22,27 @@ function backwards_function(e::Edge)
     return f
 end
 
-function reify!(d::Dict{Num, DistributionOption})::Dict{Num, Real}
+function reify(d::Dict{Num, TermValue})
 
-    k = collect(keys(d))
-    v = values(d)
-    v = reify.(v)
+    rd = Dict{Num, Float64}()
 
-    return Dict(k .=> v)
+    for k in keys(d)
+
+        if d[k] isa Distribution
+
+            rd[k] = rand(d[k])
+            continue
+        elseif d[k] isa Real
+
+            rd = float(d[k])
+            continue 
+        elseif d[k] isa Missing
+
+            error("You must completely specify the initial conditions.")
+        end
+    end
+
+    return rd
 end
 
 """
@@ -43,8 +57,8 @@ function ModelingToolkit.ODESystem(hg::EcologicalHypergraph)
     cm = CommunityMatrix(hg)
     funcs = mapslices(sum, cm; dims = 2)
 
-    p = reify!(params(hg))
-    v = reify!(vars(hg)) 
+    p = reify(params(hg))
+    v = reify(vars(hg)) 
 
     D = Differential(hg.t)
     dbs = D.(string_to_var.(Ref(hg), species(hg))) 

@@ -21,7 +21,7 @@ function parse_parameters(ex::Tuple{Vararg{Union{Expr, Symbol}}})::RenameDict
         if p.args[2] isa Symbol 
         
             param = p.args[2]
-            val = DistributionOption(eval(p.args[3]))
+            val = eval(p.args[3])
         
             paramsymbol = TemplateScalarParameter(param, val)
             params[paramsymbol] = missing # No replacement yet
@@ -30,7 +30,7 @@ function parse_parameters(ex::Tuple{Vararg{Union{Expr, Symbol}}})::RenameDict
         elseif p.args[2] isa Expr
                
             param = p.args[2].args[1]
-            val = DistributionOption(eval(p.args[3]))
+            val = eval(p.args[3])
 
             paramsymbol = TemplateVectorParameter(param, val)
             params[paramsymbol] = missing 

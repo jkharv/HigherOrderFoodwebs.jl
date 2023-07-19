@@ -131,14 +131,13 @@ function set_backwards_function!(node::Node, f::Num)
     node.func.func_backwards = f
 end
 
-function set_initial_condition!(hg::EcologicalHypergraph, sp::String, 
-    val::Union{Distribution, Real})
+function set_initial_condition!(hg::EcologicalHypergraph, sp::String, val::TermValue)
     
     var = string_to_var(hg, sp) 
-    hg.vars[var] = DistributionOption(val)
+    hg.vars[var] = val
 end
 
-function vars(node::Node)::Dict{Num, DistributionOption}
+function vars(node::Node)::Dict{Num, TermValue}
 
     vs = node.func.vars
     hg = node.edge.hypergraph
@@ -146,9 +145,9 @@ function vars(node::Node)::Dict{Num, DistributionOption}
     return filter(k -> k[1] ∈ vs , hg.vars)
 end
 
-function vars(edge::Edge)::Dict{Num, DistributionOption}
+function vars(edge::Edge)::Dict{Num, TermValue}
 
-    v = Dict{Num, DistributionOption}()
+    v = Dict{Num, TermValue}()
 
     for n ∈ nodes(edge)
 
@@ -158,12 +157,12 @@ function vars(edge::Edge)::Dict{Num, DistributionOption}
     return v
 end
 
-function vars(hg::EcologicalHypergraph)::Dict{Num, DistributionOption}
+function vars(hg::EcologicalHypergraph)::Dict{Num, TermValue}
 
     return hg.vars
 end
 
-function set_vars!(node::Node, var::Pair{Num, DistributionOption})
+function set_vars!(node::Node, var)
 
     if var[1] ∉ node.func.var
 
@@ -173,14 +172,14 @@ function set_vars!(node::Node, var::Pair{Num, DistributionOption})
     node.func.var[var[1]] = var[2]
 end
 
-function params(node::Node)::Dict{Num, DistributionOption}
+function params(node::Node)::Dict{Num, TermValue}
 
     return node.func.params
 end
 
-function params(edge::Edge)::Dict{Num, DistributionOption}
+function params(edge::Edge)::Dict{Num, TermValue}
 
-    p = Dict{Num, DistributionOption}()
+    p = Dict{Num, TermValue}()
 
     for n ∈ nodes(edge)
 
@@ -190,9 +189,9 @@ function params(edge::Edge)::Dict{Num, DistributionOption}
     return p
 end
 
-function params(hg::EcologicalHypergraph)::Dict{Num, DistributionOption}
+function params(hg::EcologicalHypergraph)::Dict{Num, TermValue}
 
-    p = Dict{Num, DistributionOption}()
+    p = Dict{Num, TermValue}()
 
     for e ∈ interactions(hg)
 
@@ -202,12 +201,12 @@ function params(hg::EcologicalHypergraph)::Dict{Num, DistributionOption}
     return p
 end
 
-function set_param!(node::Node, param::Pair{Num, DistributionOption})
+function set_param!(node::Node, param)
 
     node.func.params[param[1]] = param[2]
 end
 
-function set_params!(node::Node, params::Dict{Num, DistributionOption})
+function set_params!(node::Node, params)
 
     merge!(node.func.params, params)
 end

@@ -3,13 +3,13 @@ mutable struct CommunityMatrix{T} <: AbstractMatrix{T}
     m::Matrix{T}
     spp::Vector{String}
 
-    vars::Dict{Num, DistributionOption}
-    params::Dict{Num, DistributionOption}
+    vars::Dict{Num, TermValue}
+    params::Dict{Num, TermValue}
 
     function CommunityMatrix(m::Matrix{T}, 
                              spp::Vector{String}, 
-                             vars::Dict{Num, DistributionOption},
-                             params::Dict{Num, DistributionOption}) where T
+                             vars::Dict{Num, TermValue},
+                             params::Dict{Num, TermValue}) where T
 
         new{T}(m, spp, vars, params)
     end
