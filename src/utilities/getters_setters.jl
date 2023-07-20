@@ -39,7 +39,7 @@ function EcologicalNetworks.interactions(hg::EcologicalHypergraph)
 end
 
 """
-    add_modifier!(e::Edge, n::Node, role::Symbol = :modifier)::Node
+    add_modifier!(e::Edge, spp::Vector{String}, role::Symbol = :modifier)::Node
 
 Add a modifier to `e` representing species `spp`. The optional role argument defaults to
 `:modifier`. Once finished, this function also returns a reference to the node that was
