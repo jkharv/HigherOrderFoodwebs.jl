@@ -96,11 +96,24 @@ mutable struct EcologicalHypergraph
     end
 end
 
-function EcologicalHypergraph(adjm::AbstractMatrix, spp::Vector{String})
+function EcologicalHypergraph(adjm::AbstractMatrix, spp::Vector{String}, addself = true)
+
+    adjm = copy(adjm)
 
     if(size(adjm[1]) != size(adjm[2]))
 
         throw(ArgumentError("An adjacency matrix must be square."))
+    end
+
+    if addself
+
+        for i in 1:length(spp)
+            
+            if adjm[i, i] != 1.0
+
+                adjm[i, i] = 1.0
+            end
+        end
     end
 
     non_zero_indices = findall(x -> !iszero(x), adjm)
@@ -133,20 +146,7 @@ end
 Constructor for `EcologicalHypergraph`
 Convert a network from `EcologicalNetworks.jl` into an EcologicalHypergraph.
 """
-function EcologicalHypergraph(network::UnipartiteNetwork{Bool, String}; add_self = true)
+function EcologicalHypergraph(network::UnipartiteNetwork{Bool, String}; addself = true)
 
-    edges = Matrix(network.edges)
-
-    if add_self
-
-        for i in 1:length(species(network))
-            
-            if !edges[i, i]
-
-                edges[i, i] = true
-            end
-        end
-    end
-
-    return EcologicalHypergraph(edges, species(network))
+    return EcologicalHypergraph(copy(adjacency(network)), species(network), addself)
 end
