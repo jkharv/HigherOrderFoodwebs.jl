@@ -68,6 +68,18 @@ function nodes(e::Edge)::Vector{Node}
 end
 
 """
+    nodes(hg::EcologicalHypergraph)
+
+Returns a `vector` of the `Node`s in an `EcologicalHypergraph`.
+"""
+function nodes(hg::EcologicalHypergraph)::Vector{Node}
+  
+    
+    return collect(Iterators.flatten([nodes(e) for e ∈ interactions(hg)]))
+
+end
+
+"""
    subject(e::Edge)::Node 
 
 Returns the `Node` playing the role of `:subject` in an `Edge`
