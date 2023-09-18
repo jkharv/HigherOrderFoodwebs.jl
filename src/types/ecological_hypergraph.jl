@@ -15,7 +15,7 @@ mutable struct FunctionalForm
 
         for v in varnames
 
-            var = @variables $v(edge.hypergraph.t)
+            var = @variables $v(edge.hypergraph.value.t)
             append!(vars, var)
         end
        
@@ -42,7 +42,7 @@ mutable struct Node
 
         func = FunctionalForm(edge, species)
 
-        new(edge, species, role, func)
+        new(WeakRef(edge), species, role, func)
     end
 end
 
@@ -62,7 +62,7 @@ mutable struct Edge
 
     function Edge(hypergraph, nodes::Vector{Node})
 
-        new(hypergraph, nodes)
+        new(WeakRef(hypergraph), nodes)
     end
 end
 
