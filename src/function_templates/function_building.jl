@@ -89,8 +89,8 @@ end
 
 function disambiguate_symbol(node::Node, sym::Symbol)::Symbol
 
-    sbj = species(subject(node.edge))[1]
-    obj = species(object(node.edge))[1]
+    sbj = species(subject(node.edge.value))[1]
+    obj = species(object(node.edge.value))[1]
 
     return Symbol(sym, "_" , sbj, "_", obj)
 end

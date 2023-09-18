@@ -19,7 +19,7 @@ function optimal_foraging!(edge::Edge)
     focal_resource = species(object(edge))[1]
     consumer = species(subject(edge))[1]
 
-    resources = get_resource_interactions(consumer, edge.hypergraph)
+    resources = get_resource_interactions(consumer, edge.hypergraph.value)
     f(x) = species(object(x))[1]
     resources = f.(resources)
 

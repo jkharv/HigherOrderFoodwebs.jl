@@ -152,7 +152,7 @@ end
 function vars(node::Node)::Dict{Num, TermValue}
 
     vs = node.func.vars
-    hg = node.edge.hypergraph
+    hg = node.edge.value.hypergraph.value
 
     return filter(k -> k[1] ∈ vs , hg.vars)
 end
