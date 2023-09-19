@@ -1,4 +1,4 @@
-function string_to_var(hg::EcologicalHypergraph, s::String)
+function sp_to_var(hg::EcologicalHypergraph, s::String)
 
     x = findfirst(x -> subject(x).species[1] == s, interactions(hg))
     spp = subject(interactions(hg)[x])

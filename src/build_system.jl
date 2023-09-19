@@ -61,7 +61,7 @@ function ModelingToolkit.ODESystem(hg::EcologicalHypergraph)
     v = reify(vars(hg)) 
 
     D = Differential(hg.t)
-    dbs = D.(string_to_var.(Ref(hg), species(hg))) 
+    dbs = D.(sp_to_var.(Ref(hg), species(hg))) 
     eqs = Equation.(dbs, funcs)
     
     return ODESystem(eqs, name = :Hypergraph, defaults=merge(p, v))

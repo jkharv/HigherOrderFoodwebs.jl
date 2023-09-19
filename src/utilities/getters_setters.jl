@@ -145,7 +145,7 @@ end
 
 function set_initial_condition!(hg::EcologicalHypergraph, sp::String, val::TermValue)
     
-    var = string_to_var(hg, sp) 
+    var = sp_to_var(hg, sp) 
     hg.vars[var] = val
 end
 
