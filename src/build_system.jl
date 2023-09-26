@@ -34,7 +34,7 @@ function reify(d::Dict{Num, TermValue})
             continue
         elseif d[k] isa Real
 
-            rd = float(d[k])
+            rd[k] = float(d[k])
             continue 
         elseif d[k] isa Missing
 
