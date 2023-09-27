@@ -5,6 +5,8 @@ using EcologicalNetworks
 using ModelingToolkit
 using Symbolics
 using Distributions
+using LinearAlgebra
+using SparseArrays
 
 # The allowable types for giving values to parameters and variables.
 const TermValue = Union{Missing, T, W} where {T<:Real, W<:UnivariateDistribution}
