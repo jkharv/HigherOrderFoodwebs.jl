@@ -1,6 +1,26 @@
 # Simple predicate functions for dealing with Hypergraphs
 
 """
+    issubject(n::Node)::Bool
+
+Returns true if `n` is a subject
+"""
+function issubject(n::Node)::Bool
+
+    return role(n) == :subject
+end
+
+"""
+    isobject(n::Node)::Bool
+
+Returns true if `n` is an object 
+"""
+function isobject(n::Node)::Bool
+
+    return role(n) == :object
+end
+
+"""
     isloop(e::Edge)::Bool
 
 Returns true if the edge `e` is a loop (subject and object species are identical).
