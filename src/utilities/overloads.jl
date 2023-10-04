@@ -1,6 +1,6 @@
 # Pretty printing overides for EcologicalHypergraphs.jl types
 function Base.show(io::IO, hg::EcologicalHypergraph)
-    # TODO Move out of declarations file.   
+    
     print(io, "EcologicalHypergraph
     • Species: $(length(species(hg))) 
     • Interactions: $(length(interactions(hg)))"
@@ -12,10 +12,10 @@ function Base.show(io::IO, e::Edge)
     sub = subject(e)  
     obj = object(e)
     mods = modifiers(e)
-    mods = map(x -> x.species, mods)
+    mods = map(x -> species(x), mods)
 
     print(io, "Edge \
-    $(obj.species[1]) → $(sub.species[1]); Modified by: $(join(mods, ", "))" 
+    $(species(obj)[1]) → $(species(sub)[1]); Modified by: $(join(mods, ", "))" 
     )
 end
 

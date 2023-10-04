@@ -6,7 +6,7 @@ using Distributions
 
 @testset verbose = true "EcologicalHypergraphs" begin 
 
-    @testset "EcologicalHypergraph constructors" begin
+    @testset "DynamicalHypergraph constructors" begin
         include("hypergraph_constructors.jl") 
     end
 

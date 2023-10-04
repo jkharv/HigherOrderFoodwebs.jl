@@ -8,26 +8,18 @@ using Distributions
 using LinearAlgebra
 using SparseArrays
 
-# The allowable types for giving values to parameters and variables.
-const TermValue = Union{Missing, T, W} where {T<:Real, W<:UnivariateDistribution}
-
-include(joinpath(".", "types", "ecological_hypergraph.jl"))
-export EcologicalHypergraph, Node, Edge
-
-include(joinpath(".", "types", "community_matrix.jl"))
-export CommunityMatrix
+include(joinpath(".", "types", "types.jl"))
+export EcologicalHypergraph, DynamicalHypergraph, Node, Edge, CommunityMatrix
+export species, interactions, role, nodes, subject, object, modifiers,
+       add_modifier!, forwards_function, set_forwards_function!, backwards_function, 
+       set_backwards_function!, vars, set_vars!, params, set_param!, 
+       set_initial_condition!
 
 include(joinpath(".", "types", "conversions.jl"))
 
 include(joinpath(".", "utilities", "predicates.jl"))
 export isloop, contains_species, isproducer, isconsumer, subject_is_consumer, 
        subject_is_producer
-
-include(joinpath(".", "utilities", "getters_setters.jl"))
-export species, interactions, role, nodes, subject, object, modifiers, add_modifier!,
-       forwards_function, set_forwards_function!, backwards_function, 
-       set_backwards_function!, vars, set_vars!, params, set_param!, 
-       set_initial_condition!
 
 include(joinpath(".", "utilities", "utilities.jl"))
 include(joinpath(".", "utilities", "overloads.jl"))

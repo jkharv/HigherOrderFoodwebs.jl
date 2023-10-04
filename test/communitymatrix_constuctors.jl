@@ -5,9 +5,10 @@ m = [
  0  1  1  1  0
  0  0  0  1  1
 ]
+m = convert(Matrix{Bool}, m)
 
-web = UnipartiteNetwork(convert(Matrix{Bool}, m))
-hg = EcologicalHypergraph(m, ["s1", "s2", "s3", "s4", "s5"])
+web = UnipartiteNetwork(m)
+hg = DynamicalHypergraph(m, ["s1", "s2", "s3", "s4", "s5"])
 
 tl = trophic_level(web);
 producer_filter = x -> subject_is_producer(x, tl);

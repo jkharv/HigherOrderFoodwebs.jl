@@ -8,8 +8,9 @@ m = [
 0 0 1 0
 0 0 0 1
 ]
+m = convert(Matrix{Bool}, m)
 
-hg = EcologicalHypergraph(m, ["s1", "s2", "s3", "s4"])
+hg = DynamicalHypergraph(m, ["s1", "s2", "s3", "s4"])
 
 @functional_form subject.(interactions(hg)) begin
     
@@ -76,8 +77,9 @@ m = [
 0 0 1 0
 0 0 0 1
 ]
+m = convert(Matrix{Bool}, m)
 
-hg = EcologicalHypergraph(m, ["s1", "s2", "s3", "s4"])
+hg = DynamicalHypergraph(m, ["s1", "s2", "s3", "s4"])
 
 int1 = interactions(hg)[1]
 n = add_modifier!(int1, ["s2", "s3", "s4"])

@@ -5,8 +5,10 @@ m = [
  0  1  1  1  0
  0  0  0  1  1
 ]
+m = convert(Matrix{Bool}, m)
 
-hg = EcologicalHypergraph(m, ["s1", "s2", "s3", "s4", "s5"])
+
+hg = DynamicalHypergraph(m, ["s1", "s2", "s3", "s4", "s5"])
 
 @testset "isloop" begin
 

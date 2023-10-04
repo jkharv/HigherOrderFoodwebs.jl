@@ -26,7 +26,7 @@ function CommunityMatrix(hg::EcologicalHypergraph)::CommunityMatrix{Num}
     s = length(species(hg))
     cm = zeros(Num, s, s)
 
-    indices = Dict(hg.species .=> 1:s)
+    indices = Dict(hg.spp .=> 1:s)
 
     # This orders the matrix in the same way as the species vec in hg
     for e ∈ interactions(hg) 

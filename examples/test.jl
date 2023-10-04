@@ -11,7 +11,7 @@ using Plots
 #----------------------------------------
 
 web = nichemodel(25, 0.2);
-hg = EcologicalHypergraph(web);
+hg = DynamicalHypergraph(web);
 
 tl = trophic_level(web);
 producer_filter = x -> subject_is_producer(x, tl);
@@ -28,13 +28,12 @@ trophic = filter(!isloop, interactions(hg));
 
 # Growth function for producers
 @functional_form subject.(producer_growth) begin
-    
+
     x -> r*x*(1 - x/k)
 end r ~ Normal(0.8, 0.25) k ~ Uniform(0.1, 10.0)
 
 # Growth function for consumers
 @functional_form subject.(consumer_growth) begin
-    
     x -> r * x
 end r ~ Uniform(-0.2, -0.05)
 
@@ -47,11 +46,11 @@ end a ~ Normal(0.7, 0.25) e ~ Normal(0.1, 0.15)
 
 # Trophic interaction function pt.2
 @functional_form object.(trophic) begin
-    
+
     x -> x
 end
 
-#---------------------------------------- 
+#----------------------------------------
 # Add some modifiers
 #----------------------------------------
 
@@ -60,12 +59,12 @@ mods = optimal_foraging!(hg);
 
 # Add the modifier functions
 @functional_form mods begin
-   
+
     x[] ->  (p[1] * x[1]) / sum(p[1:end] .* x[1:end])
 
 end p[] ~ Uniform(0.2, 0.3);
 
-#---------------------------------------- 
+#----------------------------------------
 # Do something with the hypergraph
 #----------------------------------------
 
