@@ -8,15 +8,19 @@ function Base.show(io::IO, hg::EcologicalHypergraph)
 end
 
 function Base.show(io::IO, e::Edge)
-    
+   
+    if length(e.nodes) == 0
+
+        print(io, " ")
+        return
+    end
+
     sub = subject(e)  
     obj = object(e)
     mods = modifiers(e)
     mods = map(x -> species(x), mods)
 
-    print(io, "Edge \
-    $(species(obj)[1]) → $(species(sub)[1]); Modified by: $(join(mods, ", "))" 
-    )
+    print(io, "$(species(obj)[1]) → $(species(sub)[1]); $(join(mods, ", "))")
 end
 
 function Base.show(io::IO, node::Node)

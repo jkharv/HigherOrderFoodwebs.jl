@@ -13,7 +13,7 @@ export EcologicalHypergraph, DynamicalHypergraph, Node, Edge, CommunityMatrix
 export species, interactions, role, nodes, subject, object, modifiers,
        add_modifier!, forwards_function, set_forwards_function!, backwards_function, 
        set_backwards_function!, vars, set_vars!, params, set_param!, 
-       set_initial_condition!
+       set_initial_condition!, remove!
 
 include(joinpath(".", "types", "conversions.jl"))
 

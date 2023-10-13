@@ -315,6 +315,59 @@ function role(n::Node)::Symbol
     return n.role
 end
 
+# function remove!(hg::EcologicalHypergraph, sp::String)
+
+#     if hg isa DynamicalHypergraph
+
+#         # Identify var to delete
+#         old_var = sp_to_var(hg, sp)
+
+#         # Identify params to delete
+#         old_params = []
+#         for n in nodes(hg)
+
+#             # I'm not sure I can reliably remove all the no longer needed params
+#             # from the list.
+#         end
+
+#         # Delete them from the global list.
+#         filter!(e -> first(e) ≠ old_var, hg.vars)
+        
+#         # Make those same changes at the node level  
+#         for n ∈ nodes(hg)
+
+#             filter!(x -> x ≠ old_var, n.func.vars)
+
+#             sub = Dict(old_var => 0)
+
+#             n.func.func_forwards = ModelingToolkit.simplify(substitute(n.func.func_forwards, sub))
+#             n.func.func_forwards = ModelingToolkit.simplify(substitute(n.func.func_backwards, sub))
+#         end
+#     end
+
+#     # Create new adjacency matrix.
+#     s = length(species(hg)) - 1
+#     am = SparseMatrixCSC(zeros(Edge, s, s))
+
+#     # Create new species list
+#     new_spp = copy(species(hg))
+#     filter!(x -> x ≠ sp, new_spp)
+
+#     # Copy data over.
+#     for (j, obj) ∈ enumerate(new_spp)
+#         for (i, sub) ∈ enumerate(new_spp)
+
+#             am[i, j] = hg[sub, obj]
+#         end
+#     end
+
+#     # Replace old with new
+#     hg.m = am
+#     hg.spp = new_spp
+    
+#     return hg
+# end
+
 #-----------------------------------------------------------------------------------------
 #   Dynamics/Function Accessors
 #-----------------------------------------------------------------------------------------
