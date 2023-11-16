@@ -68,7 +68,7 @@ mutable struct Edge
     end
 end
 
-Base.zero(Edge) = Edge(missing, Vector{Node}())
+Base.zero(::Type{Edge}) = Edge(missing, Vector{Node}())
 Base.iszero(e::Edge) = isempty(e.nodes)
 
 mutable struct DynamicalHypergraph <: EcologicalHypergraph
