@@ -4,6 +4,7 @@ authors = ["Jake Harvey <jacob.harvey@mail.mcgill.ca>"]
 version = "0.1.0"
 
 [deps]
+AnnotatedHypergraphs = "121eab65-6eab-4c2f-bb7d-b6867ee8c3ea"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 EcologicalNetworks = "f03a62fe-f8ab-5b77-a061-bb599b765229"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"

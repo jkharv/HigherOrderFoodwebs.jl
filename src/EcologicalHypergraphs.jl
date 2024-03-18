@@ -2,6 +2,7 @@ module EcologicalHypergraphs
 
 using MacroTools: prewalk, postwalk, unblock, rmlines
 using EcologicalNetworks
+using AnnotatedHypergraphs
 using ModelingToolkit
 using Symbolics
 using Distributions
@@ -9,7 +10,7 @@ using LinearAlgebra
 using SparseArrays
 
 include(joinpath(".", "types", "types.jl"))
-export EcologicalHypergraph, DynamicalHypergraph, Node, Edge, CommunityMatrix
+export CommunityMatrix, DynamicalHypergraphModel
 export species, interactions, role, nodes, subject, object, modifiers,
        add_modifier!, forwards_function, set_forwards_function!, backwards_function, 
        set_backwards_function!, vars, set_vars!, params, set_param!, 
