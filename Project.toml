@@ -1,4 +1,4 @@
-name = "EcologicalHypergraphs"
+name = "HigherOrderFoodwebs"
 uuid = "573a6084-d739-11ed-30ee-8d814a9e0f06"
 authors = ["Jake Harvey <jacob.harvey@mail.mcgill.ca>"]
 version = "0.1.0"
@@ -6,10 +6,10 @@ version = "0.1.0"
 [deps]
 AnnotatedHypergraphs = "121eab65-6eab-4c2f-bb7d-b6867ee8c3ea"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-EcologicalNetworks = "f03a62fe-f8ab-5b77-a061-bb599b765229"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 

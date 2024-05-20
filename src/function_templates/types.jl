@@ -1,5 +1,5 @@
-# This file contains type hierachy of template objects that are parsed from the function
-# templates provided by the user.
+# This file contains type hierachy of template objects that are parsed from the
+# function templates provided by the user.
 
 abstract type TemplateObject end
 abstract type TemplateVariable <: TemplateObject end
@@ -36,5 +36,6 @@ struct FunctionTemplate
     forwards_function::Expr
     backwards_function::Expr
 
+    cannonical_vars::Vector{Symbol}
     objects::RenameDict
 end
