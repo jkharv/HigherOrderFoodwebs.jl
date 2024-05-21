@@ -24,10 +24,27 @@ struct FoodwebModel
     param_vals::Dict{Num, Number}
 
     function FoodwebModel(
-        hg::SpeciesInteractionNetwork{<: Partiteness{T}, 
-                                      <: AnnotatedHyperedge{T, Bool}}
-        ) where T <: Any
+        hg::SpeciesInteractionNetwork{<: Partiteness{T}, <: AnnotatedHyperedge{T, Bool}};
+        add_self_interactions = true) where T <: Any
 
+        hg = deepcopy(hg)
+
+        if add_self_interactions
+
+            for sp ∈ species(hg)
+
+                # Check if the loop is already there
+                z = findfirst(x -> isloop(x) & has_role(sp, :subject, x) , interactions(hg))
+
+                # create the loop if it's not there already
+                if isnothing(z)
+
+                    new_int = AnnotatedHyperedge([sp, sp], [:subject, :object], true)
+                    push!(hg.interactions, new_int)
+                end
+            end
+        end
+        
         rules = Dict{AnnotatedHyperedge{T, Bool}, DynamicalRule}()
         u0 = Dict{Num, Number}()
         param_vals = Dict{Num, Number}()
