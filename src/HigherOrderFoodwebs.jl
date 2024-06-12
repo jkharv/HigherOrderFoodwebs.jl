@@ -1,24 +1,39 @@
 module HigherOrderFoodwebs
 
-using MacroTools: prewalk, postwalk, unblock, rmlines
+using MacroTools: prewalk, postwalk, @capture, unblock, rmlines, prettify
 using AnnotatedHypergraphs
 using ModelingToolkit
 using Symbolics
 using Distributions
 using LinearAlgebra
 using SparseArrays
+using CommonSolve
+using DifferentialEquations
 
-include(joinpath(".", "types", "types.jl"))
-include(joinpath(".", "types", "conversions.jl"))
+const TermValue = Union{Missing, T, W} where {T<:Real, W<:UnivariateDistribution}
+
+include("./types/community_matrix.jl")
+include("./types/foodweb_model.jl")
+include("./types/extra_constructors.jl")
+include("./types/conversions.jl")
 export FoodwebModel
+export CommunityMatrix
 export AnnotatedHypergraph
 
-include(joinpath(".", "types", "foodweb_interface.jl"))
+include("./interfaces/foodweb_interface.jl")
 export species, richness, interactions, role, roles, has_role
+export set_initial_condition!
 
-include(joinpath(".", "utilities", "utilities.jl"))
-include(joinpath(".", "utilities", "overloads.jl"))
-include(joinpath(".", "utilities", "pretty_printing.jl"))
+include("./interfaces/common_solve.jl")
+export solve
+
+
+include("./build_system.jl")
+export build_ode_system
+
+include("./utilities/utilities.jl")
+include("./utilities/overloads.jl")
+include("./utilities/pretty_printing.jl")
 
 
 #include(joinpath(".", "NTE_models", "optimal_foraging.jl"))
@@ -26,7 +41,9 @@ include(joinpath(".", "utilities", "pretty_printing.jl"))
 
 # In a world where Julia's module system was nicer, I'd have this as an actual module.
 # We'll just pretend it is for now.
-include(joinpath("function_templates", "FunctionTemplates.jl"))
+include("./function_templates/FunctionTemplates.jl")
+export @group, @set_rule
+
 
 #Here for dev, remove later
 include("NTE_models/nichemodel.jl")
