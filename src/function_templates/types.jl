@@ -36,6 +36,6 @@ struct FunctionTemplate
     forwards_function::Expr
     backwards_function::Expr
 
-    cannonical_vars::Vector{Symbol}
+    canonical_vars::Vector{Symbol}
     objects::RenameDict
 end
