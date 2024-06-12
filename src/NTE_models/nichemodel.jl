@@ -28,7 +28,7 @@ function nichemodel(species::Integer=10, connectance::T=0.2) where {T <: Abstrac
         end
     end
 
-    z = findall(!, edges)
+    z = findall(edges)
     z = Tuple.(z)    
 
     z = AnnotatedHyperedge.(
