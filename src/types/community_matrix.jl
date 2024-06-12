@@ -1,17 +1,11 @@
-mutable struct CommunityMatrix{T} <: AbstractMatrix{T}
+struct CommunityMatrix{T, U} <: AbstractMatrix{T}
 
     m::Matrix{T}
-    spp::Vector{String}
+    spp::Vector{U}
 
-    vars::Dict{Num, TermValue}
-    params::Dict{Num, TermValue}
+    function CommunityMatrix(m::Matrix{T}, spp::Vector{U}) where {T, U}
 
-    function CommunityMatrix(m::Matrix{T}, 
-                             spp::Vector{String}, 
-                             vars::Dict{Num, TermValue},
-                             params::Dict{Num, TermValue}) where T
-
-        new{T}(m, spp, vars, params)
+        new{T, U}(m, spp)
     end
 end
 
@@ -31,8 +25,8 @@ function Base.setindex!(cm::CommunityMatrix, v, i::Int, j::Int)
     cm.m[i, j] = v
 end
 
-# String-based indexing
-function Base.getindex(cm::CommunityMatrix, i::String, j::String)
+# Species identifier-based indexing
+function Base.getindex(cm::CommunityMatrix{T, U}, i::U, j::U) where {T, U}
 
     i = findfirst(x -> x == i, cm.spp)
     j = findfirst(x -> x == j, cm.spp)
@@ -40,7 +34,7 @@ function Base.getindex(cm::CommunityMatrix, i::String, j::String)
     return cm.m[i,j]
 end
 
-function Base.setindex!(cm::CommunityMatrix, v, i::String, j::String)
+function Base.setindex!(cm::CommunityMatrix{T, U}, v, i::U, j::U) where {T, U}
 
     i = findfirst(x -> x == i, cm.spp)
     j = findfirst(x -> x == j, cm.spp)
