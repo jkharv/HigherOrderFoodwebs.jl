@@ -10,7 +10,7 @@ using SparseArrays
 using CommonSolve
 using DifferentialEquations
 
-const TermValue = Union{Missing, T, W} where {T<:Real, W<:UnivariateDistribution}
+const TermValue = Union{Missing, Expr, T, W} where {T<:Real, W<:UnivariateDistribution}
 
 include("./types/community_matrix.jl")
 include("./types/foodweb_model.jl")
@@ -22,6 +22,7 @@ export AnnotatedHypergraph
 
 include("./interfaces/foodweb_interface.jl")
 export species, richness, interactions, role, roles, has_role
+export isproducer, isconsumer
 export set_initial_condition!
 
 include("./interfaces/common_solve.jl")
