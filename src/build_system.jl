@@ -28,7 +28,7 @@ function build_ode_system(fwm::FoodwebModel)::FoodwebModel
     p_vals = fwm.param_vals
 
     sys = ODESystem(eqs, t, v, p; name = :Foodweb)
-    prob = ODEProblem(complete(sys), u0, (0,1000), p_vals)
+    prob = ODEProblem(structural_simplify(sys), u0, (0,1000), p_vals)
 
     return FoodwebModel(
         fwm.hg,
