@@ -1,12 +1,29 @@
-# This is _real_ lazy. TODO actually impletment this interface properly Also
-# implement Solution type with accomodations for the food web and flux stuff.
+mutable struct FoodwebModelSolver
 
-function CommonSolve.solve(fwm::FoodwebModel, args...; kwargs...)
+    fwm::FoodwebModel
+    integrator::OrdinaryDiffEq.ODEIntegrator
+end
+
+function CommonSolve.init(fwm::FoodwebModel, args...; kwargs...)
 
     if ismissing(fwm.odes)
 
+        # I should probably inline this definition
         fwm = build_ode_system(fwm)
     end
-    
-    solve(fwm.odes, args...; kwargs...)
+
+    return FoodwebModelSolver(
+        fwm, 
+        init(fwm.odes, args...; kwargs...)
+    )
+end
+
+function CommonSolve.step!(fwm::FoodwebModelSolver, args...; kwargs...)
+
+    step!(fwm.integrator, args...; kwargs...)
+end
+
+function CommonSolve.solve!(fwm::FoodwebModelSolver)
+
+    solve!(fwm.integrator)
 end

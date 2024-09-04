@@ -1,28 +1,37 @@
-function Base.show(io::IO, ::MIME"text/plain", cm::CommunityMatrix)
-
-    for r ∈ eachrow(cm) 
-        for e ∈ r
-       
-            iszero(e) ? print(io, "⬜") : print(io, "⬛")
-        end
-        println(io, "")
-    end
-end
-
 function build_ode_system(fwm::FoodwebModel)::FoodwebModel
 
+    # If u0 is missing we will set them all to zero.
+    # Only the species though.
+
+    for sp ∈ species(fwm) 
+
+        v = fwm.vars[sp]
+
+        if v ∈ keys(fwm.u0)
+
+            break
+        else
+            
+            fwm.u0[v] = 0.0
+        end
+    end
+
+    vars = merge(fwm.vars, fwm.aux_vars)
+
     D = Differential(fwm.t)
-    f(x) = map(x -> fwm.vars[x], x)
+    f(x) = map(x -> vars[x], x)
     d(x) = map(x -> D(x), x)
 
     cm = CommunityMatrix(fwm)
 
-    lhs = (d ∘ f ∘ species)(fwm)
+    var_syms = cm.spp
+
+    lhs = (d ∘ f)(var_syms)
     rhs = map(sum, eachrow(cm))
     eqs = lhs .~ rhs
 
     p = fwm.params
-    v = (collect ∘ values)(fwm.vars)
+    v = (collect ∘ values)(vars)
     t = fwm.t
     u0 = fwm.u0
     p_vals = fwm.param_vals
@@ -38,6 +47,8 @@ function build_ode_system(fwm::FoodwebModel)::FoodwebModel
         fwm.u0,
         fwm.params,
         fwm.param_vals,
+        fwm.aux_dynamic_rules,
+        fwm.aux_vars,
         prob,
         cm
     )

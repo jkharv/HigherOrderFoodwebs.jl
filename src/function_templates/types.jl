@@ -9,27 +9,29 @@ struct TemplateScalarParameter <: TemplateParameter
 
     sym::Symbol
     val::TermValue
+    num::Union{Num, Vector{Num}, Missing}
 end
 
 struct TemplateVectorParameter <: TemplateParameter
 
     sym::Symbol
     val::TermValue
+    num::Union{Num, Vector{Num}, Missing}
 end
 
 struct TemplateScalarVariable <:TemplateVariable
 
     sym::Symbol
     val::TermValue
+    num::Union{Num, Vector{Num}, Missing}
 end
 
 struct TemplateVectorVariable <: TemplateVariable
 
     sym::Symbol
     val::TermValue
+    num::Union{Num, Vector{Num}, Missing}
 end
-
-const RenameDict = Dict{TemplateObject, Union{Num, Vector{Num}, Missing}}
 
 struct FunctionTemplate
 
@@ -37,5 +39,5 @@ struct FunctionTemplate
     backwards_function::Expr
 
     canonical_vars::Vector{Symbol}
-    objects::RenameDict
+    objects::Vector{TemplateObject}
 end

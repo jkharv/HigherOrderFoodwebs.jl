@@ -33,8 +33,7 @@ function nichemodel(species::Integer=10, connectance::T=0.2) where {T <: Abstrac
 
     z = AnnotatedHyperedge.(
         [[Symbol("node_$(first(i))"), Symbol("node_$(last(i))")] for i in z],
-        Ref([:subject, :object]), 
-        Ref(true)
+        Ref([:subject, :object])
     )
 
     spp = Unipartite(Symbol.(["node_$i" for i in 1:species]))

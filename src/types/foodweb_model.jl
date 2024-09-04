@@ -12,8 +12,8 @@ end
 
 struct FoodwebModel{T}
 
-    hg::SpeciesInteractionNetwork{<: Partiteness, <: AnnotatedHyperedge{T, Bool}}
-    dynamic_rules::Dict{AnnotatedHyperedge{<:Any, Bool}, DynamicalRule}
+    hg::SpeciesInteractionNetwork{<:Partiteness, <:AnnotatedHyperedge, <:Any}
+    dynamic_rules::Dict{AnnotatedHyperedge, DynamicalRule}
 
     t::Num
 
@@ -23,12 +23,15 @@ struct FoodwebModel{T}
     params::Vector{Num}
     param_vals::Dict{Num, Number}
 
+    aux_dynamic_rules::Dict{Symbol, DynamicalRule}
+    aux_vars::Dict{Symbol, Num}
+
     odes::Union{ODEProblem, Missing}
     community_matrix::Union{CommunityMatrix, Missing}
 end
 
 function FoodwebModel(
-    hg::SpeciesInteractionNetwork{<: Partiteness{T}, <: AnnotatedHyperedge{T, Bool}};
+    hg::SpeciesInteractionNetwork{<:Partiteness{T}, <:AnnotatedHyperedge{T}};
     add_self_interactions = true) where T
 
     hg = deepcopy(hg)
@@ -43,23 +46,35 @@ function FoodwebModel(
             # create the loop if it's not there already
             if isnothing(z)
 
-                new_int = AnnotatedHyperedge([sp, sp], [:subject, :object], true)
-                push!(hg.interactions, new_int)
+                new_int = AnnotatedHyperedge([sp, sp], [:subject, :object])
+                push!(hg.edges, new_int)
             end
         end
     end
     
-    rules = Dict{AnnotatedHyperedge{T, Bool}, DynamicalRule}()
+    rules = Dict{AnnotatedHyperedge, DynamicalRule}()
     u0 = Dict{Num, Number}()
     param_vals = Dict{Num, Number}()
     params = Vector{Num}()
 
     t = create_variable(:t)
-    spp = AnnotatedHypergraphs.species(hg)
+    spp = species(hg)
     nums = create_variable.(spp, Ref(t))
     vars = Dict(spp .=> nums)
 
-    return FoodwebModel{T}(hg, rules, t, vars, u0, params, param_vals, missing, missing)
+    return FoodwebModel{T}(
+        hg, 
+        rules, 
+        t, 
+        vars, 
+        u0, 
+        params, 
+        param_vals, 
+        Dict{Symbol, DynamicalRule}(),
+        Dict{Symbol, Num}(),
+        missing, 
+        missing
+    )
 end
 
 function set_dynamical_rule!(fw::FoodwebModel, he::AnnotatedHyperedge, dr::DynamicalRule)

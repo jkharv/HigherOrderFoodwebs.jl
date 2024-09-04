@@ -7,7 +7,19 @@
 
 function create_runtime_symbol(x::TemplateVectorVariable, spp, fwm)
 
-    return [fwm.vars[x] for x ∈ spp]
+    nums = Vector{Num}()
+
+    for sp ∈ spp
+
+        if sp ∈ species(fwm)
+
+            push!(nums, fwm.vars[sp])
+        else
+            push!(nums, fwm.aux_vars[sp])
+        end
+    end
+
+    return nums
 end
 
 function create_runtime_symbol(x::TemplateScalarVariable, spp, fwm)
@@ -23,7 +35,31 @@ function create_runtime_symbol(x::TemplateScalarVariable, spp, fwm)
         """)
     end
 
-    return fwm.vars[spp[1]]
+    if spp[1] ∈ keys(fwm.vars)
+        return fwm.vars[spp[1]]
+    else 
+        return fwm.aux_vars[spp[1]]
+    end
+end
+
+function new_param(fwm, sym, spp, val)
+
+    new_sym = sym
+
+    if spp isa Vector 
+
+        new_sym = (gensym ∘ join)([sym, spp...], "_" )
+    else
+        
+        new_sym = (gensym ∘ join)([sym, spp], "_" )
+    end
+        
+    # Create the parameter and add it to the FoodwebModel.
+    param = create_param(new_sym)
+    push!(fwm.params, param)
+    push!(fwm.param_vals, param => val)
+
+    return param
 end
 
 function create_runtime_symbol(tmplt::TemplateScalarParameter, spp, fwm)
@@ -65,7 +101,7 @@ end
 function apply_template(tmplt::FunctionTemplate, obj::TemplateObject)   
   
     sym = obj.sym
-    var = tmplt.objects[obj]
+    var = obj.num
 
     ff = postwalk(x -> x == sym ? var : x, tmplt.forwards_function)
     bf = postwalk(x -> x == sym ? var : x, tmplt.backwards_function)
@@ -79,10 +115,11 @@ function apply_template(tmplt::FunctionTemplate)
 
     for o ∈ tmplt.objects
 
-        if !ismissing(last(o))
+        if !ismissing(o.num)
 
-            tmplt = apply_template(tmplt, first(o))
+            tmplt = apply_template(tmplt, o)
         end
     end
+
     return tmplt
 end

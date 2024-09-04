@@ -32,31 +32,29 @@ function DynamicalRule(tmplt::FunctionTemplate)
     ff = eval(tmplt.forwards_function)
     bf = eval(tmplt.backwards_function)
 
-    f = collect ∘ Iterators.flatten ∘ values ∘ filter
-    vars = f(kv -> kv[1] isa TemplateVariable, tmplt.objects)
-    params = f(kv -> kv[1] isa TemplateParameter, tmplt.objects)
-
+    vars = filter(x -> x isa TemplateVariable, tmplt.objects)
+    params = filter(x -> x isa TemplateParameter, tmplt.objects)
 
     return DynamicalRule(ff, bf, vars, params)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", f::FunctionTemplate)
 
-    fs = f.forwards_function.args[1]
-    bs = f.backwards_function.args[1]
+    fs = f.forwards_function
+    bs = f.backwards_function
 
     println(io, "Forwards function:  " * string(fs))    
     println(io, "Backwards Function: " * string(bs))    
     println(io, "Template Symbols:")
 
-    for s in f.objects
+    for o in f.objects
 
-        o = first(s)
         sym = string(o.sym)
         val = string(o.val)
+        num = string(o.num)
 
         type = o isa TemplateParameter ? "Parameter " : "Variable  "
 
-        println(io, "  "  * type * sym * " ~ " * val * " => " * string(last(s)))
+        println(io, "   $type $sym ~ $val =>  $num")
     end
 end
