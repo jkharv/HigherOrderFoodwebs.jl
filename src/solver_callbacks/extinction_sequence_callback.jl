@@ -84,11 +84,12 @@ end
 function ExtinctionSequenceCallback(
     fwm::FoodwebModel{T}, 
     extinction_sequence::Vector{T},
-    time_limit::Float64,
-    extinctions::Vector{Tuple{Float64, T}}
+    time_limit::Float64;
+    extinction_history = Vector{Tuple{Float64, T}}()
     ) where T
 
-    es = ExtinctionSequenceCallbackAffect(fwm, extinction_sequence, time_limit, extinctions)
+    es = ExtinctionSequenceCallbackAffect(
+        fwm, extinction_sequence, time_limit, extinction_history)
     c(u, t, integrator) = extinction_condition(es, u, t, integrator)
     
     return DiscreteCallback(c, es)

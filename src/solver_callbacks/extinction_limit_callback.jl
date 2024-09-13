@@ -25,9 +25,12 @@ function extinction_threshold_condition(u,t,integrator)
     return true
 end
 
-function ExtinctionThresholdCallback(fwm::FoodwebModel, extinction_threshold, extinctions) 
+function ExtinctionThresholdCallback(
+    fwm::FoodwebModel{T}, 
+    extinction_threshold::Float64; 
+    extinction_history = Vector{Tuple{Float64, T}}()) where T
 
-    f(x) = extinction_threshold_affect(fwm, extinction_threshold, x, extinctions)
+    f(x) = extinction_threshold_affect(fwm, extinction_threshold, x, extinction_history)
 
     return DiscreteCallback(extinction_threshold_condition, f)
 end
