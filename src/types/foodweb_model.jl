@@ -74,7 +74,8 @@ function FoodwebModel(
     param_vals = Dict{Num, Number}()
     params = Vector{Num}()
 
-    t = create_var(:t)
+    t = @independent_variables t
+    t = t[1]
     spp = species(hg)
     nums = create_var.(spp, Ref(t))
     vars = Dict(spp .=> nums)
