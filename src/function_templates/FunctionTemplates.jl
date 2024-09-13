@@ -1,6 +1,0 @@
-include(joinpath(".", "types.jl"))
-include(joinpath(".", "parsing.jl"))
-include(joinpath(".", "dynamic_rule.jl"))
-include(joinpath(".", "template_utils.jl"))
-include(joinpath(".", "runtime_symbol_generation.jl"))
-include(joinpath(".", "template_arithmetic.jl"))
