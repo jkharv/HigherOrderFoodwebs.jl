@@ -6,65 +6,62 @@ using Distributions
 using DifferentialEquations
 using Plots
 
-hg  = (optimal_foraging ∘ nichemodel)(30, 0.2)
-fwm = FoodwebModel(hg)
+hg  = (optimal_foraging ∘ nichemodel)(20, 0.2);
+fwm = FoodwebModel(hg);
 
-self_loops = filter(isloop, interactions(fwm))
-trophic = filter(!isloop, interactions(fwm))
+# Useful shorthand for later
+HigherOrderFoodwebs.isproducer(x) = isproducer(fwm, x) 
+HigherOrderFoodwebs.isconsumer(x) = isconsumer(fwm, x)
 
-function add_auxiliary_variable!(fwm::FoodwebModel, sym::Symbol)
+growth = filter(isloop, interactions(fwm));
+trophic = filter(!isloop, interactions(fwm));
 
-    num = HigherOrderFoodwebs.create_variable(sym, fwm.t)
-    fwm.aux_vars[sym] = num
-end
+producer_growth = filter(isproducer ∘ subject, growth)
+consumer_growth = filter(isconsumer ∘ subject, growth)
 
-function aux_var(fwm, sym)
-
-    return fwm.aux_vars[sym]
-end
-
-av(x) = aux_var(fwm, x)
-
-
-function new_param(fwm, sym, spp, val)
-    
-    # Make it unambigous
-    sym = (gensym ∘ join)([sym, spp...], "_" )
-
-    # Create the parameter and add it to the FoodwebModel.
-    param = HigherOrderFoodwebs.create_param(sym)
-    push!(fwm.params, param)
-    push!(fwm.param_vals, param => val)
-
-    return param
-end
-
-new_param(sym, spp, val) = new_param(fwm, sym, spp, val)
-
-for i ∈ self_loops
+for i ∈ producer_growth
 
     s = fwm.vars[subject(i)]
-    k = new_param(:k, [subject(i)], 10.0)
+    k = add_param!(fwm, :k, [subject(i)], 1.0)
 
-    growth = s * (1.0 - s / k)  
+    dr = DynamicRule(s * (1.0 - (s / k)))
+    fwm.dynamic_rules[i] = dr
+end
 
-    fwm.dynamic_rules[i] = HigherOrderFoodwebs.DynamicalRule(
-        growth, # Forwards
-        growth, # Backwards
-        [s],    # Variables
-        [k]     # Parameters
-    )
+for i ∈ consumer_growth
+
+    s = fwm.vars[subject(i)]
+    m = add_param!(fwm, :m, [subject(i)], 0.2)
+
+    dr = DynamicRule(-s * m)
+    fwm.dynamic_rules[i] = dr
 end
 
 for i ∈ trophic
 
-    s = subject(i)
-    o = object(i)
-    m = with_role(:AF_modifier, i)
+    s = fwm.vars[subject(i)]
+    o = fwm.vars[object(i)]
 
+    e = add_param!(fwm, :e, [subject(i), object(i)], 0.15)
 
-
-
-
+    dr = DynamicRule(
+         s * o * e,
+        -s * o
+    )
+    
+    fwm.dynamic_rules[i] = dr
 end
 
+u0 = Dict(species(fwm) .=> rand(Uniform(0.5, 1.0), length(species(fwm))));
+set_initial_condition!(fwm, u0)
+
+et = ExtinctionThresholdCallback(fwm, 1e-20, Vector{Tuple{Float64, Symbol}});
+
+sol = solve(fwm, RK4();
+    force_dtmin = true,
+    abstol = 1e-5,
+    reltol = 1e-3,
+    tspan = (1, 1000)
+);
+
+plot(sol, legend = false)
