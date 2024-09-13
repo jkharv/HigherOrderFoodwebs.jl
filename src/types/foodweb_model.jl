@@ -1,10 +1,27 @@
-struct DynamicalRule
+struct DynamicRule
 
     forwards_function::Num
     backwards_function::Num
     vars::Vector{Num}
     params::Vector{Num}
 end
+
+function DynamicRule(forwards_rule::Num, backwards_rule::Num)
+
+    both = forwards_rule + backwards_rule
+
+    vars = filter(!ModelingToolkit.isparameter, get_variables(both))
+    params = filter(ModelingToolkit.isparameter, get_variables(both))
+
+    return DynamicRule(
+        forwards_rule,
+        backwards_rule,
+        vars,
+        params
+    )
+end
+
+DynamicRule(rule::Num) = DynamicRule(rule, rule)
 
 struct SpatialFoodwebModel
 
@@ -13,7 +30,7 @@ end
 struct FoodwebModel{T}
 
     hg::SpeciesInteractionNetwork{<:Partiteness, <:AnnotatedHyperedge, <:Any}
-    dynamic_rules::Dict{AnnotatedHyperedge, DynamicalRule}
+    dynamic_rules::Dict{AnnotatedHyperedge, DynamicRule}
 
     t::Num
 
@@ -23,7 +40,7 @@ struct FoodwebModel{T}
     params::Vector{Num}
     param_vals::Dict{Num, Number}
 
-    aux_dynamic_rules::Dict{Symbol, DynamicalRule}
+    aux_dynamic_rules::Dict{Symbol, DynamicRule}
     aux_vars::Dict{Symbol, Num}
 
     odes::Union{ODEProblem, Missing}
@@ -52,14 +69,14 @@ function FoodwebModel(
         end
     end
     
-    rules = Dict{AnnotatedHyperedge, DynamicalRule}()
+    rules = Dict{AnnotatedHyperedge, DynamicRule}()
     u0 = Dict{Num, Number}()
     param_vals = Dict{Num, Number}()
     params = Vector{Num}()
 
-    t = create_variable(:t)
+    t = create_var(:t)
     spp = species(hg)
-    nums = create_variable.(spp, Ref(t))
+    nums = create_var.(spp, Ref(t))
     vars = Dict(spp .=> nums)
 
     return FoodwebModel{T}(
@@ -70,14 +87,14 @@ function FoodwebModel(
         u0, 
         params, 
         param_vals, 
-        Dict{Symbol, DynamicalRule}(),
+        Dict{Symbol, DynamicRule}(),
         Dict{Symbol, Num}(),
         missing, 
         missing
     )
 end
 
-function set_dynamical_rule!(fw::FoodwebModel, he::AnnotatedHyperedge, dr::DynamicalRule)
+function set_dynamical_rule!(fw::FoodwebModel, he::AnnotatedHyperedge, dr::DynamicRule)
 
     # Add the rule
     fw.dynamic_rules[he] = dr

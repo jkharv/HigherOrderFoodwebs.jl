@@ -1,5 +1,7 @@
 module HigherOrderFoodwebs
 
+__precompile__(false) 
+
 using MacroTools: prewalk, postwalk, @capture, unblock, rmlines, prettify
 using MacroTools
 using SpeciesInteractionNetworks
@@ -17,8 +19,11 @@ include("./types/community_matrix.jl")
 include("./types/foodweb_model.jl")
 include("./types/extra_constructors.jl")
 include("./types/conversions.jl")
-export FoodwebModel
+export FoodwebModel, DynamicRule
 export CommunityMatrix
+
+include("./symbolic_utils/utils.jl")
+export new_param, new_var, add_param!, add_var!
 
 include("./interfaces/foodweb_interface.jl")
 export species, richness, interactions, role, roles, has_role
@@ -43,11 +48,6 @@ include("./utilities/pretty_printing.jl")
 
 #include(joinpath(".", "NTE_models", "optimal_foraging.jl"))
 #export optimal_foraging!
-
-# In a world where Julia's module system was nicer, I'd have this as an actual module.
-# We'll just pretend it is for now.
-include("./function_templates/FunctionTemplates.jl")
-export @group, @params, @params, @set_rule, @set_aux_rule, new_param
 
 include("./structural_models/types.jl")
 include("./structural_models/optimal_foraging.jl")

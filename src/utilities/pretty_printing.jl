@@ -8,7 +8,7 @@ function Base.show(io::IO, ::MIME"text/plain", fwm::FoodwebModel)
     print(io, str)
 end
 
-function Base.show(io::IO, ::MIME"text/plain", dr::DynamicalRule)
+function Base.show(io::IO, ::MIME"text/plain", dr::DynamicRule)
 
     str = """
     DynamicalRule
