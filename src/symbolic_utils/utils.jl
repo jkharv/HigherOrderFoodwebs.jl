@@ -14,7 +14,6 @@ end
 
 function create_param(sym::Symbol)
 
-
     x = @variables $sym
     param =  ModelingToolkit.toparam(x[1])
 
