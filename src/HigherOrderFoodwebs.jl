@@ -45,9 +45,8 @@ export assemble_foodweb!
 include("./utilities/utilities.jl")
 include("./utilities/overloads.jl")
 include("./utilities/pretty_printing.jl")
-
-#include(joinpath(".", "NTE_models", "optimal_foraging.jl"))
-#export optimal_foraging!
+include("./utilities/trophic_ordering.jl")
+export trophic_ordering
 
 include("./structural_models/types.jl")
 include("./structural_models/optimal_foraging.jl")
