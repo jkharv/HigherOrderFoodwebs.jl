@@ -1,4 +1,3 @@
-using Revise
 using HigherOrderFoodwebs
 using SpeciesInteractionNetworks
 using ModelingToolkit
@@ -22,7 +21,7 @@ consumer_growth = filter(isconsumer ∘ subject, growth)
 for i ∈ producer_growth
 
     s = fwm.vars[subject(i)]
-    k = add_param!(fwm, :k, [subject(i)], 1.0)
+    k = add_param!(fwm, :k, [subject(i)], 1.0 + rand()/10)
 
     dr = DynamicRule(s * (1.0 - (s / k)))
     fwm.dynamic_rules[i] = dr
@@ -52,16 +51,15 @@ for i ∈ trophic
     fwm.dynamic_rules[i] = dr
 end
 
-u0 = Dict(species(fwm) .=> rand(Uniform(0.5, 1.0), length(species(fwm))));
-set_initial_condition!(fwm, u0)
+solver = assemble_foodweb!(fwm);
 
-et = ExtinctionThresholdCallback(fwm, 1e-20, Vector{Tuple{Float64, Symbol}});
+plot(solver.integrator.sol; legend = false)
 
-sol = solve(fwm, RK4();
+sol = solve(solver, RK4();
     force_dtmin = true,
     abstol = 1e-5,
     reltol = 1e-3,
-    tspan = (1, 1000)
+    tspan = (1, 5000)
 );
 
 plot(sol, legend = false)
