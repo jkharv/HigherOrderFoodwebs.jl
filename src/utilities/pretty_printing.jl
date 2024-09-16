@@ -11,7 +11,7 @@ end
 function Base.show(io::IO, ::MIME"text/plain", dr::DynamicRule)
 
     str = """
-    DynamicalRule
+    DynamicRule
         f.f.: $(dr.forwards_function)
         b.f.: $(dr.backwards_function)
         Variables: $(dr.vars)
