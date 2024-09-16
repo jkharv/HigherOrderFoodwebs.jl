@@ -40,7 +40,7 @@ include("./build_system.jl")
 export build_ode_system
 
 include("./foodweb_assembly.jl")
-export assemble_foodweb!
+export assemble_foodweb
 
 include("./utilities/utilities.jl")
 include("./utilities/overloads.jl")

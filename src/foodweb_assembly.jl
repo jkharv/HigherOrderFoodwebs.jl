@@ -11,7 +11,7 @@ function assemble_foodweb(fwm::FoodwebModel)
         callback = cb,
         abstol = 1e-6, 
         reltol = 1e-3, 
-        tspan = (1, 1000)
+        tspan = (1, 100*length(invasion_sequence))
         );
 
     while !isempty(invasion_sequence)
