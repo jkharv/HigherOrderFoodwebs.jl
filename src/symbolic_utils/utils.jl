@@ -54,5 +54,5 @@ end
 
 function add_param!(fwm::FoodwebModel{T}, sym::Symbol, spp::T, val::Number) where T
 
-    return add_param!(fwm, sym, spp, val)
+    return add_param!(fwm, sym, [spp], val)
 end
