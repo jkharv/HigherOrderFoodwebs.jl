@@ -53,6 +53,10 @@ include("./structural_models/optimal_foraging.jl")
 include("./structural_models/nichemodel.jl")
 export nichemodel, optimal_foraging
 
+include("./registered_symbolics/holling_2.jl")
+include("./registered_symbolics/logistic.jl")
+export holling2 logistic
+
 #Reexports from SpeciesInteractionNetworks.jl
 export Partiteness, Bipartite, Unipartite
 export Interaction, Directed, Undirected, Hyperedge, AnnotatedHyperedge
