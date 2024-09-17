@@ -55,7 +55,7 @@ export nichemodel, optimal_foraging
 
 include("./registered_symbolics/holling_2.jl")
 include("./registered_symbolics/logistic.jl")
-export holling2 logistic
+export holling2, logistic
 
 #Reexports from SpeciesInteractionNetworks.jl
 export Partiteness, Bipartite, Unipartite
