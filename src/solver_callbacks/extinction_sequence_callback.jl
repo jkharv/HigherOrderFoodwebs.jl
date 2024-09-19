@@ -35,9 +35,7 @@ function (escb::ExtinctionSequenceCallbackAffect)(integrator)
 
         target = escb.extinction_sequence[escb.cursor]
 
-        # Check that these indices are actually good. Especially when we add
-        # non-biomass variables.
-        index = findfirst(x -> x == target, spp)
+        index = variable_index(integrator, target)
 
         # Skip to the next species in the sequence if spp is already extinct.
         if integrator.u[index] ≤ EXTINCTION_THRESHOLD

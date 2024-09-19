@@ -12,6 +12,7 @@ using LinearAlgebra
 using SparseArrays
 using CommonSolve
 using DifferentialEquations
+using SymbolicIndexingInterface
 
 const TermValue = Union{Missing, Expr, T, W} where {T<:Real, W<:UnivariateDistribution}
 
