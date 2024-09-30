@@ -1,12 +1,22 @@
 const LOW_DENSITY = 0.0001;
 
-function assemble_foodweb(fwm::FoodwebModel, solver = RK4())
+function assemble_foodweb(fwm::FoodwebModel, solver = RK4(); args...)
 
-    integrator = introduce_species(fwm, solver)
+    defaults = (
+        maxiters = 1e7,
+        force_dtmin = true,
+        abstol = 1e-2, 
+        reltol = 1e-2, 
+        tspan = (1, 100*length(species(fwm)))
+    )
+
+    args = merge(defaults, args) 
+
+    integrator = introduce_species(fwm, solver; args...)
     return reinitialize(integrator)
 end
 
-function introduce_species(fwm::FoodwebModel, solver)
+function introduce_species(fwm::FoodwebModel, solver; args...)
 
     invasion_sequence = trophic_ordering(fwm)
 
@@ -15,11 +25,7 @@ function introduce_species(fwm::FoodwebModel, solver)
     integrator = init(
         fwm, solver;
         callback = cb,
-        maxiters = 1e7,
-        force_dtmin = true,
-        abstol = 1e-2, 
-        reltol = 1e-2, 
-        tspan = (1, 100*length(invasion_sequence))
+        args...
     );
 
     while !isempty(invasion_sequence)
@@ -64,4 +70,11 @@ function reinitialize(s::FoodwebModelSolver)
         fwm.odes,
         fwm.community_matrix
     )
+end
+
+function merge_args(defaults, user)
+
+    # I need to deal with Callbacks seperately
+    # I'll do that later tho. (maybe)
+    return merge(user, defaults)
 end
