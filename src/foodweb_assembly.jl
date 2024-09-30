@@ -1,38 +1,54 @@
 const LOW_DENSITY = 0.0001;
 
-function assemble_foodweb(fwm::FoodwebModel)
+function assemble_foodweb(fwm::FoodwebModel, solver = RK4())
+
+    integrator = introduce_species(fwm, solver)
+    return reinitialize(integrator)
+end
+
+function introduce_species(fwm::FoodwebModel, solver)
 
     invasion_sequence = trophic_ordering(fwm)
 
     cb = ExtinctionThresholdCallback(fwm, 1e-20)
 
     integrator = init(
-        fwm, RK4();
+        fwm, solver;
         callback = cb,
-        abstol = 1e-6, 
-        reltol = 1e-3, 
+        maxiters = 1e7,
+        force_dtmin = true,
+        abstol = 1e-2, 
+        reltol = 1e-2, 
         tspan = (1, 100*length(invasion_sequence))
-        );
+    );
 
     while !isempty(invasion_sequence)
 
         spp = popfirst!(invasion_sequence)
         integrator.integrator[fwm.vars[spp]] = 10*LOW_DENSITY
-        step!(integrator, 100.0)
+        step!(integrator, 100)
     end
+
+    return integrator
+end
+
+function reinitialize(s::FoodwebModelSolver)
+
+    fwm = s.fwm
+    integrator = s.integrator
 
     u0 = Dict{Num, Number}()
 
     # Species
     for (s, v) in fwm.vars
 
-        u0[v] = integrator.integrator.sol[v][end]
+        u0[v] = integrator.sol[v][end]
     end
 
     # Aux vars
     for (s, v) in fwm.aux_vars
 
-        u0[v] = integrator.integrator.sol[s][end]
+        u0[v] = integrator.sol[s][end]
     end
 
     return FoodwebModel(
