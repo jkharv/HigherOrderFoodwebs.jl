@@ -63,8 +63,8 @@ function reinitialize(s::FoodwebModelSolver)
         fwm.param_vals,
         fwm.aux_dynamic_rules,
         fwm.aux_vars,
-        fwm.odes,
-        fwm.community_matrix
+        missing, # These will be lazily generated anew when
+        missing  # someone tries to simulate this model later.
     )
 end
 
