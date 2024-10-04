@@ -37,9 +37,6 @@ include("./solver_callbacks/extinction_sequence_callback.jl")
 include("./solver_callbacks/extinction_limit_callback.jl")
 export ExtinctionSequenceCallback, ExtinctionThresholdCallback
 
-include("./build_system.jl")
-export build_ode_system
-
 include("./foodweb_assembly.jl")
 export assemble_foodweb
 
