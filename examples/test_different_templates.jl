@@ -3,7 +3,6 @@ using SpeciesInteractionNetworks
 using ModelingToolkit
 using Distributions
 using DifferentialEquations
-using Plots
 
 hg  = (optimal_foraging ∘ nichemodel)(20, 0.2);
 fwm = FoodwebModel(hg);
@@ -51,15 +50,13 @@ for i ∈ trophic
     fwm.dynamic_rules[i] = dr
 end
 
-solver = assemble_foodweb!(fwm);
-
-plot(solver.integrator.sol; legend = false)
+solver = assemble_foodweb(fwm);
 
 sol = solve(solver, RK4();
     force_dtmin = true,
-    abstol = 1e-5,
-    reltol = 1e-3,
+    abstol = 0.01,
+    reltol = 0.01,
     tspan = (1, 5000)
 );
 
-plot(sol, legend = false)
+sol[end]
