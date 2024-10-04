@@ -60,14 +60,18 @@ function build_ode_system(fwm::FoodwebModel)::FoodwebModel
     rhs = map(sum, eachrow(cm))
     eqs = lhs .~ rhs
 
-    p = fwm.params
-    v = (collect ∘ values)(vars)
-    t = fwm.t
-    u0 = fwm.u0
-    p_vals = fwm.param_vals
-
-    sys = ODESystem(eqs, t, v, p; name = :Foodweb)
-    prob = ODEProblem(structural_simplify(sys), u0, (0,1000), p_vals)
+    sys = ODESystem(eqs, 
+        fwm.t, 
+        (collect ∘ values)(vars), 
+        fwm.params; 
+        name = :Foodweb
+    )
+    prob = ODEProblem(
+        structural_simplify(sys), 
+        fwm.u0, 
+        (0,1000), 
+        fwm.param_vals
+    )
 
     return FoodwebModel(
         fwm.hg,

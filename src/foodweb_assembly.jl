@@ -22,11 +22,7 @@ function introduce_species(fwm::FoodwebModel, solver; args...)
 
     cb = ExtinctionThresholdCallback(fwm, 1e-20)
 
-    integrator = init(
-        fwm, solver;
-        callback = cb,
-        args...
-    );
+    integrator = init(fwm, solver; callback = cb, args...);
 
     while !isempty(invasion_sequence)
 
