@@ -36,7 +36,7 @@ end
 function add_var!(fwm::FoodwebModel, sym::Symbol)
 
     v = create_var(sym)
-    push!(fwm.aux_vars, dep => v)
+    push!(fwm.aux_vars, sym => v)
 
     return v
 end
