@@ -14,8 +14,6 @@ using CommonSolve
 using DifferentialEquations
 using SymbolicIndexingInterface
 
-const TermValue = Union{Missing, Expr, T, W} where {T<:Real, W<:UnivariateDistribution}
-
 include("./types/community_matrix.jl")
 include("./types/foodweb_model.jl")
 include("./types/extra_constructors.jl")
