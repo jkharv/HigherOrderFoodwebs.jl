@@ -24,17 +24,21 @@ atk_rates = CommunityMatrix(
     species(fwm)
 )
 
+atk_rates_syms = CommunityMatrix(
+    Matrix{Union{Missing,Symbol}}(missing, length(species(fwm)), length(species(fwm))),
+    species(fwm)
+)
+
 for i ∈ trophic
 
     s = subject(i)
     o = object(i)
 
     sym = Symbol("a_$(s)_$(o)")
-    add_var!(fwm, sym)
+    add_var!(fwm, sym, fwm.t)
     atk_rates[s, o] = fwm.aux_vars[sym]
+    atk_rates_syms[s, o] = sym
 end
-
-
 
 for i ∈ producer_growth
 
@@ -58,26 +62,44 @@ for i ∈ trophic
 
     s = fwm.vars[subject(i)]
     o = fwm.vars[object(i)]
+    m = with_role(:AF_modifier, i)
+    m = [fwm.vars[x] for x in m]
 
+    a_so_sym = atk_rates_syms[subject(i), object(i)]
+    a_so = atk_rates[subject(i), object(i)]
+    as   = [atk_rates[subject(i), x] for x in species(fwm)]
+    as   = filter(!iszero, as) 
 
+    set_initial_condition!(fwm, Dict(a_so_sym => 0.6))
 
     e = add_param!(fwm, :e, [subject(i), object(i)], 0.15)
 
-    dr = DynamicRule(
-         s * o * e,
-        -s * o
+    if length(m) > 0
+        
+        mean_gain = mean([o, m...] .* as)
+        
+        fwm.aux_dynamic_rules[a_so_sym] = DynamicRule(
+            0.001 * (a_so * s * o) - mean_gain * a_so * (1 - a_so)
+        )
+    else
+
+        fwm.aux_dynamic_rules[a_so_sym] = DynamicRule(Num(0))
+    end
+
+    fwm.dynamic_rules[i] = DynamicRule(
+         s * o * a_so * e,
+        -s * o * a_so
     )
-    
-    fwm.dynamic_rules[i] = dr
 end
 
 solver = assemble_foodweb(fwm);
 
 sol = solve(solver, RK4();
     force_dtmin = true,
+    maxiters = 1e7,
     abstol = 0.01,
     reltol = 0.01,
-    tspan = (1, 5000)
+    tspan = (1, 1000)
 );
 
 sol[end]
