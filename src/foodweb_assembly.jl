@@ -7,6 +7,7 @@ function assemble_foodweb(fwm::FoodwebModel, solver = RK4(); args...)
         force_dtmin = true,
         abstol = 1e-2, 
         reltol = 1e-2, 
+        save_on = false,
         tspan = (1, 100*length(species(fwm)))
     )
 
