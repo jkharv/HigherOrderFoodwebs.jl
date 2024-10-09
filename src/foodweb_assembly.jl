@@ -28,7 +28,7 @@ function introduce_species(fwm::FoodwebModel, solver; args...)
     while !isempty(invasion_sequence)
 
         spp = popfirst!(invasion_sequence)
-        integrator.integrator[fwm.vars[spp]] = 10*LOW_DENSITY
+        integrator.integrator[fwm.vars[spp]] = 100*LOW_DENSITY
         step!(integrator, 100)
     end
 
@@ -45,13 +45,13 @@ function reinitialize(s::FoodwebModelSolver)
     # Species
     for (s, v) in fwm.vars
 
-        u0[v] = integrator.sol[v][end]
+        u0[v] = integrator[v][end]
     end
 
     # Aux vars
     for (s, v) in fwm.aux_vars
 
-        u0[v] = integrator.sol[s][end]
+        u0[v] = integrator[s][end]
     end
 
     return FoodwebModel(
