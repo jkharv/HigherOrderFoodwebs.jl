@@ -7,18 +7,18 @@ end
 
 function Symbolics.derivative(::typeof(holling2), args::NTuple{3, Any}, ::Val{1})
 
-    object, alternate, b0 = args
-    return 1 / (b0 + alternate)
+    o, a, b = args
+    return 1 / (b + a)
 end
 
 function Symbolics.derivative(::typeof(holling2), args::NTuple{3, Any}, ::Val{2})
 
-    object, alternate, b0 = args
+    o, a, b = args
     return -(o / (a + b)^2)
 end
 
 function Symbolics.derivative(::typeof(holling2), args::NTuple{3, Any}, ::Val{3})
 
-    object, alternate, b0 = args
+    o, a, b = args
     return -(o / (a + b)^2)
 end
