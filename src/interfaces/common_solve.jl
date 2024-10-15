@@ -68,6 +68,8 @@ function build_ode_system(fwm::FoodwebModel)::FoodwebModel
     )
     prob = ODEProblem(
         structural_simplify(sys), 
+        jac = true, 
+        sparse = true,
         fwm.u0, 
         (0,1000), 
         fwm.param_vals
