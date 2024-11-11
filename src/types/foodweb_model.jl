@@ -8,10 +8,10 @@ end
 
 function DynamicRule(forwards_rule::Num, backwards_rule::Num)
 
-    both = forwards_rule + backwards_rule
+    both = union(get_variables(forwards_rule), get_variables(backwards_rule))
 
-    vars = filter(!ModelingToolkit.isparameter, get_variables(both))
-    params = filter(ModelingToolkit.isparameter, get_variables(both))
+    vars = filter(!ModelingToolkit.isparameter, both)
+    params = filter(ModelingToolkit.isparameter, both)
 
     return DynamicRule(
         forwards_rule,
