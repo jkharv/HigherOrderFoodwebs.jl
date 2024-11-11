@@ -4,7 +4,7 @@ function extinction_threshold_affect(fwm, threshold, integrator, extinctions)
 
         i = variable_index(integrator, sp)
 
-        if 0.0 < integrator.u[i] < threshold
+        if integrator.u[i] < threshold
             
             integrator.u[i] = 0.0
             push!(extinctions, (integrator.t, sp))
