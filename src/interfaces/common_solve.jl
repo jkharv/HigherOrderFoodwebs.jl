@@ -9,7 +9,7 @@ function CommonSolve.init(fwm::FoodwebModel, args...; kwargs...)
     if ismissing(fwm.odes)
 
         # I should probably inline this definition
-        fwm = build_ode_system(fwm)
+        build_ode_system!(fwm)
     end
 
     return FoodwebModelSolver(
@@ -28,64 +28,40 @@ function CommonSolve.solve!(fwm::FoodwebModelSolver)
     solve!(fwm.integrator)
 end
 
-function build_ode_system(fwm::FoodwebModel)::FoodwebModel
-
-    # If u0 is missing we will set them all to zero.
-    # Only the species though.
-
-    for sp ∈ species(fwm) 
-
-        v = fwm.vars[sp]
-
-        if v ∈ keys(fwm.u0)
-
-            break
-        else
-            
-            fwm.u0[v] = 0.0
-        end
-    end
+function build_ode_system!(fwm::FoodwebModel)
 
     vars = merge(fwm.vars, fwm.aux_vars)
+    cm = CommunityMatrix(fwm);
 
     D = Differential(fwm.t)
-    f(x) = map(x -> vars[x], x)
-    d(x) = map(x -> D(x), x)
-
-    cm = CommunityMatrix(fwm)
-
-    var_syms = cm.spp
-
-    lhs = (d ∘ f)(var_syms)
-    rhs = map(sum, eachrow(cm))
+    lhs = [D(vars[x]) for x in cm.spp]
+    rhs = [sum(x) for x in eachrow(cm)]
     eqs = lhs .~ rhs
 
-    sys = ODESystem(eqs, 
+    default_u0 = Dict((collect ∘ values)(vars) .=> zeros(length(vars)))
+    for x in keys(fwm.u0)
+
+        # Make sure that user supplied values take precedence over
+        # setting everything to zero.
+        default_u0[x] = fwm.u0[x]
+    end
+    default_p  = fwm.param_vals
+
+    sys = ODESystem(
+        eqs, 
         fwm.t, 
         (collect ∘ values)(vars), 
         fwm.params; 
-        name = :Foodweb
-    )
-    prob = ODEProblem(
-        structural_simplify(sys), 
-        jac = true, 
-        sparse = true,
-        fwm.u0, 
-        (0,1000), 
-        fwm.param_vals
+        name = :Foodweb,
+        defaults = merge(default_u0, default_p)
     )
 
-    return FoodwebModel(
-        fwm.hg,
-        fwm.dynamic_rules,
-        fwm.t,
-        fwm.vars,
-        fwm.u0,
-        fwm.params,
-        fwm.param_vals,
-        fwm.aux_dynamic_rules,
-        fwm.aux_vars,
-        prob,
-        cm
-    )
+    ModelingToolkit.calculate_jacobian(sys)
+
+    prob = ODEProblem(structural_simplify(sys))
+
+    fwm.odes = prob
+    fwm.community_matrix = cm
+
+    return 
 end
