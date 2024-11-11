@@ -27,7 +27,7 @@ struct SpatialFoodwebModel
 
 end
 
-struct FoodwebModel{T}
+mutable struct FoodwebModel{T}
 
     hg::SpeciesInteractionNetwork{<:Partiteness, <:AnnotatedHyperedge, <:Any}
     dynamic_rules::Dict{AnnotatedHyperedge, DynamicRule}
