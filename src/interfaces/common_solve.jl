@@ -6,7 +6,7 @@ end
 
 function CommonSolve.init(fwm::FoodwebModel, args...; kwargs...)
 
-    if ismissing(fwm.odes)
+    if isnothing(fwm.odes)
 
         # I should probably inline this definition
         build_ode_system!(fwm)
@@ -30,11 +30,11 @@ end
 
 function build_ode_system!(fwm::FoodwebModel)
 
-    vars = merge(fwm.vars, fwm.aux_vars)
+    vars = vcat(fwm.vars, fwm.aux_vars)
     cm = CommunityMatrix(fwm);
 
     D = Differential(fwm.t)
-    lhs = [D(vars[x]) for x in cm.spp]
+    lhs = D.(vars)
     rhs = [sum(x) for x in eachrow(cm)]
     eqs = lhs .~ rhs
 

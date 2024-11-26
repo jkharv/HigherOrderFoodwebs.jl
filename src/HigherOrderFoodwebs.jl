@@ -27,7 +27,7 @@ export new_param, new_var, add_param!, add_var!
 include("./interfaces/foodweb_interface.jl")
 export species, richness, interactions, role, roles, has_role
 export isproducer, isconsumer
-export set_initial_condition!
+export set_u0!
 
 include("./interfaces/common_solve.jl")
 
@@ -52,6 +52,9 @@ export nichemodel, optimal_foraging
 include("./registered_symbolics/holling_2.jl")
 include("./registered_symbolics/logistic.jl")
 export holling2, logistic
+
+include("./foodweb_solution.jl")
+export trophic_flux
 
 #Reexports from SpeciesInteractionNetworks.jl
 export Partiteness, Bipartite, Unipartite

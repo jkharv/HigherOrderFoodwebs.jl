@@ -25,7 +25,10 @@ end
 function add_var!(fwm::FoodwebModel, dep::Symbol, indep::Num)
 
     v = create_var(dep, indep)
-    push!(fwm.aux_vars, dep => v)
+    push!(fwm.aux_vars, v)
+
+    fwm.conversion_dict[dep] = v
+    fwm.conversion_dict[v] = dep
 
     return v
 end

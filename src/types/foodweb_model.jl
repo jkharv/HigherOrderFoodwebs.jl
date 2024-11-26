@@ -30,21 +30,22 @@ end
 mutable struct FoodwebModel{T}
 
     hg::SpeciesInteractionNetwork{<:Partiteness, <:AnnotatedHyperedge, <:Any}
-    dynamic_rules::Dict{AnnotatedHyperedge, DynamicRule}
 
     t::Num
+    dynamic_rules::Dict{AnnotatedHyperedge, DynamicRule}
+    aux_dynamic_rules::Dict{Num, DynamicRule}
+    
+    params::Vector{Num}
+    vars::Vector{Num}
+    aux_vars::Vector{Num}
+   
+    conversion_dict::Dict{Union{T, Num}, Union{T, Num}}    
 
-    vars::Dict{T, Num}
+    param_vals::Dict{Num, Number}
     u0::Dict{Num, Number}
 
-    params::Vector{Num}
-    param_vals::Dict{Num, Number}
-
-    aux_dynamic_rules::Dict{Symbol, DynamicRule}
-    aux_vars::Dict{Symbol, Num}
-
-    odes::Union{ODEProblem, Missing}
-    community_matrix::Union{CommunityMatrix, Missing}
+    odes::Union{ODEProblem, Nothing}
+    community_matrix::Union{CommunityMatrix, Nothing}
 end
 
 function FoodwebModel(
@@ -77,21 +78,31 @@ function FoodwebModel(
     t = @independent_variables t
     t = t[1]
     spp = species(hg)
-    nums = create_var.(spp, Ref(t))
-    vars = Dict(spp .=> nums)
+    vars = Vector{Num}()
+    conversion_dict = Dict{Union{Num, T}, Union{Num, T}}()
+
+    for sp ∈ spp
+    
+        v = create_var(sp, t)
+        push!(vars, v)
+
+        conversion_dict[sp] = v
+        conversion_dict[v] = sp
+    end
 
     return FoodwebModel{T}(
         hg, 
-        rules, 
         t, 
+        rules, 
+        Dict{Num, DynamicRule}(), # aux_dynamic_rules
+        params,
         vars, 
-        u0, 
-        params, 
+        Vector{Num}(), # aux_vars
+        conversion_dict, 
         param_vals, 
-        Dict{Symbol, DynamicRule}(),
-        Dict{Symbol, Num}(),
-        missing, 
-        missing
+        u0, 
+        nothing, 
+        nothing
     )
 end
 

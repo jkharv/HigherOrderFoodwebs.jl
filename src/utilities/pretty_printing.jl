@@ -21,13 +21,16 @@ function Base.show(io::IO, ::MIME"text/plain", dr::DynamicRule)
     print(io, str)
 end
 
-function Base.show(io::IO, ::MIME"text/plain", cm::CommunityMatrix{<:Number, Any})
+function Base.show(io::IO, ::MIME"text/plain", cm::CommunityMatrix)
+
+return
 
     for r ∈ eachrow(cm) 
         for e ∈ r
        
-            iszero(e) | ismissing(e) ? print(io, "⬜") : print(io, "⬛")
+            iszero(e) | ismissing(e) ? print(io, " ") : print(io, "∘")
         end
         println(io, "")
     end
 end
+

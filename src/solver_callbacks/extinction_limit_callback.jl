@@ -3,15 +3,11 @@ function extinction_threshold_affect(fwm, threshold, integrator, extinctions)
     for sp ∈ species(fwm)        
 
         i = variable_index(integrator, sp)
-
         if integrator.u[i] < threshold
             
             integrator.u[i] = 0.0
             push!(extinctions, (integrator.t, sp))
-        else
-
-            # no change
-        end
+        end 
     end
 end
 
