@@ -6,7 +6,7 @@ function extinction_threshold_affect(fwm, threshold, integrator, extinctions)
         # integrator.u[i] ≠ 0 avoids double counting
         if (integrator.u[i] < threshold) & (integrator.u[i] ≠ 0)
             
-            integrator.u[i] = 0.0
+            set_u!(integrator, i, 0.0)
             push!(extinctions, (integrator.t, sp))
         end 
     end
