@@ -23,6 +23,7 @@ end
 
 DynamicRule(rule::Num) = DynamicRule(rule, rule)
 
+# Hopefully we get to this at some point.
 struct SpatialFoodwebModel
 
 end
@@ -39,6 +40,7 @@ mutable struct FoodwebModel{T}
     vars::Vector{Num}
     aux_vars::Vector{Num}
    
+    # Used to convert between type T references to species and Nums from Symbolics.jl
     conversion_dict::Dict{Union{T, Num}, Union{T, Num}}    
 
     param_vals::Dict{Num, Number}
