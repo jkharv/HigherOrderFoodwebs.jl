@@ -6,7 +6,6 @@ using Statistics
 using ModelingToolkit
 using DataFrames
 using SymbolicIndexingInterface
-using FoodwebPlots
 import GLMakie
 
 # --------------------------------------- #
@@ -129,14 +128,6 @@ end
 #  Simulate the foodweb  #
 # ---------------------- #
 
-using FoodwebPlots
-using GLMakie
-
-foodwebplot(fwm)
-
-
-
-
 solver = assemble_foodweb(fwm, Rosenbrock23())
 
 et = ExtinctionThresholdCallback(fwm, 1e-20);
@@ -149,10 +140,6 @@ es = ExtinctionSequenceCallback(fwm, shuffle(species(fwm)), 100.0);
     saveat = collect(1:0.1:1000),
     tspan = (1, 1000)
 );
-
-for i in trophic
-    println(HigherOrderFoodwebs.trophic_flux(fwm, sol, i, 100.0))
-end
 
 # f = GLMakie.Figure()
 empty!(f)
@@ -169,4 +156,12 @@ GLMakie.ylims!(ax, (-0.1,1.1))
 for a in (collect ∘ values)(fwm.aux_vars)
 
     GLMakie.lines!(ax, sol.t, sol[a])
+end
+
+empty!(f)
+ax = GLMakie.Axis(f[1,1], ylabel = "Trophic Flux", xlabel = "Timestep")
+for i in trophic
+
+    x = fwm.dynamic_rules[i].forwards_function
+    GLMakie.lines!(ax, sol.t, sol[x])
 end
