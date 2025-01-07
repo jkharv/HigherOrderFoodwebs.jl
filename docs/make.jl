@@ -1,5 +1,5 @@
 using Documenter
-using EcologicalHypergraphs
+using HigherOrderFoodwebs
 
 # Disables prettyurls when not in a CI environment. This makes browing the
 # generated HTML easier, eg no need to use a webserver.
@@ -7,30 +7,16 @@ using EcologicalHypergraphs
 fmt = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true")
 
 makedocs(
-    sitename = "EcologicalHypergraphs", 
+    sitename = "HigherOrderFoodwebs", 
     format = fmt,
-    modules = [EcologicalHypergraphs],
+    modules = [HigherOrderFoodwebs],
     authors = "Jake Harvey",
     pages = [
-        "Index" => "index.md",
-        "Examples" => [
-            "Optimal Foraging" => "examples/optimal_foraging.md",
-        ],
-        "Interface" => [
-            "Types" => "interface/types.md",
-            "Core Functions" => "interface/core.md"
-        ],
-        "Dynamics" => [
-            "Dynamical Hypergraphs" => "dynamics/dynamical_hypergraphs.md",
-            "Community Matrices" => "dynamics/community_matrices.md"
-        ],
-        "Statistics" => [
-            "Statistical Hypergraphs" => "statistics/statistical_hypergraphs.md"
-        ],
+        "Index" => "index.md"
     ]
 )
 
 deploydocs(
-    repo   = "github.com/jkharv/EcologicalHypergraphs.jl.git",
+    repo   = "github.com/jkharv/HigherOrderFoodwebs.jl.git",
     devbranch = "main"
 )
