@@ -30,7 +30,7 @@ end
 
 mutable struct FoodwebModel{T}
 
-    hg::SpeciesInteractionNetwork{<:Partiteness, <:AnnotatedHyperedge, <:Any}
+    hg::SpeciesInteractionNetwork{<:Partiteness, <:AnnotatedHyperedge}
 
     t::Num
     dynamic_rules::Dict{AnnotatedHyperedge, DynamicRule}
