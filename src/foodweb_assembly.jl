@@ -1,6 +1,6 @@
 const LOW_DENSITY = 0.0001;
 
-function assemble_foodweb(fwm::FoodwebModel, solver = Rosenbrock23(); args...)
+function assemble_foodweb(fwm::FoodwebModel, solver = Rosenbrock23(); kwargs...)
 
     defaults = (
         maxiters = 1e7,
@@ -9,34 +9,35 @@ function assemble_foodweb(fwm::FoodwebModel, solver = Rosenbrock23(); args...)
         tspan = (1, 100*length(species(fwm)))
     )
 
-    args = merge(defaults, args) 
+    args = merge(defaults, kwargs) 
 
-    integrator = introduce_species(fwm, solver; args...)
-    return reinitialize(integrator)
+    integrator = introduce_species(fwm, solver; kwargs...)
+    return reinitialize(fwm, integrator)
 end
 
-function introduce_species(fwm::FoodwebModel, solver; args...)
+function introduce_species(fwm::FoodwebModel, solver; kwargs...)
 
     invasion_sequence = trophic_ordering(fwm)
 
+    prob = ODEProblem(fwm)
     cb = ExtinctionThresholdCallback(fwm, 1e-20)
-
-    integrator = init(fwm, solver; callback = cb, args...);
+    tspan = (1, 100 * richness(fwm) + 200)
+   
+    integrator = init(prob, solver; tspan = tspan, callback = cb, kwargs...);
 
     while !isempty(invasion_sequence)
 
         spp = popfirst!(invasion_sequence)
-        integrator.integrator[fwm.conversion_dict[spp]] = 100*LOW_DENSITY
+        integrator[fwm.conversion_dict[spp]] = 100*LOW_DENSITY
         step!(integrator, 100)
     end
+
+    step!(integrator, 100)
 
     return integrator
 end
 
-function reinitialize(s::FoodwebModelSolver)
-
-    fwm = s.fwm
-    integrator = s.integrator
+function reinitialize(fwm::FoodwebModel, integrator)
 
     u0 = Dict{Num, Number}()
 
@@ -63,8 +64,6 @@ function reinitialize(s::FoodwebModelSolver)
         fwm.conversion_dict,
         fwm.param_vals,
         u0,
-        nothing, # These will be lazily generated anew when
-        nothing  # someone tries to simulate this model later.
     )
 end
 
