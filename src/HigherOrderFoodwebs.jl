@@ -1,6 +1,6 @@
 module HigherOrderFoodwebs
 
-__precompile__(false) 
+# __precompile__(false) 
 
 using MacroTools: prewalk, postwalk, @capture, unblock, rmlines, prettify
 using MacroTools
@@ -29,7 +29,9 @@ export species, richness, interactions, role, roles, has_role
 export isproducer, isconsumer
 export set_u0!
 
-include("./interfaces/common_solve.jl")
+include("./interfaces/sciml_ext.jl")
+export ODESystem, ODEProblem
+
 
 include("./solver_callbacks/extinction_sequence_callback.jl")
 include("./solver_callbacks/extinction_limit_callback.jl")

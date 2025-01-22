@@ -45,9 +45,6 @@ mutable struct FoodwebModel{T}
 
     param_vals::Dict{Num, Number}
     u0::Dict{Num, Number}
-
-    odes::Union{ODEProblem, Nothing}
-    community_matrix::Union{CommunityMatrix, Nothing}
 end
 
 function FoodwebModel(
@@ -102,9 +99,7 @@ function FoodwebModel(
         Vector{Num}(), # aux_vars
         conversion_dict, 
         param_vals, 
-        u0, 
-        nothing, 
-        nothing
+        u0
     )
 end
 
