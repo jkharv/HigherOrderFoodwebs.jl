@@ -1,7 +1,5 @@
 module HigherOrderFoodwebs
 
-# __precompile__(false) 
-
 using MacroTools: prewalk, postwalk, @capture, unblock, rmlines, prettify
 using MacroTools
 using SpeciesInteractionNetworks
@@ -26,17 +24,16 @@ export new_param, new_var, add_param!, add_var!
 
 include("./interfaces/foodweb_interface.jl")
 export species, richness, interactions, role, roles, has_role
-export isproducer, isconsumer
-export set_u0!
+export isproducer, isconsumer, set_u0!
 
 include("./interfaces/sciml_ext.jl")
 export ODESystem, ODEProblem
-
 
 include("./solver_callbacks/extinction_sequence_callback.jl")
 include("./solver_callbacks/extinction_threshold_callback.jl")
 include("./solver_callbacks/richness_termination_callback.jl")
 export ExtinctionSequenceCallback, ExtinctionThresholdCallback
+export RichnessTerminationCallback
 
 include("./foodweb_assembly.jl")
 export assemble_foodweb
