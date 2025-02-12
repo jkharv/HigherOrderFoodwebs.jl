@@ -34,7 +34,8 @@ export ODESystem, ODEProblem
 
 
 include("./solver_callbacks/extinction_sequence_callback.jl")
-include("./solver_callbacks/extinction_limit_callback.jl")
+include("./solver_callbacks/extinction_threshold_callback.jl")
+include("./solver_callbacks/richness_termination_callback.jl")
 export ExtinctionSequenceCallback, ExtinctionThresholdCallback
 
 include("./foodweb_assembly.jl")
