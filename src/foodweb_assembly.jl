@@ -1,4 +1,4 @@
-const LOW_DENSITY = 0.0001;
+const LOW_DENSITY = 0.01;
 
 function assemble_foodweb(fwm::FoodwebModel, solver = Rosenbrock23(); kwargs...)
 
@@ -23,12 +23,17 @@ function introduce_species(fwm::FoodwebModel, solver; kwargs...)
     cb = ExtinctionThresholdCallback(fwm, 1e-20)
     tspan = (1, 100 * richness(fwm) + 200)
    
-    integrator = init(prob, solver; tspan = tspan, callback = cb, kwargs...);
+    integrator = init(prob, solver;
+        tspan = tspan, 
+        save_on = false,
+        callback = cb, 
+        kwargs...
+    );   
 
     while !isempty(invasion_sequence)
 
         spp = popfirst!(invasion_sequence)
-        integrator[fwm.conversion_dict[spp]] = 100*LOW_DENSITY
+        integrator[fwm.conversion_dict[spp]] = LOW_DENSITY
         step!(integrator, 100)
     end
 
