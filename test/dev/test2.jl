@@ -1,18 +1,16 @@
-using DifferentialEquations
 using HigherOrderFoodwebs
 using SpeciesInteractionNetworks
+using OrdinaryDiffEq
 using Random
 using Statistics
 using ModelingToolkit
 using DataFrames
-using SymbolicIndexingInterface
-import GLMakie
 
 # --------------------------------------- #
 # Draw a random structure for the foodweb #
 # --------------------------------------- #
 
-fwm = (FoodwebModel ∘ optimal_foraging ∘ nichemodel)(10, 0.3)
+fwm = (FoodwebModel ∘ optimal_foraging ∘ nichemodel)(12, 0.3)
 
 # -------------------------------------- #
 # Generate some species-level parameters #
@@ -124,20 +122,22 @@ for i ∈ trophic
     fwm.dynamic_rules[i] = DynamicRule(fwd, bwd)
 end
 
+
 # ---------------------- #
 #  Simulate the foodweb  #
 # ---------------------- #
 
-solver = assemble_foodweb(fwm, Rosenbrock23())
+solver = assemble_foodweb(fwm, AutoTsit5(Rosenbrock23()))
+prob = ODEProblem{true, SciMLBase.FullSpecialize}(solver)
 
 et = ExtinctionThresholdCallback(fwm, 1e-20);
 es = ExtinctionSequenceCallback(fwm, shuffle(species(fwm)), 100.0);
 
-@time sol = solve(solver, Rosenbrock23();
+@time sol = solve(prob, AutoTsit5(Rosenbrock23());
     callback = CallbackSet(et,es),
     maxiters = 1e7,
     force_dtmin = true,
-    saveat = collect(1:0.1:1000),
+    save_on = false,
     tspan = (1, 1000)
 );
 
