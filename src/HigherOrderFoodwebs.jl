@@ -1,7 +1,6 @@
 module HigherOrderFoodwebs
 
 using MacroTools: prewalk, postwalk, @capture, unblock, rmlines, prettify
-using MacroTools
 using SpeciesInteractionNetworks
 using ModelingToolkit
 using Symbolics
