@@ -1,11 +1,17 @@
 
-function SciMLBase.ODEProblem(fwm::FoodwebModel; kwargs...)
+function SciMLBase.ODEProblem{iip, specialization}(fwm::FoodwebModel; kwargs...) where {iip, specialization}
 
     s = ODESystem(fwm)
     s = structural_simplify(s)
 
     # kwargs on ODEProblem just get handed off to the solver.
-    return ODEProblem(s; kwargs...)
+    return ODEProblem{iip, specialization}(s; kwargs...)
+end
+
+function SciMLBase.ODEProblem(fwm::FoodwebModel; kwargs...)
+
+    # Same defaults for iip and specialize as in DiffEqBase
+    return ODEProblem{true, SciMLBase.AutoSpecialize}(fwm; kwargs...)
 end
 
 function ModelingToolkit.ODESystem(fwm::FoodwebModel)
