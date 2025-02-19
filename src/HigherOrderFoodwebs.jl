@@ -7,8 +7,8 @@ using Symbolics
 using Distributions
 using LinearAlgebra
 using SparseArrays
-using CommonSolve
-using DifferentialEquations
+using SciMLBase
+using OrdinaryDiffEq
 using SymbolicIndexingInterface
 
 include("./types/community_matrix.jl")
