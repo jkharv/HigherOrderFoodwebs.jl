@@ -1,3 +1,6 @@
+# There is some unexpected non-thread-safety going on in MTK.
+# https://github.com/SciML/ModelingToolkit.jl/issues/3315
+mtk_lock = ReentrantLock();
 
 function SciMLBase.ODEProblem{iip, specialization}(fwm::FoodwebModel; kwargs...) where {iip, specialization}
 
@@ -34,6 +37,8 @@ function ModelingToolkit.ODESystem(fwm::FoodwebModel)
         default_u0[x] = fwm.u0[x]
     end
 
+    lock(mtk_lock) 
+
     sys = ODESystem(
         eqs, 
         fwm.t, 
@@ -45,6 +50,8 @@ function ModelingToolkit.ODESystem(fwm::FoodwebModel)
 
     # Despite the lack of !, this is a mutating function.
     calculate_jacobian(sys)
+
+    unlock(mtk_lock)
 
     return sys 
 end
