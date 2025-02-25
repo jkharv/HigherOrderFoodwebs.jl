@@ -4,11 +4,16 @@ mtk_lock = ReentrantLock();
 
 function SciMLBase.ODEProblem{iip, specialization}(fwm::FoodwebModel; kwargs...) where {iip, specialization}
 
+    lock(mtk_lock)
+
     s = ODESystem(fwm)
     s = structural_simplify(s)
-
     # kwargs on ODEProblem just get handed off to the solver.
-    return ODEProblem{iip, specialization}(s; kwargs...)
+    s = ODEProblem{iip, specialization}(s; kwargs...)
+
+    unlock(mtk_lock)
+
+    return s 
 end
 
 function SciMLBase.ODEProblem(fwm::FoodwebModel; kwargs...)
@@ -50,6 +55,8 @@ function ModelingToolkit.ODESystem(fwm::FoodwebModel)
 
     # Despite the lack of !, this is a mutating function.
     calculate_jacobian(sys)
+
+    GC.gc()
 
     unlock(mtk_lock)
 
