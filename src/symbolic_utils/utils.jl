@@ -52,10 +52,18 @@ function add_param!(fwm::FoodwebModel{T}, sym::Symbol, spp::Vector{T}, val::Numb
     push!(fwm.params, p)   
     push!(fwm.param_vals, p => val)
 
+    push!(fwm.conversion_dict, sym => p)
+    push!(fwm.conversion_dict, p => sym)
+
     return p
 end
 
 function add_param!(fwm::FoodwebModel{T}, sym::Symbol, spp::T, val::Number) where T
 
     return add_param!(fwm, sym, [spp], val)
+end
+
+function add_param!(fwm::FoodwebModel{T}, sym::Symbol, val::Number) where T
+
+    return add_param!(fwm, sym, Vector{T}(), val)
 end
