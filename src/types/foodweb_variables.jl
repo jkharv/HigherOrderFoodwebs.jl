@@ -37,7 +37,7 @@ end
 
 function add_var!(vs::FoodwebVariables, v::Symbol, type::VariableType)
 
-    var = create_var(v)
+    var = create_var(v, ModelingToolkit.t_nounits)
 
     add_var!(vs, v, var, type)
 end
