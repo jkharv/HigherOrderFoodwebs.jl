@@ -11,12 +11,14 @@ using SciMLBase
 using OrdinaryDiffEq
 using SymbolicIndexingInterface
 
+include("./types/foodweb_variables.jl")
 include("./types/community_matrix.jl")
 include("./types/foodweb_model.jl")
 include("./types/extra_constructors.jl")
 include("./types/conversions.jl")
 export FoodwebModel, DynamicRule
 export CommunityMatrix
+export FoodwebVariables
 
 include("./symbolic_utils/utils.jl")
 export new_param, new_var, add_param!, add_var!
