@@ -13,6 +13,28 @@ struct FoodwebVariables{T}
     idxs::Dict{Union{T, Num}, Int64}
 end
 
+function FoodwebVariables{T}()::FoodwebVariables{T} where T
+
+    return FoodwebVariables{T}(
+        Vector{VariableType}(),
+        Vector{T}(),
+        Vector{Num}(),
+        Dict{Union{T, Num}, Int64}()
+    )
+end
+
+function FoodwebVariables(spp::Vector{T})::FoodwebVariables{T} where T
+
+    vs = FoodwebVariables{T}() 
+
+    for sp in spp
+
+        add_var!(vs, sp, SPECIES_VARIABLE)
+    end
+
+    return vs
+end
+
 function add_var!(vs::FoodwebVariables, v::Symbol, type::VariableType)
 
     var = create_var(v)
@@ -44,7 +66,7 @@ end
 function Base.show(io::IO, ::MIME"text/plain", v::FoodwebVariables)
 
     str = "$(typeof(v))
-        Variables: $(length(v.sym))      
+        Variables: $(length(v.syms))      
     "
    
     print(io, str)
