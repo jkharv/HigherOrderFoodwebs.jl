@@ -35,14 +35,10 @@ mutable struct FoodwebModel{T}
     t::Num
     dynamic_rules::Dict{AnnotatedHyperedge, DynamicRule}
     aux_dynamic_rules::Dict{Num, DynamicRule}
-    
-    params::Vector{Num}
-    vars::Vector{Num}
-    aux_vars::Vector{Num}
    
-    # Used to convert between type T references to species and Nums from Symbolics.jl
-    conversion_dict::Dict{Union{T, Num}, Union{T, Num}}    
+    vars::FoodwebVariables{T}    
 
+    params::Vector{Num}
     param_vals::Dict{Num, Number}
     u0::Dict{Num, Number}
 end
@@ -70,35 +66,22 @@ function FoodwebModel(
     end
     
     rules = Dict{AnnotatedHyperedge, DynamicRule}()
+    aux_rules = Dict{Num, DynamicRule}()
+
+    vars = FoodwebVariables(species(hg))
+
     u0 = Dict{Num, Number}()
     param_vals = Dict{Num, Number}()
     params = Vector{Num}()
 
-    t = @independent_variables t
-    t = t[1]
-    spp = species(hg)
-    vars = Vector{Num}()
-    conversion_dict = Dict{Union{Num, T}, Union{Num, T}}()
-
-    for sp ∈ spp
-    
-        v = create_var(sp, t)
-        push!(vars, v)
-
-        conversion_dict[sp] = v
-        conversion_dict[v] = sp
-    end
-
     return FoodwebModel{T}(
-        hg, 
-        t, 
-        rules, 
-        Dict{Num, DynamicRule}(), # aux_dynamic_rules
+        hg,
+        ModelingToolkit.t_nounits,
+        rules,
+        aux_rules,
+        vars,
         params,
-        vars, 
-        Vector{Num}(), # aux_vars
-        conversion_dict, 
-        param_vals, 
+        param_vals,
         u0
     )
 end
