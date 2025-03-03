@@ -66,8 +66,9 @@ end
 function Base.show(io::IO, ::MIME"text/plain", v::FoodwebVariables)
 
     str = "$(typeof(v))
-        Variables: $(length(v.syms))      
-    "
+        Species variables: $(length(variables(v, type = SPECIES_VARIABLE)))
+        Trait variables: $(length(variables(v, type = TRAIT_VARIABLE)))
+        Environment variables: $(length(variables(v, type = ENVIRONMENT_VARIABLE)))"
    
     print(io, str)
 end
