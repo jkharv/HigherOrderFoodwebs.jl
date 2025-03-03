@@ -22,26 +22,14 @@ end
 
 # Functions to add these vars and params to the FWM object.
 
-function add_var!(fwm::FoodwebModel, dep::Symbol, indep::Num)
+function variables(fwm::FoodwebModel; type::Union{VariableType, Missing} = missing)
 
-    v = create_var(dep, indep)
-    push!(fwm.aux_vars, v)
-
-    fwm.conversion_dict[dep] = v
-    fwm.conversion_dict[v] = dep
-
-    return v
+    return variables(fwm.vars; type = type)
 end
 
-# TODO It doesn't make sense to be adding more indep variables if I don't treat
-# them differently from dep variables.  Don't actually use this function so long
-# as I've not done anything to address this.
-function add_var!(fwm::FoodwebModel, sym::Symbol)
+function add_var!(fwm::FoodwebModel, v::Symbol, type::VariableType)
 
-    v = create_var(sym)
-    push!(fwm.aux_vars, sym => v)
-
-    return v
+    return add_var!(fwm.vars, v, type)
 end
 
 function add_param!(fwm::FoodwebModel{T}, sym::Symbol, spp::Vector{T}, val::Number) where T
@@ -51,9 +39,6 @@ function add_param!(fwm::FoodwebModel{T}, sym::Symbol, spp::Vector{T}, val::Numb
 
     push!(fwm.params, p)   
     push!(fwm.param_vals, p => val)
-
-    push!(fwm.conversion_dict, sym => p)
-    push!(fwm.conversion_dict, p => sym)
 
     return p
 end
