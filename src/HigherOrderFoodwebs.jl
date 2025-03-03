@@ -18,7 +18,8 @@ include("./types/extra_constructors.jl")
 include("./types/conversions.jl")
 export FoodwebModel, DynamicRule
 export CommunityMatrix
-export FoodwebVariables
+export FoodwebVariables, variables
+export SPECIES_VARIABLE, ENVIRONMENT_VARIABLE, TRAIT_VARIABLE
 
 include("./symbolic_utils/utils.jl")
 export new_param, new_var, add_param!, add_var!
