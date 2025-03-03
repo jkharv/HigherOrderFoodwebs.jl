@@ -67,6 +67,16 @@ function variables(v::FoodwebVariables; type::Union{VariableType, Missing} = mis
     return [v.vars[i] for i ∈ idxs]
 end
 
+function sym_to_var(vs::FoodwebVariables, s::Symbol)
+
+    return vs.vard[vs.idxs[s]]
+end
+
+function var_to_sym(vs::FoodwebVariables, v::Num)
+
+    return vs.syms[vs.idxs[v]]
+end
+
 function Base.show(io::IO, ::MIME"text/plain", v::FoodwebVariables)
 
     str = "$(typeof(v))

@@ -93,3 +93,13 @@ function set_dynamical_rule!(fw::FoodwebModel, he::AnnotatedHyperedge, dr::Dynam
 
     # TODO This should do some checks
 end
+
+function var_to_sym(fwm::FoodwebModel, v::Num)
+
+    return var_to_sym(fwm.vars, v)
+end
+
+function sym_to_var(fwm::FoodwebModel, s::Symbol)
+
+    return sym_to_var(fwm.vars, s)
+end

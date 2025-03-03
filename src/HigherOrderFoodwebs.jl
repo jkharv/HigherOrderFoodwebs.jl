@@ -19,6 +19,7 @@ include("./types/conversions.jl")
 export FoodwebModel, DynamicRule
 export CommunityMatrix
 export FoodwebVariables, variables
+export var_to_sym, sym_to_var
 export SPECIES_VARIABLE, ENVIRONMENT_VARIABLE, TRAIT_VARIABLE
 
 include("./symbolic_utils/utils.jl")
