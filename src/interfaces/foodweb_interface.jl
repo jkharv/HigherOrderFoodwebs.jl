@@ -45,3 +45,21 @@ function isconsumer(fwm::FoodwebModel, sp)::Bool
 
     return !isproducer(fwm, sp)
 end
+
+function SpeciesInteractionNetworks.subject(fwm::FoodwebModel, i::AnnotatedHyperedge)
+
+    s = subject(i)
+    return fwm.vars.vars[fwm.vars.idxs[s]]
+end
+
+function SpeciesInteractionNetworks.object(fwm::FoodwebModel, i::AnnotatedHyperedge)
+
+    s = object(i)
+    return fwm.vars.vars[fwm.vars.idxs[s]]
+end
+
+function SpeciesInteractionNetworks.with_role(fwm::FoodwebModel, i::AnnotatedHyperedge, r::Symbol)
+
+    s = with_role(r, i)
+    return [fwm.vars.vars[fwm.vars.idxs[i]] for i in s]
+end
