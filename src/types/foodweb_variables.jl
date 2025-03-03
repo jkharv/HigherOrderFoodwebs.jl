@@ -40,6 +40,8 @@ function add_var!(vs::FoodwebVariables, v::Symbol, type::VariableType)
     var = create_var(v, ModelingToolkit.t_nounits)
 
     add_var!(vs, v, var, type)
+
+    return var
 end
 
 function add_var!(vs::FoodwebVariables, v::Symbol, var::Num ,type::VariableType)
@@ -49,6 +51,8 @@ function add_var!(vs::FoodwebVariables, v::Symbol, var::Num ,type::VariableType)
     push!(vs.syms, v)
     vs.idxs[v] = lastindex(vs.type)
     vs.idxs[var] = lastindex(vs.type) 
+
+    return var
 end
 
 function variables(v::FoodwebVariables; type::Union{VariableType, Missing} = missing)
