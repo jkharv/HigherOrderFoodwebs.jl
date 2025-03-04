@@ -51,8 +51,6 @@ function reinitialize(fwm::FoodwebModel, integrator)
     for v in fwm.vars
 
         u0[v] = integrator[v][end]
-
-        println(u0[v])
     end
 
     # Aux vars
