@@ -1,15 +1,19 @@
-const LOW_DENSITY = 0.01;
+const LOW_DENSITY = 0.1;
 
-function assemble_foodweb(fwm::FoodwebModel, solver = Rosenbrock23(); kwargs...)
+function assemble_foodweb(fwm::FoodwebModel, solver = AutoTsit5(Rosenbrock23()); 
+    kwargs...
+)
 
     defaults = (
         maxiters = 1e7,
         force_dtmin = true,
         save_on = false,
-        tspan = (1, 100*length(species(fwm)))
+        reltol = 1e-3,
+        abstol = 1e-3,
+        tspan = (1, 100 * richness(fwm) + 200)
     )
 
-    args = merge(defaults, kwargs) 
+    kwargs = merge(defaults, kwargs) 
 
     integrator = introduce_species(fwm, solver; kwargs...)
     return reinitialize(fwm, integrator)
@@ -21,11 +25,8 @@ function introduce_species(fwm::FoodwebModel, solver; kwargs...)
 
     prob = ODEProblem(fwm)
     cb = ExtinctionThresholdCallback(fwm, 1e-20)
-    tspan = (1, 100 * richness(fwm) + 200)
    
     integrator = init(prob, solver;
-        tspan = tspan, 
-        save_on = false,
         callback = cb, 
         kwargs...
     );   
@@ -50,6 +51,8 @@ function reinitialize(fwm::FoodwebModel, integrator)
     for v in fwm.vars
 
         u0[v] = integrator[v][end]
+
+        println(u0[v])
     end
 
     # Aux vars
