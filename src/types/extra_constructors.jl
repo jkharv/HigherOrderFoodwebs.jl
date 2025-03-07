@@ -1,12 +1,9 @@
 function CommunityMatrix(fwm::FoodwebModel)
 
-    spp = species(fwm)
-    s = length(spp)
+    vars = deepcopy(fwm.vars)
+    n = length(vars)
 
-    aux_vars = [fwm.conversion_dict[x] for x in fwm.aux_vars]
-    n_aux_vars = length(aux_vars)
-
-    cm = CommunityMatrix(zeros(Num, s + n_aux_vars, s + n_aux_vars), [spp..., aux_vars...])
+    cm = CommunityMatrix(zeros(Num, n, n), vars)
 
     for intrx ∈ interactions(fwm)
 
@@ -22,7 +19,7 @@ function CommunityMatrix(fwm::FoodwebModel)
 
     for eq ∈ fwm.aux_dynamic_rules
 
-        var = fwm.conversion_dict[first(eq)]
+        var = var_to_sym(fwm, first(eq))
         dr = last(eq)
         cm[var, var] = dr.forwards_function
     end

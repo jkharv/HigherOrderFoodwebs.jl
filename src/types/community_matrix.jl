@@ -1,9 +1,9 @@
 struct CommunityMatrix{T, U} <: AbstractMatrix{T}
 
     m::Matrix{T}
-    spp::Vector{U}
+    spp::FoodwebVariables{U}
 
-    function CommunityMatrix(m::Matrix{T}, spp::Vector{U}) where {T, U}
+    function CommunityMatrix(m::Matrix{T}, spp::FoodwebVariables{U}) where {T, U}
 
         new{T, U}(m, spp)
     end
@@ -28,16 +28,16 @@ end
 # Species identifier-based indexing
 function Base.getindex(cm::CommunityMatrix{T, U}, i::U, j::U) where {T, U}
 
-    i = findfirst(x -> x == i, cm.spp)
-    j = findfirst(x -> x == j, cm.spp)
+    i = cm.spp.idxs[i]
+    j = cm.spp.idxs[j]
 
     return cm.m[i,j]
 end
 
 function Base.setindex!(cm::CommunityMatrix{T, U}, v, i::U, j::U) where {T, U}
 
-    i = findfirst(x -> x == i, cm.spp)
-    j = findfirst(x -> x == j, cm.spp)
+    i = cm.spp.idxs[i]
+    j = cm.spp.idxs[j]
 
     cm.m[i, j] = v
 end
