@@ -56,6 +56,9 @@ include("./registered_symbolics/holling_2.jl")
 include("./registered_symbolics/logistic.jl")
 export holling2, logistic
 
+include("numerical_tools/realized_network_sampling.jl")
+export trophic_flux
+
 #Reexports from SpeciesInteractionNetworks.jl
 export Partiteness, Bipartite, Unipartite
 export Interaction, Directed, Undirected, Hyperedge, AnnotatedHyperedge
