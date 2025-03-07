@@ -16,16 +16,16 @@ end
 
 function ModelingToolkit.ODESystem(fwm::FoodwebModel)
 
-    vars = vcat(fwm.vars, fwm.aux_vars)
-    cm = CommunityMatrix(fwm);
+    vars = variables(fwm)
+    cm = CommunityMatrix(fwm)
 
-    D = Differential(fwm.t)
+    D = ModelingToolkit.D_nounits
     lhs = D.(vars)
     rhs = [sum(x) for x in eachrow(cm)]
     eqs = lhs .~ rhs
 
     default_p  = fwm.param_vals 
-    default_u0 = Dict((collect ∘ values)(vars) .=> zeros(length(vars)))
+    default_u0 = Dict(vars .=> zeros(length(vars)))
 
     for x in keys(fwm.u0)
 
@@ -36,8 +36,8 @@ function ModelingToolkit.ODESystem(fwm::FoodwebModel)
 
     sys = ODESystem(
         eqs, 
-        fwm.t, 
-        (collect ∘ values)(vars), 
+        ModelingToolkit.t_nounits, 
+        vars, 
         fwm.params; 
         name = :Foodweb,
         defaults = merge(default_u0, default_p)
