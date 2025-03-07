@@ -27,10 +27,6 @@ function (escb::ExtinctionSequenceCallbackAffect)(integrator)
 
     s = length(escb.extinction_sequence) 
 
-    # This should be in the same order as the indexing 
-    # in integrator.u. 
-    spp = (collect ∘ keys)(escb.foodwebmodel.vars)
-    
     while escb.cursor ≤ s
 
         target = escb.extinction_sequence[escb.cursor]
@@ -42,7 +38,7 @@ function (escb::ExtinctionSequenceCallbackAffect)(integrator)
  
             escb.cursor += 1
             continue
-
+        
         else
 
             integrator.u[index] = 0
