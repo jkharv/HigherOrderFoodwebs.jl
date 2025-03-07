@@ -69,7 +69,7 @@ end
 
 function sym_to_var(vs::FoodwebVariables, s::Symbol)
 
-    return vs.vard[vs.idxs[s]]
+    return vs.vars[vs.idxs[s]]
 end
 
 function var_to_sym(vs::FoodwebVariables, v::Num)
@@ -85,4 +85,9 @@ function Base.show(io::IO, ::MIME"text/plain", v::FoodwebVariables)
         Environment variables: $(length(variables(v, type = ENVIRONMENT_VARIABLE)))"
    
     print(io, str)
+end
+
+function Base.length(vs::FoodwebVariables)
+
+    return length(vs.syms)
 end
