@@ -1,6 +1,7 @@
 const LOW_DENSITY = 0.1;
 
 function assemble_foodweb(fwm::FoodwebModel, solver = AutoTsit5(Rosenbrock23()); 
+    extra_transient_time = 0,
     kwargs...
 )
 
@@ -15,11 +16,11 @@ function assemble_foodweb(fwm::FoodwebModel, solver = AutoTsit5(Rosenbrock23());
 
     kwargs = merge(defaults, kwargs) 
 
-    integrator = introduce_species(fwm, solver; kwargs...)
+    integrator = introduce_species(fwm, solver; extra_transient_time, kwargs...)
     return reinitialize(fwm, integrator)
 end
 
-function introduce_species(fwm::FoodwebModel, solver; kwargs...)
+function introduce_species(fwm::FoodwebModel, solver; extra_transient_time, kwargs...)
 
     invasion_sequence = trophic_ordering(fwm)
 
@@ -39,7 +40,10 @@ function introduce_species(fwm::FoodwebModel, solver; kwargs...)
         step!(integrator, 100)
     end
 
-    step!(integrator, 100)
+    if extra_transient_time > 0
+
+        step!(integrator, extra_transient_time)
+    end
 
     return integrator
 end
