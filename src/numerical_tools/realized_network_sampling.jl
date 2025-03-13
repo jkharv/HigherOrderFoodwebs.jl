@@ -16,11 +16,11 @@ function trophic_flux(fwm, sol, t1, t2;
 
         if reverse_flux
 
-            f = fwm.dynamic_rules[intx].forwards_function
+            f = fwm.dynamic_rules[intx].backwards_function
             flux[intx] = mean(sol(t1:t2, idxs = f))
         else
 
-            f = fwm.dynamic_rules[intx].backwards_function
+            f = fwm.dynamic_rules[intx].forwards_function
             flux[intx] = mean(sol(t1:t2, idxs = f))
         end
     end
