@@ -3,6 +3,7 @@
     SPECIES_VARIABLE
     ENVIRONMENT_VARIABLE
     TRAIT_VARIABLE
+    PARAMETER
 end
 
 struct FoodwebVariables{T}
@@ -11,6 +12,7 @@ struct FoodwebVariables{T}
     syms::Vector{T}
     vars::Vector{Num}
     idxs::Dict{Union{T, Num}, Int64}
+    vals::Vector{Float64}
 end
 
 function FoodwebVariables{T}()::FoodwebVariables{T} where T
@@ -19,7 +21,8 @@ function FoodwebVariables{T}()::FoodwebVariables{T} where T
         Vector{VariableType}(),
         Vector{T}(),
         Vector{Num}(),
-        Dict{Union{T, Num}, Int64}()
+        Dict{Union{T, Num}, Int64}(),
+        Vector{Float64}()
     )
 end
 
@@ -44,11 +47,12 @@ function add_var!(vs::FoodwebVariables, v::Symbol, type::VariableType)
     return var
 end
 
-function add_var!(vs::FoodwebVariables, v::Symbol, var::Num ,type::VariableType)
+function add_var!(vs::FoodwebVariables, v::Symbol, var::Num, type::VariableType)
 
     push!(vs.type, type)
     push!(vs.vars, var)
     push!(vs.syms, v)
+    push!(vs.vals, 0.0) 
     vs.idxs[v] = lastindex(vs.type)
     vs.idxs[var] = lastindex(vs.type) 
 
@@ -67,14 +71,41 @@ function variables(v::FoodwebVariables; type::Union{VariableType, Missing} = mis
     return [v.vars[i] for i ∈ idxs]
 end
 
-function sym_to_var(vs::FoodwebVariables, s::Symbol)
+function get_symbol(vs::FoodwebVariables, x::Num)
 
-    return vs.vars[vs.idxs[s]]
+    return vs.syms[get_index(vs, x)]
 end
 
-function var_to_sym(vs::FoodwebVariables, v::Num)
+function get_symbol(vs::FoodwebVariables, x::Int64)
 
-    return vs.syms[vs.idxs[v]]
+    return vs.syms[x]
+end
+
+function get_variable(vs::FoodwebVariables, x::Symbol)
+
+    return vs.vars[get_index(vs, x)]
+end
+
+function get_variable(vs::FoodwebVariables, x::Int64)
+
+    return vs.vars[x]
+end
+
+function get_index(vs::FoodwebVariables, x::Union{Symbol, Num})
+
+    return vs.idxs[x]
+end
+
+function set_value!(vs::FoodwebVariables, x::Union{Symbol, Num}, val::Float64)
+
+    idx = get_index(vs, x)
+    vs.vals[idx] = val
+end
+
+function get_value(vs::FoodwebVariables, x::Union{Symbol, Num})
+
+    idx = get_index(vs, x)
+    return vs.vals[idx]
 end
 
 function Base.show(io::IO, ::MIME"text/plain", v::FoodwebVariables)
