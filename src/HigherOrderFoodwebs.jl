@@ -16,7 +16,6 @@ include("./types/dynamic_rule.jl")
 include("./types/community_matrix.jl")
 include("./types/foodweb_model.jl")
 include("./types/extra_constructors.jl")
-include("./types/conversions.jl")
 export FoodwebModel, DynamicRule
 export CommunityMatrix
 export FoodwebVariables, variables
@@ -26,11 +25,12 @@ export SPECIES_VARIABLE, ENVIRONMENT_VARIABLE, TRAIT_VARIABLE, PARAMETER
 include("./symbolic_utils/utils.jl")
 export new_param, new_var, add_param!, add_var!
 
-include("./interfaces/foodweb_interface.jl")
+include("./core_interfaces/foodweb_interface.jl")
+include("./core_interfaces/dynamic_rule.jl")
+include("./core_interfaces/community_matrix.jl")
+include("./core_interfaces/sciml_ext.jl")
 export species, richness, interactions, role, roles, has_role
 export isproducer, isconsumer, set_u0!
-
-include("./interfaces/sciml_ext.jl")
 export ODESystem, ODEProblem
 
 include("./solver_callbacks/extinction_sequence_callback.jl")
@@ -42,8 +42,6 @@ export RichnessTerminationCallback
 include("./foodweb_assembly.jl")
 export assemble_foodweb
 
-include("./utilities/overloads.jl")
-include("./utilities/pretty_printing.jl")
 include("./utilities/trophic_ordering.jl")
 export trophic_ordering
 
