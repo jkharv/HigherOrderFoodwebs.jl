@@ -19,7 +19,7 @@ function CommunityMatrix(fwm::FoodwebModel)
 
     for eq ∈ fwm.aux_dynamic_rules
 
-        var = var_to_sym(fwm, first(eq))
+        var = get_symbol(fwm, first(eq))
         dr = last(eq)
         cm[var, var] = dr.forwards_function
     end

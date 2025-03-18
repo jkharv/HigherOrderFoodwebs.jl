@@ -24,23 +24,16 @@ function ModelingToolkit.ODESystem(fwm::FoodwebModel)
     rhs = [sum(x) for x in eachrow(cm)]
     eqs = lhs .~ rhs
 
-    default_p  = fwm.param_vals 
-    default_u0 = Dict(vars .=> zeros(length(vars)))
-
-    for x in keys(fwm.u0)
-
-        # Make sure that user supplied values take precedence over setting
-        # everything to zero.
-        default_u0[x] = fwm.u0[x]
-    end
+    p0 = Dict([x => get_value(fwm.params, x) for x in fwm.params.vars])
+    u0 = Dict([x => get_value(fwm.vars, x) for x in fwm.vars.vars])
 
     sys = ODESystem(
         eqs, 
         ModelingToolkit.t_nounits, 
         vars, 
-        fwm.params; 
+        variables(fwm.params); 
         name = :Foodweb,
-        defaults = merge(default_u0, default_p)
+        defaults = merge(p0, u0)
     )
 
     # Despite the lack of !, this is a mutating function.

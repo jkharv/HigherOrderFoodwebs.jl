@@ -35,7 +35,7 @@ function introduce_species(fwm::FoodwebModel, solver; extra_transient_time, kwar
     while !isempty(invasion_sequence)
 
         sp = popfirst!(invasion_sequence)
-        v = sym_to_var(fwm, sp)
+        v = get_variable(fwm, sp)
         integrator[v] = LOW_DENSITY
         step!(integrator, 100)
     end
@@ -50,22 +50,18 @@ end
 
 function reinitialize(fwm::FoodwebModel, integrator)
 
-    u0 = Dict{Num, Number}()
-
     for v in variables(fwm)
 
-        u0[v] = integrator[v][end]
+        val = integrator[v][end]
+        set_value!(fwm.vars, v, val)
     end
 
     return FoodwebModel(
         fwm.hg,
-        fwm.t,
         fwm.dynamic_rules,
         fwm.aux_dynamic_rules,
         fwm.vars,
         fwm.params,
-        fwm.param_vals,
-        u0,
     )
 end
 
