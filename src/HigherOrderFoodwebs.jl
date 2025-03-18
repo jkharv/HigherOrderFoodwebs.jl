@@ -12,6 +12,7 @@ using OrdinaryDiffEq
 using SymbolicIndexingInterface
 
 include("./types/foodweb_variables.jl")
+include("./types/dynamic_rule.jl")
 include("./types/community_matrix.jl")
 include("./types/foodweb_model.jl")
 include("./types/extra_constructors.jl")
@@ -41,7 +42,6 @@ export RichnessTerminationCallback
 include("./foodweb_assembly.jl")
 export assemble_foodweb
 
-include("./utilities/utilities.jl")
 include("./utilities/overloads.jl")
 include("./utilities/pretty_printing.jl")
 include("./utilities/trophic_ordering.jl")
