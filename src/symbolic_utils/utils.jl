@@ -37,8 +37,8 @@ function add_param!(fwm::FoodwebModel{T}, sym::Symbol, spp::Vector{T}, val::Numb
     unambiguous_sym = (Symbol ∘ join)([sym, spp...], "_")
     p = create_param(unambiguous_sym)
 
-    push!(fwm.params, p)   
-    push!(fwm.param_vals, p => val)
+    add_var!(fwm.params, unambiguous_sym, p, PARAMETER)
+    fwm.params.vals[get_index(fwm.params, p)] = val
 
     return p
 end

@@ -3,8 +3,8 @@ SpeciesInteractionNetworks.richness(fwm::FoodwebModel) = richness(fwm.hg)
 SpeciesInteractionNetworks.interactions(fwm::FoodwebModel) = interactions(fwm.hg) 
 
 function set_u0!(fwm::FoodwebModel{T}, k::Union{T, Num}, val::Float64) where T
- 
-    fwm.u0[k] = val 
+    
+    set_value!(fwm.vars, k, val)
 end
 
 function set_u0!(fwm::FoodwebModel{T}, u0::Dict{T, Float64}) where T

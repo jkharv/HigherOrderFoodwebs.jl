@@ -23,24 +23,15 @@ end
 
 DynamicRule(rule::Num) = DynamicRule(rule, rule)
 
-# Hopefully we get to this at some point.
-struct SpatialFoodwebModel
-
-end
-
 mutable struct FoodwebModel{T}
 
     hg::SpeciesInteractionNetwork{<:Partiteness, <:AnnotatedHyperedge}
 
-    t::Num
     dynamic_rules::Dict{AnnotatedHyperedge, DynamicRule}
     aux_dynamic_rules::Dict{Num, DynamicRule}
    
     vars::FoodwebVariables{T}    
-
-    params::Vector{Num}
-    param_vals::Dict{Num, Number}
-    u0::Dict{Num, Number}
+    params::FoodwebVariables{T}
 end
 
 function FoodwebModel(
@@ -65,24 +56,12 @@ function FoodwebModel(
         end
     end
     
-    rules = Dict{AnnotatedHyperedge, DynamicRule}()
-    aux_rules = Dict{Num, DynamicRule}()
-
-    vars = FoodwebVariables(species(hg))
-
-    u0 = Dict{Num, Number}()
-    param_vals = Dict{Num, Number}()
-    params = Vector{Num}()
-
     return FoodwebModel{T}(
         hg,
-        ModelingToolkit.t_nounits,
-        rules,
-        aux_rules,
-        vars,
-        params,
-        param_vals,
-        u0
+        Dict{AnnotatedHyperedge, DynamicRule}(), # dynamic_rules
+        Dict{Num, DynamicRule}(), # aux_dynamic_rules
+        FoodwebVariables(species(hg)), # vars
+        FoodwebVariables{T}(), # params 
     )
 end
 
@@ -94,12 +73,12 @@ function set_dynamical_rule!(fw::FoodwebModel, he::AnnotatedHyperedge, dr::Dynam
     # TODO This should do some checks
 end
 
-function var_to_sym(fwm::FoodwebModel, v::Num)
+function get_symbol(fwm::FoodwebModel, x::Num)
 
-    return var_to_sym(fwm.vars, v)
+    return get_symbol(fwm.vars, x)
 end
 
-function sym_to_var(fwm::FoodwebModel, s::Symbol)
+function get_variable(fwm::FoodwebModel, x::Symbol)
 
-    return sym_to_var(fwm.vars, s)
+    return get_variable(fwm.vars, x)
 end
