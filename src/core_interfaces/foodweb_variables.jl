@@ -82,3 +82,29 @@ function Base.length(vs::FoodwebVariables)
 
     return length(vs.syms)
 end
+
+#
+# Utility function, Not, part of the interface.
+#
+
+function create_var(dep::Symbol, indep::Num)
+
+    x = @variables $dep(indep)
+
+    return x[1]
+end
+
+function create_var(sym::Symbol)
+
+    x = @variables $sym
+
+    return x[1]
+end
+
+function create_param(sym::Symbol)
+
+    x = @variables $sym
+    param =  ModelingToolkit.toparam(x[1])
+
+    return param
+end

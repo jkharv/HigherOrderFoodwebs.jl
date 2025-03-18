@@ -74,6 +74,37 @@ function set_u0!(fwm::FoodwebModel, u0::Dict{Num, Float64})
     end
 end
 
+function variables(fwm::FoodwebModel; type::Union{VariableType, Missing} = missing)
+
+    return variables(fwm.vars; type = type)
+end
+
+function add_var!(fwm::FoodwebModel, v::Symbol, type::VariableType)
+
+    return add_var!(fwm.vars, v, type)
+end
+
+function add_param!(fwm::FoodwebModel{T}, sym::Symbol, spp::Vector{T}, val::Number) where T
+
+    unambiguous_sym = (Symbol ∘ join)([sym, spp...], "_")
+    p = create_param(unambiguous_sym)
+
+    add_var!(fwm.params, unambiguous_sym, p, PARAMETER)
+    fwm.params.vals[get_index(fwm.params, p)] = val
+
+    return p
+end
+
+function add_param!(fwm::FoodwebModel{T}, sym::Symbol, spp::T, val::Number) where T
+
+    return add_param!(fwm, sym, [spp], val)
+end
+
+function add_param!(fwm::FoodwebModel{T}, sym::Symbol, val::Number) where T
+
+    return add_param!(fwm, sym, Vector{T}(), val)
+end
+
 function Base.show(io::IO, ::MIME"text/plain", fwm::FoodwebModel)
 
     str = """
