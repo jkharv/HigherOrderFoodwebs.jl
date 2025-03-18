@@ -63,3 +63,13 @@ function SpeciesInteractionNetworks.with_role(fwm::FoodwebModel, i::AnnotatedHyp
     s = with_role(r, i)
     return [fwm.vars.vars[fwm.vars.idxs[i]] for i in s]
 end
+
+function Base.show(io::IO, ::MIME"text/plain", fwm::FoodwebModel)
+
+    str = """
+    $(typeof(fwm))
+        → $(length(species(fwm))) species
+        → $(length(interactions(fwm))) interactions"""
+   
+    print(io, str)
+end
