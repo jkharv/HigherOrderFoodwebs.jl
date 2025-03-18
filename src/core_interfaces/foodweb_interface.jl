@@ -2,27 +2,6 @@ SpeciesInteractionNetworks.species(fwm::FoodwebModel) = species(fwm.hg)
 SpeciesInteractionNetworks.richness(fwm::FoodwebModel) = richness(fwm.hg) 
 SpeciesInteractionNetworks.interactions(fwm::FoodwebModel) = interactions(fwm.hg) 
 
-function set_u0!(fwm::FoodwebModel{T}, k::Union{T, Num}, val::Float64) where T
-    
-    set_value!(fwm.vars, k, val)
-end
-
-function set_u0!(fwm::FoodwebModel{T}, u0::Dict{T, Float64}) where T
-
-    for (k, v) ∈ u0
-
-        set_u0!(fwm, k, v)
-    end
-end
-
-function set_u0!(fwm::FoodwebModel, u0::Dict{Num, Float64})
-
-    for (k, v) ∈ u0
-
-        set_u0!(fwm, k, v)
-    end
-end
-
 function isproducer(fwm::FoodwebModel, sp)::Bool
 
     @assert sp ∈ species(fwm)
@@ -62,6 +41,37 @@ function SpeciesInteractionNetworks.with_role(fwm::FoodwebModel, i::AnnotatedHyp
 
     s = with_role(r, i)
     return [fwm.vars.vars[fwm.vars.idxs[i]] for i in s]
+end
+
+function get_symbol(fwm::FoodwebModel, x::Num)
+
+    return get_symbol(fwm.vars, x)
+end
+
+function get_variable(fwm::FoodwebModel, x::Symbol)
+
+    return get_variable(fwm.vars, x)
+end
+
+function set_u0!(fwm::FoodwebModel{T}, k::Union{T, Num}, val::Float64) where T
+    
+    set_value!(fwm.vars, k, val)
+end
+
+function set_u0!(fwm::FoodwebModel{T}, u0::Dict{T, Float64}) where T
+
+    for (k, v) ∈ u0
+
+        set_u0!(fwm, k, v)
+    end
+end
+
+function set_u0!(fwm::FoodwebModel, u0::Dict{Num, Float64})
+
+    for (k, v) ∈ u0
+
+        set_u0!(fwm, k, v)
+    end
 end
 
 function Base.show(io::IO, ::MIME"text/plain", fwm::FoodwebModel)

@@ -9,35 +9,31 @@ struct CommunityMatrix{T, U} <: AbstractMatrix{T}
     end
 end
 
-function Base.size(cm::CommunityMatrix)
+function CommunityMatrix(fwm::FoodwebModel)
 
-    return size(cm.m)
-end
+    vars = deepcopy(fwm.vars)
+    n = length(vars)
 
-# Integer-based indexing
-function Base.getindex(cm::CommunityMatrix, i::Int, j::Int)
+    cm = CommunityMatrix(zeros(Num, n, n), vars)
 
-    return cm.m[i,j]
-end
+    for intrx ∈ interactions(fwm)
 
-function Base.setindex!(cm::CommunityMatrix, v, i::Int, j::Int)
+        sbj = subject(intrx)
+        obj = object(intrx)
 
-    cm.m[i, j] = v
-end
+        ff = fwm.dynamic_rules[intrx].forwards_function
+        bf = fwm.dynamic_rules[intrx].backwards_function
 
-# Species identifier-based indexing
-function Base.getindex(cm::CommunityMatrix{T, U}, i::U, j::U) where {T, U}
+        cm[sbj, obj] = ff
+        cm[obj, sbj] = bf
+    end
 
-    i = cm.spp.idxs[i]
-    j = cm.spp.idxs[j]
+    for eq ∈ fwm.aux_dynamic_rules
 
-    return cm.m[i,j]
-end
+        var = get_symbol(fwm, first(eq))
+        dr = last(eq)
+        cm[var, var] = dr.forwards_function
+    end
 
-function Base.setindex!(cm::CommunityMatrix{T, U}, v, i::U, j::U) where {T, U}
-
-    i = cm.spp.idxs[i]
-    j = cm.spp.idxs[j]
-
-    cm.m[i, j] = v
+    return cm
 end

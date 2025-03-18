@@ -39,21 +39,3 @@ function FoodwebModel(
         FoodwebVariables{T}(), # params 
     )
 end
-
-function set_dynamical_rule!(fw::FoodwebModel, he::AnnotatedHyperedge, dr::DynamicRule)
-
-    # Add the rule
-    fw.dynamic_rules[he] = dr
-
-    # TODO This should do some checks
-end
-
-function get_symbol(fwm::FoodwebModel, x::Num)
-
-    return get_symbol(fwm.vars, x)
-end
-
-function get_variable(fwm::FoodwebModel, x::Symbol)
-
-    return get_variable(fwm.vars, x)
-end
