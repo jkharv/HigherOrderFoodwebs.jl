@@ -1,12 +1,9 @@
 module HigherOrderFoodwebs
 
-using MacroTools: prewalk, postwalk, @capture, unblock, rmlines, prettify
 using SpeciesInteractionNetworks
 using ModelingToolkit
 using Symbolics
 using Distributions
-using LinearAlgebra
-using SparseArrays
 using SciMLBase
 using OrdinaryDiffEq
 using SymbolicIndexingInterface
