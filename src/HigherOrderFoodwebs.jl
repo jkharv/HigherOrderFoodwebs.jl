@@ -28,12 +28,6 @@ export FoodwebModel
 include("./types/community_matrix.jl")
 export CommunityMatrix
 
-# This ultimately will move into the interface file
-include("./symbolic_utils/utils.jl")
-export new_param, new_var, add_param!, add_var!
-#  Deal with this
-
-
 #
 # Core interfaces
 #
@@ -48,6 +42,7 @@ export species, richness, interactions, role, roles, has_role
 export isproducer, isconsumer, set_u0!
 export subject, object, with_role # From SpeciesInteractionNetworks.jl
 export get_symbol, get_variable, set_u0!
+export add_var!, add_param!
 
 include("./core_interfaces/community_matrix.jl")
 # The Array interface from Base
@@ -71,11 +66,9 @@ export RichnessTerminationCallback
 #
 # Foodweb assembly models
 #
-include("./foodweb_assembly.jl")
+include("./foodweb_assembly/foodweb_assembly.jl")
+include("./foodweb_assembly/trophic_ordering.jl")
 export assemble_foodweb
-
-include("./utilities/trophic_ordering.jl")
-export trophic_ordering
 
 #
 # Structural models
@@ -96,7 +89,7 @@ export holling2, logistic
 #
 # Tools for examining realized networks
 #
-include("numerical_tools/realized_network_sampling.jl")
+include("realized_networks/trophic_flux.jl")
 export trophic_flux
 
 end
