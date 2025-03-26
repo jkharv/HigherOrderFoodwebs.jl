@@ -16,15 +16,16 @@ function assemble_foodweb(fwm::FoodwebModel, solver = AutoTsit5(Rosenbrock23());
 
     kwargs = merge(defaults, kwargs) 
 
-    integrator = introduce_species(fwm, solver; extra_transient_time, kwargs...)
-    return reinitialize(fwm, integrator)
+    integrator, sys = introduce_species(fwm, solver; extra_transient_time, kwargs...)
+    return reinitialize(fwm, integrator, sys)
 end
 
 function introduce_species(fwm::FoodwebModel, solver; extra_transient_time, kwargs...)
 
     invasion_sequence = trophic_ordering(fwm)
 
-    prob = ODEProblem(fwm)
+    sys = structural_simplify(ODESystem(fwm))
+    prob = ODEProblem(sys)
     cb = ExtinctionThresholdCallback(fwm, 1e-20)
    
     integrator = init(prob, solver;
@@ -45,24 +46,20 @@ function introduce_species(fwm::FoodwebModel, solver; extra_transient_time, kwar
         step!(integrator, extra_transient_time)
     end
 
-    return integrator
+    return (integrator, sys)
 end
 
-function reinitialize(fwm::FoodwebModel, integrator)
+function reinitialize(fwm::FoodwebModel, integrator, sys)
+
+    u0 = Dict{Num, Float64}()
 
     for v in variables(fwm)
 
         val = integrator[v][end]
-        set_value!(fwm.vars, v, val)
+        push!(u0, v => val) 
     end
 
-    return FoodwebModel(
-        fwm.hg,
-        fwm.dynamic_rules,
-        fwm.aux_dynamic_rules,
-        fwm.vars,
-        fwm.params,
-    )
+    return ODEProblem(sys, u0)
 end
 
 function merge_args(defaults, user)

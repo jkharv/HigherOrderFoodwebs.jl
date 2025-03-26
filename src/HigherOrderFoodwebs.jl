@@ -82,15 +82,22 @@ export nichemodel, optimal_foraging
 # Common functions and their derivatives for foodweb models #
 # --------------------------------------------------------- #
 
-include("./registered_symbolics/holling_2.jl")
+include("./registered_symbolics/holling_disk.jl")
 include("./registered_symbolics/logistic.jl")
-export holling2, logistic
+export holling_disk, logistic
 
 # ------------------------------------- #
 # Tools for examining realized networks #
 # ------------------------------------- #
 
-include("realized_networks/trophic_flux.jl")
+include("./realized_networks/trophic_flux.jl")
 export trophic_flux
+
+# --------- #
+# Utilities #
+# --------- #
+
+include("./utilities/jacobian.jl")
+public fwm_jacobian
 
 end
