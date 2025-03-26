@@ -27,6 +27,8 @@ function ModelingToolkit.ODESystem(fwm::FoodwebModel)
     p0 = Dict([x => get_value(fwm.params, x) for x in fwm.params.vars])
     u0 = Dict([x => get_value(fwm.vars, x) for x in fwm.vars.vars])
 
+    jac = fwm_jacobian(fwm)
+
     sys = ODESystem(
         eqs, 
         ModelingToolkit.t_nounits, 
@@ -36,9 +38,7 @@ function ModelingToolkit.ODESystem(fwm::FoodwebModel)
         defaults = merge(p0, u0)
     )
 
-    # Despite the lack of !, this is a mutating function.
-    # This is insanely bottlenecking performance.
-    # calculate_jacobian(sys)
+    ModelingToolkit.get_jac(sys)[] = jac 
 
     return sys 
 end

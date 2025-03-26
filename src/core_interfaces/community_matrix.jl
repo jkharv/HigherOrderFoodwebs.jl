@@ -35,3 +35,20 @@ function Base.setindex!(cm::CommunityMatrix{T, U}, v, i::U, j::U) where {T, U}
 
     cm.m[i, j] = v
 end
+
+# Num-based indexing
+function Base.getindex(cm::CommunityMatrix{T, U}, i::T, j::T) where {T, U}
+
+    i = cm.spp.idxs[i]
+    j = cm.spp.idxs[j]
+
+    return cm.m[i,j]
+end
+
+function Base.setindex!(cm::CommunityMatrix{T, U}, v, i::T, j::T) where {T, U}
+
+    i = cm.spp.idxs[i]
+    j = cm.spp.idxs[j]
+
+    cm.m[i, j] = v
+end
