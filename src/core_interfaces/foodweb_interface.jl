@@ -53,6 +53,11 @@ function get_variable(fwm::FoodwebModel, x::Symbol)
     return get_variable(fwm.vars, x)
 end
 
+function get_value(fwm::FoodwebModel, x::Union{Symbol, Num})::Float64
+
+    return get_value(fwm.vs, x)
+end
+
 function set_u0!(fwm::FoodwebModel{T}, k::Union{T, Num}, val::Float64) where T
     
     set_value!(fwm.vars, k, val)
