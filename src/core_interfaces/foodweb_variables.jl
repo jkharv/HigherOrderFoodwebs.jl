@@ -83,6 +83,36 @@ function Base.length(vs::FoodwebVariables)
     return length(vs.syms)
 end
 
+function Base.in(x::Num, vs::FoodwebVariables)
+
+    for v in vs.vars
+   
+        if isequal(v, x)
+
+            return true
+        end
+    end
+
+    return false
+end
+
+function Base.in(x::Symbol, vs::FoodwebVariables)
+
+    for s in vs.syms
+   
+        if s == x
+
+            return true
+        end
+    end
+
+    return false
+end
+
+function Base.in(x::Int64, vs::FoodwebVariables)
+
+    return 0 < x < length(vs)
+end
 #
 # Utility function, Not, part of the interface.
 #
