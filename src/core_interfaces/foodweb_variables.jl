@@ -36,7 +36,7 @@ function variable_type(vs::FoodwebVariables{T}, x::Union{T, Num})::VariableType 
     return variable_type(vs, get_index(vs, x))
 end
 
-function variable_type(vs::FoodwebVariables, x::Int64)::VariableType where T
+function variable_type(vs::FoodwebVariables, x::Int64)::VariableType
 
     return vs.type[x]
 end
