@@ -33,13 +33,15 @@ include("./core_interfaces/dynamic_rule.jl")
 
 include("./core_interfaces/foodweb_variables.jl")
 export add_var!, variables, get_symbol, get_variable, get_index
-export set_value!, get_value
+export set_value!, get_value, variable_type
 
 include("./core_interfaces/foodweb_interface.jl")
 export species, richness, interactions, role, roles, has_role
 export isproducer, isconsumer, set_u0!
 export subject, object, with_role # From SpeciesInteractionNetworks.jl
-export get_symbol, get_variable, set_u0!
+
+# Passthroughs to the FoodwebVariables type
+export get_symbol, get_variable, set_u0!, variable_type
 export add_var!, add_param!
 
 include("./core_interfaces/community_matrix.jl")

@@ -31,38 +31,48 @@ function variables(v::FoodwebVariables; type::Union{VariableType, Missing} = mis
     return [v.vars[i] for i ∈ idxs]
 end
 
-function get_symbol(vs::FoodwebVariables, x::Num)
+function variable_type(vs::FoodwebVariables{T}, x::Union{T, Num})::VariableType where T
+
+    return variable_type(vs, get_index(vs, x))
+end
+
+function variable_type(vs::FoodwebVariables, x::Int64)::VariableType where T
+
+    return vs.type[x]
+end
+
+function get_symbol(vs::FoodwebVariables{T}, x::Num)::T where T
 
     return vs.syms[get_index(vs, x)]
 end
 
-function get_symbol(vs::FoodwebVariables, x::Int64)
+function get_symbol(vs::FoodwebVariables, x::Int64)::Symbol
 
     return vs.syms[x]
 end
 
-function get_variable(vs::FoodwebVariables, x::Symbol)
+function get_variable(vs::FoodwebVariables{T}, x::T)::Num where T
 
     return vs.vars[get_index(vs, x)]
 end
 
-function get_variable(vs::FoodwebVariables, x::Int64)
+function get_variable(vs::FoodwebVariables, x::Int64)::Num
 
     return vs.vars[x]
 end
 
-function get_index(vs::FoodwebVariables, x::Union{Symbol, Num})
+function get_index(vs::FoodwebVariables{T}, x::Union{T, Num})::Int64 where T
 
     return vs.idxs[x]
 end
 
-function set_value!(vs::FoodwebVariables, x::Union{Symbol, Num}, val::Float64)
+function set_value!(vs::FoodwebVariables{T}, x::Union{T, Num}, val::Float64) where T
 
     idx = get_index(vs, x)
     vs.vals[idx] = val
 end
 
-function get_value(vs::FoodwebVariables, x::Union{Symbol, Num})
+function get_value(vs::FoodwebVariables{T}, x::Union{T, Num})::Float64 where T
 
     idx = get_index(vs, x)
     return vs.vals[idx]
