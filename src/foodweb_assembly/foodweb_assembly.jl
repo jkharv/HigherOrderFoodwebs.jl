@@ -10,24 +10,22 @@ function assemble_foodweb(fwm::FoodwebModel, solver = AutoTsit5(Rosenbrock23());
         force_dtmin = true,
         save_on = false,
         reltol = 1e-3,
-        abstol = 1e-3,
-        tspan = (1, 100 * richness(fwm) + 200)
+        abstol = 1e-3
     )
-
     kwargs = merge(defaults, kwargs) 
+    
+    prob = ODEProblem(fwm, (1, 100 * richness(fwm) + 200))
 
-    integrator, sys = introduce_species(fwm, solver; extra_transient_time, kwargs...)
-    return reinitialize(fwm, integrator, sys)
+    u0 = introduce_species(fwm, prob, solver; extra_transient_time, kwargs...)
+
+    return remake(prob; u0 = u0)
 end
 
-function introduce_species(fwm::FoodwebModel, solver; extra_transient_time, kwargs...)
+function introduce_species(fwm, prob, solver; extra_transient_time, kwargs...)
 
     invasion_sequence = trophic_ordering(fwm)
-
-    sys = structural_simplify(ODESystem(fwm))
-    prob = ODEProblem(sys)
     cb = ExtinctionThresholdCallback(fwm, 1e-20)
-   
+
     integrator = init(prob, solver;
         callback = cb, 
         kwargs...
@@ -36,30 +34,17 @@ function introduce_species(fwm::FoodwebModel, solver; extra_transient_time, kwar
     while !isempty(invasion_sequence)
 
         sp = popfirst!(invasion_sequence)
-        v = get_variable(fwm, sp)
-        integrator[v] = LOW_DENSITY
+        v = get_index(fwm.vars, sp)
+        integrator.u[v] = LOW_DENSITY
+
+        # Recalculate the derivatives to account for discontinuity.
+        u_modified!(integrator, true)
         step!(integrator, 100)
     end
 
-    if extra_transient_time > 0
+    step!(integrator, extra_transient_time)
 
-        step!(integrator, extra_transient_time)
-    end
-
-    return (integrator, sys)
-end
-
-function reinitialize(fwm::FoodwebModel, integrator, sys)
-
-    u0 = Dict{Num, Float64}()
-
-    for v in variables(fwm)
-
-        val = integrator[v][end]
-        push!(u0, v => val) 
-    end
-
-    return ODEProblem(sys, u0)
+    return integrator.u
 end
 
 function merge_args(defaults, user)

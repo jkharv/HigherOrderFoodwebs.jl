@@ -31,17 +31,17 @@ function (escb::ExtinctionSequenceCallbackAffect)(integrator)
 
         target = escb.extinction_sequence[escb.cursor]
 
-        index = variable_index(integrator, target)
-
         # Skip to the next species in the sequence if spp is already extinct.
-        if integrator.u[index] ≤ EXTINCTION_THRESHOLD
+        if integrator[target] ≤ EXTINCTION_THRESHOLD
  
             escb.cursor += 1
             continue
         
         else
 
-            integrator.u[index] = 0
+            integrator[target] = 0
+
+            u_modified!(integrator, true)
 
             push!(escb.extinctions, (integrator.t, target))
 

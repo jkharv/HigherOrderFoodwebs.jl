@@ -1,3 +1,5 @@
+const time = Symbolics.variable(:t; T = Real)
+
 mutable struct FoodwebModel{T}
 
     hg::SpeciesInteractionNetwork{<:Partiteness, <:AnnotatedHyperedge}

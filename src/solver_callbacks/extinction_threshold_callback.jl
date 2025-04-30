@@ -3,7 +3,6 @@ mutable struct ExtinctionThresholdAffect{T}
     fwm::FoodwebModel{T}
     extinctions::Vector{Tuple{Float64, T}}
     invasions::Vector{Tuple{Float64, T}}
-    id_dict::Dict{Union{T, Int64}, Union{T, Int64}}
 
     function ExtinctionThresholdAffect(
         fwm::FoodwebModel{T}; 
@@ -11,7 +10,7 @@ mutable struct ExtinctionThresholdAffect{T}
         invasions = Vector{Tuple{Float64, T}}()
     ) where T
 
-        new{T}(fwm, extinctions, invasions, Dict{Union{T, Int64}, Union{T, Int64}}())
+        new{T}(fwm, extinctions, invasions)
     end
 end
 
@@ -26,7 +25,7 @@ end
 
 function (etca::ExtinctionThresholdAffect)(
     integrator, 
-    event_index, 
+    sp, 
     isextinction, # Is this a downcrossing
     invasions_allowed # Controls what happens with upcrossings
     # Are invasions allowed? Or are they set to zero?
@@ -34,18 +33,18 @@ function (etca::ExtinctionThresholdAffect)(
 
     if isextinction
 
-        push!(etca.extinctions, (integrator.t, etca.id_dict[event_index]))
-        integrator.u[event_index] = 0.0
+        push!(etca.extinctions, (integrator.t, sp))
+        integrator[sp] = 0.0
         return
     end 
     
     if invasions_allowed
         
-        push!(etca.invasions, (integrator.t, etca.id_dict[event_index]))
+        push!(etca.invasions, (integrator.t, sp))
         return
     else
 
-        integrator.u[event_index] = 0.0
+        integrator[sp] = 0.0
         return
     end
 end
@@ -54,15 +53,10 @@ end
 # represent a species, and as such should be potentially subject to extinction.
 function initialize_cb!(c, u, t, integrator, spp, etca)
 
-    idxs = variable_index.(Ref(integrator), spp)
+    fwm = integrator.sol.prob.f.sys
+    idxs = get_index.(Ref(fwm.vars), spp)
+
     append!(c.idxs, idxs)    
-
-    # Initialize the id dict in etca.
-    for (i, sp) ∈ tuple.(idxs, spp)
-
-        etca.id_dict[i] = sp
-        etca.id_dict[sp] = i
-    end
 
     return
 end

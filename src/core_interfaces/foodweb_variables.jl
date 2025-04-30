@@ -1,6 +1,6 @@
 function add_var!(vs::FoodwebVariables, v::Symbol, type::VariableType)
 
-    var = create_var(v, ModelingToolkit.t_nounits)
+    var = create_var(v, time)
 
     add_var!(vs, v, var, type)
 
@@ -144,7 +144,6 @@ end
 function create_param(sym::Symbol)
 
     x = @variables $sym
-    param =  ModelingToolkit.toparam(x[1])
 
-    return param
+    return x[1]
 end

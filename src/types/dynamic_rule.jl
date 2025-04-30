@@ -3,21 +3,19 @@ struct DynamicRule
     forwards_function::Num
     backwards_function::Num
     vars::Vector{Num}
-    params::Vector{Num}
 end
 
 function DynamicRule(forwards_rule::Num, backwards_rule::Num)
 
-    both = union(get_variables(forwards_rule), get_variables(backwards_rule))
-
-    vars = filter(!ModelingToolkit.isparameter, both)
-    params = filter(ModelingToolkit.isparameter, both)
+    both = union(
+        Symbolics.get_variables(forwards_rule), 
+        Symbolics.get_variables(backwards_rule)
+    )
 
     return DynamicRule(
         forwards_rule,
         backwards_rule,
-        vars,
-        params
+        both
     )
 end
 
