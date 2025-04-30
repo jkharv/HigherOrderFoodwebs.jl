@@ -55,7 +55,7 @@ end
 
 function get_value(fwm::FoodwebModel, x::Union{Symbol, Num})::Float64
 
-    return get_value(fwm.vs, x)
+    return get_value(fwm.vars, x)
 end
 
 function set_u0!(fwm::FoodwebModel{T}, k::Union{T, Num}, val::Float64) where T
