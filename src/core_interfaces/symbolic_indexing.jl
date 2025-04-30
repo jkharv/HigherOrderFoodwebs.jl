@@ -40,9 +40,7 @@ end
 
 function SymbolicIndexingInterface.parameter_index(fwm::FoodwebModel, sym::Num)
 
-    offset = length(variables(fwm.vars))
-
-    return offset + get_index(fwm.params, sym)
+    return get_index(fwm.params, sym)
 end
 
 function SymbolicIndexingInterface.parameter_symbols(fwm::FoodwebModel)
@@ -142,7 +140,5 @@ end
 
 function SymbolicIndexingInterface.parameter_index(fwm::FoodwebModel{T}, sym::T) where T
 
-    offset = length(variables(fwm.vars))
-
-    return offset + get_index(fwm.params, sym)
+    return get_index(fwm.params, sym)
 end
