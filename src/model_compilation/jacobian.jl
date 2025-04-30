@@ -25,6 +25,8 @@ function fwm_jacobian(fwm::FoodwebModel)::Matrix{Num}
         dr = fwm.dynamic_rules[intx]
         vs = dr.vars
 
+        filter!(x -> _in(x, variables(fwm)), vs)
+
         ff = dr.forwards_function
         rf = dr.backwards_function
         
@@ -47,6 +49,7 @@ function fwm_jacobian(fwm::FoodwebModel)::Matrix{Num}
     for (subj, rule) ∈ fwm.aux_dynamic_rules
 
         vars = rule.vars
+        filter!(x -> _in(x, variables(fwm)), vars)
         f = rule.forwards_function
 
         for v ∈ vars
@@ -56,4 +59,16 @@ function fwm_jacobian(fwm::FoodwebModel)::Matrix{Num}
     end
 
     return jac
+end
+
+function _in(sym::Num, syms::Vector{Num})
+
+    for s in syms
+
+        if isequal(s, sym)
+            return true
+        end
+    end
+    
+    return false
 end
