@@ -25,11 +25,17 @@ end
 
 function (etca::ExtinctionThresholdAffect)(
     integrator, 
-    sp, 
+    index, 
     isextinction, # Is this a downcrossing
     invasions_allowed # Controls what happens with upcrossings
     # Are invasions allowed? Or are they set to zero?
     )
+
+    # The code from DifferentialEquationsCallbacks.jl doesn't seem to support
+    # symbolic indexing in callback definitions. So we have to convert from the
+    # indices it gives us back to the species symbol.
+    fwm = integrator.f.sys
+    sp = get_symbol(fwm.vars, index)
 
     if isextinction
 
@@ -53,6 +59,9 @@ end
 # represent a species, and as such should be potentially subject to extinction.
 function initialize_cb!(c, u, t, integrator, spp, etca)
 
+    # This aspect of the callbacks seem to not allows symbolic indexing.
+    # So we have to get integer indices here. We also have to deal with
+    # recieving integer indices in the affect! code.
     fwm = integrator.sol.prob.f.sys
     idxs = get_index.(Ref(fwm.vars), spp)
 
