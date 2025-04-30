@@ -34,8 +34,7 @@ function introduce_species(fwm, prob, solver; extra_transient_time, kwargs...)
     while !isempty(invasion_sequence)
 
         sp = popfirst!(invasion_sequence)
-        v = get_index(fwm.vars, sp)
-        integrator.u[v] = LOW_DENSITY
+        integrator[sp] = LOW_DENSITY
 
         # Recalculate the derivatives to account for discontinuity.
         u_modified!(integrator, true)
