@@ -1,12 +1,14 @@
 module HigherOrderFoodwebs
 
 using SpeciesInteractionNetworks
-using ModelingToolkit
-using Symbolics
 using Distributions
+
+using Symbolics
 using SciMLBase
-using OrdinaryDiffEq
 using SymbolicIndexingInterface
+
+using OrdinaryDiffEqTsit5
+using OrdinaryDiffEqRosenbrock
 
 # ----------------------#
 # Core type declrations #
@@ -47,8 +49,7 @@ export add_var!, add_param!
 include("./core_interfaces/community_matrix.jl")
 # The Array interface from Base. No exports needed
 
-include("./core_interfaces/sciml_ext.jl")
-export ODESystem, ODEProblem
+include("./core_interfaces/symbolic_indexing.jl")
 
 # --------------------------------------------------------- #
 # Solver callbacks that are generally relevant for foodwebs #
@@ -95,11 +96,12 @@ export holling_disk, logistic
 include("./realized_networks/trophic_flux.jl")
 export trophic_flux
 
-# --------- #
-# Utilities #
-# --------- #
+# ----------------- #
+# Model compilation #
+# ----------------- #
 
-include("./utilities/jacobian.jl")
+include("./model_compilation/jacobian.jl")
+include("./model_compilation/code_compilation.jl")
 public fwm_jacobian
 
 end
