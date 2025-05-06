@@ -2,6 +2,7 @@ module HigherOrderFoodwebs
 
 using SpeciesInteractionNetworks
 using Distributions
+using SparseArrays
 
 using Symbolics
 using SciMLBase

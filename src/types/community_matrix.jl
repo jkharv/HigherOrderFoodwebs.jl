@@ -1,9 +1,9 @@
 struct CommunityMatrix{T, U} <: AbstractMatrix{T}
 
-    m::Matrix{T}
+    m::AbstractMatrix{T}
     spp::FoodwebVariables{U}
 
-    function CommunityMatrix(m::Matrix{T}, spp::FoodwebVariables{U}) where {T, U}
+    function CommunityMatrix(m::AbstractMatrix{T}, spp::FoodwebVariables{U}) where {T, U}
 
         new{T, U}(m, spp)
     end

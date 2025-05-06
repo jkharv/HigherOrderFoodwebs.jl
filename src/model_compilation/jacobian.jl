@@ -5,11 +5,11 @@ Calculate the (symbolic) jacobian matrix associated with a foodweb model. This
 uses structural information from the hypergraph to speed things up. This should
 be significantly faster than using Symbolics.jacobian 
 """
-function fwm_jacobian(fwm::FoodwebModel)::Matrix{Num}
+function fwm_jacobian(fwm::FoodwebModel)::CommunityMatrix{Num}
 
     n = (length ∘ variables)(fwm)
     jac = CommunityMatrix(
-        zeros(Num, (n,n)),
+        SparseMatrixCSC{Num, Int64}(undef, n, n),
         fwm.vars
     )
 
