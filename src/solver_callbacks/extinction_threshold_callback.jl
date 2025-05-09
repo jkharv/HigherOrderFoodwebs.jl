@@ -48,7 +48,6 @@ function (etca::ExtinctionThresholdAffect)(
     if invasions_allowed
         
         push!(etca.invasions, (integrator.t, sp))
-        u_modified!(integrator, true)
         return
     else
 
@@ -92,6 +91,9 @@ function ExtinctionThresholdCallback(
         (x, y) -> etca(x, y, true, false),  # affect_neg!
         richness(fwm);
         initialize = (w, x, y, z) -> initialize_cb!(w, x, y, z, species(fwm), etca),
-        idxs = []
+        idxs = [],
+        save_positions = (true, true),
+        abstol = threshold * 1e-1, # set the tolerance to be lower than the threshold.
+        reltol = 0.0
     )
 end
