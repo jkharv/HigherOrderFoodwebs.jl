@@ -41,16 +41,19 @@ function (etca::ExtinctionThresholdAffect)(
 
         push!(etca.extinctions, (integrator.t, sp))
         integrator[sp] = 0.0
+        u_modified!(integrator, true)
         return
     end 
     
     if invasions_allowed
         
         push!(etca.invasions, (integrator.t, sp))
+        u_modified!(integrator, true)
         return
     else
 
         integrator[sp] = 0.0
+        u_modified!(integrator, true)
         return
     end
 end
