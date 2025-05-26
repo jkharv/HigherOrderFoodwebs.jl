@@ -7,7 +7,8 @@ function compiled_function(fwm::FoodwebModel)
 
     f = build_function(rhs, vars, params, t;
         expression = Val{false},
-        check_bounds = true
+        linenumbers = false,
+        parallel = Symbolics.()
     )
 
     return f[2] # 2 is the in-place version.
@@ -21,7 +22,9 @@ function compiled_jacobian(fwm::FoodwebModel)
 
     f = build_function(jac, vars, params, t;
         expression = Val{false},
-        check_bounds = true
+        skipzeros = true, 
+        linenumbers = false,
+        parallel = Symbolics.MultithreadedForm()
     )
 
     return f[2] # 2 is the in-place version.
