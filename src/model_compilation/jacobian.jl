@@ -9,7 +9,7 @@ function fwm_jacobian(fwm::FoodwebModel)::CommunityMatrix{Num}
 
     n = (length ∘ variables)(fwm)
     jac = CommunityMatrix(
-        SparseMatrixCSC{Num, Int64}(undef, n, n),
+        spzeros(Num, n, n),
         fwm.vars
     )
 
