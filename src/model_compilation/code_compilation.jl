@@ -8,7 +8,7 @@ function compiled_function(fwm::FoodwebModel)
     f = build_function(rhs, vars, params, t;
         expression = Val{false},
         linenumbers = false,
-        parallel = Symbolics.()
+        parallel = Symbolics.MultithreadedForm()
     )
 
     return f[2] # 2 is the in-place version.
@@ -21,7 +21,7 @@ function compiled_jacobian(fwm::FoodwebModel)
     jac = HigherOrderFoodwebs.fwm_jacobian(fwm)
 
     f = build_function(jac, vars, params, t;
-        expression = Val{false},
+        expression = Val{false},  
         skipzeros = true, 
         linenumbers = false,
         parallel = Symbolics.MultithreadedForm()
