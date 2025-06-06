@@ -1,7 +1,8 @@
 const LOW_DENSITY = 0.1;
 
-function assemble_foodweb(fwm::FoodwebModel, solver = AutoTsit5(Rosenbrock23()); 
+function assemble_foodweb(fwm::FoodwebModel, solver = Rosenbrock23(autodiff = false); 
     extra_transient_time = 0,
+    compile_symbolics = false,
     kwargs...
 )
 
@@ -14,7 +15,7 @@ function assemble_foodweb(fwm::FoodwebModel, solver = AutoTsit5(Rosenbrock23());
     )
     kwargs = merge(defaults, kwargs) 
     
-    prob = ODEProblem(fwm, (1, 100 * richness(fwm) + 200))
+    prob = ODEProblem(fwm, (1, 100 * richness(fwm) + 200); compile_symbolics = false)
 
     u0 = introduce_species(fwm, prob, solver; extra_transient_time, kwargs...)
 

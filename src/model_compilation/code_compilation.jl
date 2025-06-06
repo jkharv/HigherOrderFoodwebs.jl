@@ -8,6 +8,8 @@ function compiled_function(fwm::FoodwebModel)
     f = build_function(rhs, vars, params, t;
         expression = Val{false},
         linenumbers = false,
+        cse = true,
+        iip_config = (false, true),
         parallel = Symbolics.MultithreadedForm()
     )
 
@@ -53,10 +55,52 @@ function values_inorder(vs::FoodwebVariables)::Vector{Float64}
     return vals
 end
 
-function SciMLBase.ODEProblem(fwm::FoodwebModel, tspan = (0,0); kwargs...)
+function substitute_jacobian(fwm, jac, out, vars, params, t)
 
-    f = compiled_function(fwm)
-    j = compiled_jacobian(fwm)
+    vars_vals = Dict(variables(fwm) .=> vars)
+    t_val = Dict(HigherOrderFoodwebs.time => t)
+    param_vals = Dict(variables(fwm.params) .=> params)
+    all_vals = merge(vars_vals, t_val, param_vals)
+
+    Threads.@threads for i in eachindex(jac)
+
+        x = substitute(jac[i], all_vals)
+        out[i] = convert(Float64, x.val)
+    end
+end
+
+function substitute_function(fwm, rhs, out, vars, params, t)
+
+    vars_vals = Dict(variables(fwm) .=> vars)
+    t_val = Dict(HigherOrderFoodwebs.time => t)
+    param_vals = Dict(variables(fwm.params) .=> params)
+    all_vals = merge(vars_vals, t_val, param_vals)
+
+    Threads.@threads for i in eachindex(rhs)
+
+        x = substitute(rhs[i], all_vals)
+        out[i] = convert(Float64, x.val)
+    end
+end
+
+function SciMLBase.ODEProblem(fwm::FoodwebModel, tspan = (0,0); 
+    compile_symbolics = false, kwargs...)
+
+    if compile_symbolics 
+
+        f = compiled_function(fwm)
+        j = compiled_jacobian(fwm)
+
+    else
+
+        fwm_jac = fwm_jacobian(fwm)
+        cm = CommunityMatrix(fwm)
+        rhs = [sum(x) for x in eachrow(cm)] 
+
+        j(out, vars, params, t) = substitute_jacobian(fwm, fwm_jac, out, vars, params, t)
+        f(out, vars, params, t) = substitute_function(fwm, rhs, out, vars, params, t)
+
+    end
 
     # Setting sys = fwm here allows us to access the foodweb model from the
     # prob/sol object and do Num/Symbol indexing.
