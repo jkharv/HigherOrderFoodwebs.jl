@@ -1,6 +1,6 @@
 const LOW_DENSITY = 0.1;
 
-function assemble_foodweb(fwm::FoodwebModel, solver = Rosenbrock23(autodiff = false); 
+function assemble_foodweb(fwm::FoodwebModel, solver = AutoTsit5(Rosenbrock23()); 
     extra_transient_time = 0,
     compile_symbolics = false,
     kwargs...

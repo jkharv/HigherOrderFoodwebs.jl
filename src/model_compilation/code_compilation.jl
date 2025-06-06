@@ -65,7 +65,7 @@ function substitute_jacobian(fwm, jac, out, vars, params, t)
     Threads.@threads for i in eachindex(jac)
 
         x = substitute(jac[i], all_vals)
-        out[i] = convert(Float64, x.val)
+        out[i] = x.val
     end
 end
 
@@ -79,7 +79,7 @@ function substitute_function(fwm, rhs, out, vars, params, t)
     Threads.@threads for i in eachindex(rhs)
 
         x = substitute(rhs[i], all_vals)
-        out[i] = convert(Float64, x.val)
+        out[i] = x.val
     end
 end
 
