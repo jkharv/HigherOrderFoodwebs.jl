@@ -8,8 +8,6 @@ function compiled_function(fwm::FoodwebModel)
     f = build_function(rhs, vars, params, t;
         expression = Val{false},
         linenumbers = false,
-        cse = true,
-        iip_config = (false, true),
         parallel = Symbolics.MultithreadedForm()
     )
 
@@ -27,6 +25,20 @@ function compiled_jacobian(fwm::FoodwebModel)
         skipzeros = true, 
         linenumbers = false,
         parallel = Symbolics.MultithreadedForm()
+    )
+
+    return f[2] # 2 is the in-place version.
+end
+
+function compiled_noise(fwm, g)
+
+    vars, params, t = ordered_variables(fwm)
+    
+    f = build_function(g, vars, params, t;
+        expression = Val{false},  
+        skipzeros = true, 
+        linenumbers = false,
+        parallel = Symbolics.SerialForm()
     )
 
     return f[2] # 2 is the in-place version.
@@ -84,7 +96,9 @@ function substitute_function(fwm, rhs, out, vars, params, t)
 end
 
 function SciMLBase.ODEProblem(fwm::FoodwebModel, tspan = (0,0); 
-    compile_symbolics = false, kwargs...)
+    compile_symbolics = false, 
+    kwargs...
+    )
 
     if compile_symbolics 
 
@@ -111,3 +125,38 @@ function SciMLBase.ODEProblem(fwm::FoodwebModel, tspan = (0,0);
 
     return ODEProblem(ode_func, u0, tspan, ps; kwargs...)
 end
+
+function default_noise(fwm, strength = 0.1)
+
+    return strength * variables(fwm, type = SPECIES_VARIABLE)
+end
+
+function SciMLBase.SDEProblem(fwm::FoodwebModel, g = default_noise(fwm, 0.1), tspan = (0,0);
+        compile_symbolics = true,
+        kwargs... 
+    )
+    
+    if compile_symbolics 
+
+        f = compiled_function(fwm)
+        # j = compiled_jacobian(fwm)
+        gc = compiled_noise(fwm, g) 
+
+    else
+
+        error("Uncompiled functions are not implemented in SDEProblem yet.")
+    end
+
+    sde_func = SDEFunction{true, SciMLBase.FullSpecialize}(f, gc; sys = fwm)
+
+    u0 = values_inorder(fwm.vars)
+    ps = values_inorder(fwm.params)
+
+    return SDEProblem(sde_func, u0, tspan, ps; kwargs...)
+end
+
+
+
+
+
+

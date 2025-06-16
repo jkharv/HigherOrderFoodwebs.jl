@@ -4,19 +4,35 @@ authors = ["Jake Harvey <jacob.harvey@mail.mcgill.ca>"]
 version = "0.1.0"
 
 [deps]
+Debugger = "31a5f54b-26ea-5ae9-a837-f05ce5417438"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+NaNMath = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 OrdinaryDiffEqRosenbrock = "43230ef6-c299-4910-a778-202eb28ce4ce"
 OrdinaryDiffEqTsit5 = "b1df2697-797e-41e3-8120-5422d3b24e4a"
+ProgressLogging = "33c8b6b6-d38a-422a-b730-caa89a2f386c"
 SciMLBase = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 SpeciesInteractionNetworks = "49e116ef-912f-4766-9e56-896a49944adc"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+StochasticDiffEq = "789caeaf-c7a9-5a7d-9973-96adeb23e2a0"
 SymbolicIndexingInterface = "2efcf032-c050-4f8e-a9bb-153293bab1f5"
+SymbolicUtils = "d1185830-fcd6-423d-90d6-eec64667417b"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 
 [sources]
 SpeciesInteractionNetworks = {url = "https://github.com/jkharv/SpeciesInteractionNetworks.jl.git"}
 
 [compat]
+Debugger = "0.7.13"
+LinearAlgebra = "1.11.0"
+NaNMath = "1.1.3"
 OrdinaryDiffEqRosenbrock = "1.9.0"
 OrdinaryDiffEqTsit5 = "1.1.0"
+ProgressLogging = "0.1.4"
 SparseArrays = "1.11.0"
+SpecialFunctions = "2.5.1"
+StaticArrays = "1.9.13"
+StochasticDiffEq = "6.79.0"
+SymbolicUtils = "3.29.0"

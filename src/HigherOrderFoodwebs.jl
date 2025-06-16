@@ -3,6 +3,10 @@ module HigherOrderFoodwebs
 using SpeciesInteractionNetworks
 using Distributions
 using SparseArrays
+using StaticArrays
+using LinearAlgebra
+using NaNMath
+using SpecialFunctions
 
 using Symbolics
 using SciMLBase
@@ -27,6 +31,12 @@ export FoodwebModel
 
 include("./types/community_matrix.jl")
 export CommunityMatrix
+
+
+# Modules
+
+# include("./model_compilation/code.jl")
+# using .Code
 
 # --------------- #
 # Core interfaces #
