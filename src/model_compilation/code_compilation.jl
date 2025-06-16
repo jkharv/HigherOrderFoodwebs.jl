@@ -128,7 +128,13 @@ end
 
 function default_noise(fwm, strength = 0.1)
 
-    return strength * variables(fwm, type = SPECIES_VARIABLE)
+    spp = variables(fwm, type = SPECIES_VARIABLE)
+    not_spp = setdiff(variables(fwm), spp)
+
+    eqs_spp = strength * spp
+    eqs_not_spp = 0.0 * not_spp
+
+    return [eqs_spp..., eqs_not_spp...]
 end
 
 function SciMLBase.SDEProblem(fwm::FoodwebModel, g = default_noise(fwm, 0.1), tspan = (0,0);
