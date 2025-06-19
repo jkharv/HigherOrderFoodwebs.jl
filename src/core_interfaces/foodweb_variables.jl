@@ -78,6 +78,10 @@ function get_value(vs::FoodwebVariables{T}, x::Union{T, Num})::Float64 where T
     return vs.vals[idx]
 end
 
+# --------------------- #
+#  Overloads from Base  #
+# --------------------- #
+
 function Base.show(io::IO, ::MIME"text/plain", v::FoodwebVariables)
 
     str = "$(typeof(v))
@@ -123,6 +127,7 @@ function Base.in(x::Int64, vs::FoodwebVariables)
 
     return 0 < x < length(vs)
 end
+
 #
 # Utility function, Not, part of the interface.
 #
