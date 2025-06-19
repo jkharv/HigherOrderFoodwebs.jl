@@ -103,6 +103,28 @@ function get_value(fwm::FoodwebModel, x::Union{Symbol, Num})::Float64
     end
 end
 
+function variable_type(fwm::FoodwebModel{T}, x::Union{T, Num})::VariableType where T
+
+    if x ∈ fwm.vars
+
+        return variable_type(fwm.vars, x)
+    elseif x ∈ fwm.params
+
+        return variable_type(fwm.params, x)
+    else
+
+        error("Variable $x not found!")
+    end
+end
+
+function variable_type(fwm::FoodwebModel, x::Int64)::VariableType
+
+    @warn "This function can return wrong results (or error) if any of the
+           indices represent parameters"
+    
+    return variable_type(fwm.vars, x)
+end
+
 function set_u0!(fwm::FoodwebModel{T}, k::Union{T, Num}, val::Float64) where T
     
     set_value!(fwm.vars, k, val)
