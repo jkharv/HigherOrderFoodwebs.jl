@@ -96,25 +96,30 @@ function substitute_function(fwm, rhs, out, vars, params, t)
 end
 
 function SciMLBase.ODEProblem(fwm::FoodwebModel, tspan = (0,0); 
-    compile_symbolics = false, 
+    compile_symbolics = true, 
+    compile_jacobian = false,
     kwargs...
     )
 
     if compile_symbolics 
 
         f = compiled_function(fwm)
-        j = compiled_jacobian(fwm)
-
     else
-
-        fwm_jac = fwm_jacobian(fwm)
+ 
         cm = CommunityMatrix(fwm)
         rhs = [sum(x) for x in eachrow(cm)] 
 
-        j(out, vars, params, t) = substitute_jacobian(fwm, fwm_jac, out, vars, params, t)
         f(out, vars, params, t) = substitute_function(fwm, rhs, out, vars, params, t)
-
     end
+
+    if compile_jacobian
+
+        j = compiled_jacobian(fwm)
+    else
+
+        j = nothing
+    end
+
 
     # Setting sys = fwm here allows us to access the foodweb model from the
     # prob/sol object and do Num/Symbol indexing.
@@ -139,21 +144,28 @@ end
 
 function SciMLBase.SDEProblem(fwm::FoodwebModel, g = default_noise(fwm, 0.1), tspan = (0,0);
         compile_symbolics = true,
+        compile_jacobian  = true,
         kwargs... 
     )
     
     if compile_symbolics 
 
         f = compiled_function(fwm)
-        # j = compiled_jacobian(fwm)
         gc = compiled_noise(fwm, g) 
-
     else
 
         error("Uncompiled functions are not implemented in SDEProblem yet.")
     end
 
-    sde_func = SDEFunction{true, SciMLBase.FullSpecialize}(f, gc; sys = fwm)
+    if compile_jacobian
+
+        j = compiled_jacobian(fwm)
+    else
+
+        j = nothing
+    end
+
+    sde_func = SDEFunction{true, SciMLBase.FullSpecialize}(f, gc; sys = fwm, jac = j)
 
     u0 = values_inorder(fwm.vars)
     ps = values_inorder(fwm.params)
