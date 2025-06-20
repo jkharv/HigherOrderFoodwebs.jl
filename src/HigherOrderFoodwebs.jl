@@ -14,6 +14,7 @@ using SymbolicIndexingInterface
 
 using OrdinaryDiffEqTsit5
 using OrdinaryDiffEqRosenbrock
+using StochasticDiffEq
 
 # ----------------------#
 # Core type declrations #
@@ -31,7 +32,6 @@ export FoodwebModel
 
 include("./types/community_matrix.jl")
 export CommunityMatrix
-
 
 # Modules
 
@@ -81,7 +81,7 @@ export RichnessTerminationCallback
 
 include("./foodweb_assembly/foodweb_assembly.jl")
 include("./foodweb_assembly/trophic_ordering.jl")
-export assemble_foodweb
+export assemble_foodweb, assemble_stochastic_foodweb
 
 # ----------------- #
 # Structural models #

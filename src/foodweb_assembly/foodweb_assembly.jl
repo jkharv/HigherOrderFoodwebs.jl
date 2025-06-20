@@ -2,7 +2,8 @@ const LOW_DENSITY = 0.1;
 
 function assemble_foodweb(fwm::FoodwebModel, solver = AutoTsit5(Rosenbrock23()); 
     extra_transient_time = 0,
-    compile_symbolics = false,
+    compile_symbolics = true,
+    compile_jacobian = false,
     kwargs...
 )
 
@@ -15,12 +16,47 @@ function assemble_foodweb(fwm::FoodwebModel, solver = AutoTsit5(Rosenbrock23());
     )
     kwargs = merge(defaults, kwargs) 
     
-    prob = ODEProblem(fwm, (1, 100 * richness(fwm) + 200); compile_symbolics = false)
+    prob = ODEProblem(
+        fwm, 
+        (1, 100 * richness(fwm) + 200); 
+        compile_symbolics,
+        compile_jacobian
+    )
 
     u0 = introduce_species(fwm, prob, solver; extra_transient_time, kwargs...)
 
     return remake(prob; u0 = u0)
 end
+
+function assemble_stochastic_foodweb(fwm::FoodwebModel, solver = SOSRA(); 
+    extra_transient_time = 0,
+    compile_symbolics = true,
+    compile_jacobian = false,
+    kwargs...
+)
+
+    defaults = (
+        maxiters = 1e7,
+        force_dtmin = true,
+        save_on = false,
+        reltol = 1e-3,
+        abstol = 1e-3
+    )
+    kwargs = merge(defaults, kwargs) 
+    
+    prob = SDEProblem(
+        fwm, 
+        default_noise(fwm, 0.01), 
+        (1, 100 * richness(fwm) + 200); 
+        compile_symbolics,
+        compile_jacobian
+    )
+
+    u0 = introduce_species(fwm, prob, solver; extra_transient_time, kwargs...)
+
+    return remake(prob; u0 = u0)
+end
+
 
 function introduce_species(fwm, prob, solver; extra_transient_time, kwargs...)
 
