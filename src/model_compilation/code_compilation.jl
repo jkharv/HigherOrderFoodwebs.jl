@@ -5,10 +5,12 @@ function compiled_function(fwm::FoodwebModel)
     cm = CommunityMatrix(fwm)
     rhs = [sum(x) for x in eachrow(cm)] 
 
-    f = build_function(rhs, vars, params, t;
+    f = Symbolics._build_function(Symbolics.JuliaTarget(),
+        rhs, vars, params, t;
         expression = Val{false},
         linenumbers = false,
-        parallel = Symbolics.MultithreadedForm()
+        iip_config = (false, true),
+        parallel = Symbolics.ShardedForm{true}(80, 64)
     )
 
     return f[2] # 2 is the in-place version.
@@ -20,11 +22,12 @@ function compiled_jacobian(fwm::FoodwebModel)
     
     jac = HigherOrderFoodwebs.fwm_jacobian(fwm)
 
-    f = build_function(jac, vars, params, t;
+    f = Symbolics._build_function(Symbolics.JuliaTarget(),
+        jac.m, vars, params, t;
         expression = Val{false},  
-        skipzeros = true, 
         linenumbers = false,
-        parallel = Symbolics.MultithreadedForm()
+        iip_config = (false, true), 
+        parallel = Symbolics.ShardedForm{true}(80, 64)
     )
 
     return f[2] # 2 is the in-place version.
