@@ -69,6 +69,9 @@ include("./core_interfaces/symbolic_indexing.jl")
 include("./solver_callbacks/extinction_sequence_callback.jl")
 export ExtinctionSequenceCallback
 
+include("./solver_callbacks/invasion_sequence_callback.jl")
+export InvasionSequenceCallback 
+
 include("./solver_callbacks/extinction_threshold_callback.jl")
 export ExtinctionThresholdCallback
 
