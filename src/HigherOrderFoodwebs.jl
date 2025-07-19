@@ -16,9 +16,9 @@ using OrdinaryDiffEqTsit5
 using OrdinaryDiffEqRosenbrock
 using StochasticDiffEq
 
-# ----------------------#
-# Core type declrations #
-# ----------------------#
+# ---------------------- #
+# Core type declarations #
+# ---------------------- #
 
 include("./types/dynamic_rule.jl")
 export DynamicRule
