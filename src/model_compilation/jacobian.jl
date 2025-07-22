@@ -14,9 +14,9 @@ function fwm_jacobian(fwm::FoodwebModel)::CommunityMatrix{Num}
     )
 
     # By going interaction-by-interaction we can deal with only the entries in
-    # the the jacobian that will be non-zero. It also limits us to only the
-    # parts of function that contain the relevent variables. The other rules
-    # should differentiate to zero wrt the subject & object species anyway.
+    # the jacobian that will be non-zero. It also limits us to only the parts of
+    # function that contain the relevent variables. The other rules should
+    # differentiate to zero wrt the subject & object species anyway.
     for intx ∈ interactions(fwm)
 
         s = subject(fwm, intx)
