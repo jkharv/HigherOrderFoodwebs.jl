@@ -9,6 +9,7 @@ using NaNMath
 using SpecialFunctions
 
 using Symbolics
+using SymbolicUtils
 using SciMLBase
 using SymbolicIndexingInterface
 
@@ -35,8 +36,8 @@ export CommunityMatrix
 
 # Modules
 
-# include("./model_compilation/code.jl")
-# using .Code
+include("./model_compilation/code.jl")
+using .Code
 
 # --------------- #
 # Core interfaces #

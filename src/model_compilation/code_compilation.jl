@@ -5,15 +5,14 @@ function compiled_function(fwm::FoodwebModel)
     cm = CommunityMatrix(fwm)
     rhs = [sum(x) for x in eachrow(cm)] 
 
-    f = Symbolics._build_function(Symbolics.JuliaTarget(),
-        rhs, vars, params, t;
+    f = Code.build_function(rhs, vars, params, t;
         expression = Val{false},
         linenumbers = false,
         iip_config = (false, true),
         parallel = Symbolics.ShardedForm{true}(80, 64)
     )
 
-    return f[2] # 2 is the in-place version.
+    return f
 end
 
 function compiled_jacobian(fwm::FoodwebModel)
@@ -22,29 +21,28 @@ function compiled_jacobian(fwm::FoodwebModel)
     
     jac = HigherOrderFoodwebs.fwm_jacobian(fwm)
 
-    f = Symbolics._build_function(Symbolics.JuliaTarget(),
-        jac.m, vars, params, t;
+    f = Code.build_function(jac.m, vars, params, t;
         expression = Val{false},  
         linenumbers = false,
         iip_config = (false, true), 
         parallel = Symbolics.ShardedForm{true}(80, 64)
     )
 
-    return f[2] # 2 is the in-place version.
+    return f
 end
 
 function compiled_noise(fwm, g)
 
     vars, params, t = ordered_variables(fwm)
     
-    f = build_function(g, vars, params, t;
+    f = Code.build_function(g, vars, params, t;
         expression = Val{false},  
         skipzeros = true, 
         linenumbers = false,
         parallel = Symbolics.SerialForm()
     )
 
-    return f[2] # 2 is the in-place version.
+    return f
 end
 
 function ordered_variables(fwm::FoodwebModel)
