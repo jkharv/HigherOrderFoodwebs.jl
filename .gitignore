@@ -26,6 +26,5 @@ docs/site/
 # environment.
 Manifest.toml
 
-
 # The scripts I use to test things while developing don't need to be version controlled.
 test/dev/*
