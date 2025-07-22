@@ -14,7 +14,7 @@ function CommunityMatrix(fwm::FoodwebModel)
     vars = deepcopy(fwm.vars)
     n = length(vars)
 
-    cm = CommunityMatrix(zeros(Num, n, n), vars)
+    cm = CommunityMatrix(spzeros(Num, n, n), vars)
 
     for intrx ∈ interactions(fwm)
 
