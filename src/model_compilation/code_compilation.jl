@@ -68,50 +68,13 @@ function values_inorder(vs::FoodwebVariables)::Vector{Float64}
     return vals
 end
 
-function substitute_jacobian(fwm, jac, out, vars, params, t)
-
-    vars_vals = Dict(variables(fwm) .=> vars)
-    t_val = Dict(HigherOrderFoodwebs.time => t)
-    param_vals = Dict(variables(fwm.params) .=> params)
-    all_vals = merge(vars_vals, t_val, param_vals)
-
-    Threads.@threads for i in eachindex(jac)
-
-        x = substitute(jac[i], all_vals)
-        out[i] = x.val
-    end
-end
-
-function substitute_function(fwm, rhs, out, vars, params, t)
-
-    vars_vals = Dict(variables(fwm) .=> vars)
-    t_val = Dict(HigherOrderFoodwebs.time => t)
-    param_vals = Dict(variables(fwm.params) .=> params)
-    all_vals = merge(vars_vals, t_val, param_vals)
-
-    Threads.@threads for i in eachindex(rhs)
-
-        x = substitute(rhs[i], all_vals)
-        out[i] = x.val
-    end
-end
-
 function SciMLBase.ODEProblem(fwm::FoodwebModel, tspan = (0,0); 
     compile_symbolics = true, 
     compile_jacobian = false,
     kwargs...
     )
 
-    if compile_symbolics 
-
         f = compiled_function(fwm)
-    else
- 
-        cm = CommunityMatrix(fwm)
-        rhs = [sum(x) for x in eachrow(cm)] 
-
-        f(out, vars, params, t) = substitute_function(fwm, rhs, out, vars, params, t)
-    end
 
     if compile_jacobian
 
@@ -120,7 +83,6 @@ function SciMLBase.ODEProblem(fwm::FoodwebModel, tspan = (0,0);
 
         j = nothing
     end
-
 
     # Setting sys = fwm here allows us to access the foodweb model from the
     # prob/sol object and do Num/Symbol indexing.
@@ -149,14 +111,9 @@ function SciMLBase.SDEProblem(fwm::FoodwebModel, g = default_noise(fwm, 0.1), ts
         kwargs... 
     )
     
-    if compile_symbolics 
 
         f = compiled_function(fwm)
         gc = compiled_noise(fwm, g) 
-    else
-
-        error("Uncompiled functions are not implemented in SDEProblem yet.")
-    end
 
     if compile_jacobian
 
@@ -173,9 +130,3 @@ function SciMLBase.SDEProblem(fwm::FoodwebModel, g = default_noise(fwm, 0.1), ts
 
     return SDEProblem(sde_func, u0, tspan, ps; kwargs...)
 end
-
-
-
-
-
-
