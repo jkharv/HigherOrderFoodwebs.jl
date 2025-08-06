@@ -39,9 +39,9 @@ function (iscb::InvasionSequenceCallbackAffect)(integrator)
         else
 
             integrator[invader] = iscb.invader_density 
-            u_modified!(integrator, true)
             push!(iscb.invasions, (integrator.t, invader))
             iscb.cursor += 1 
+            break;
         end
     end
 
