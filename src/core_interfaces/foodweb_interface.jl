@@ -36,7 +36,7 @@ end
 # ---------------------------------------------------------------------- #
 
 # Variables and parameters are stored in two seperate FoodwebVariables objects
-# This is something that might be work revisiting in the future, but for now, 
+# This is something that might be worth revisiting in the future, but for now, 
 # all of the functions below have got to check both objects for the proper
 # entry.
 
@@ -65,8 +65,10 @@ function get_value(fwm::FoodwebModel{T}, x::T)::Float64 where T
         return get_value(fwm.params, x)
     else
 
-        error("Could not find $x in $fwm. Parameters are disambiguated and may
-        not have the symbol you expect")
+        error(
+            "Could not find $x in $fwm. Parameters are disambiguated and may not
+            have the symbol you expect"
+        )
     end
 end
 
@@ -80,7 +82,10 @@ function variable_type(fwm::FoodwebModel{T}, x::T)::VariableType where T
         return variable_type(fwm.params, x)
     else
 
-        error("Variable $x not found!")
+        error(
+            "Could not find $x in $fwm. Parameters are disambiguated and may not
+            have the symbol you expect"
+        )
     end
 end
 
