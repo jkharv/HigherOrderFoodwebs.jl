@@ -147,6 +147,24 @@ function add_param!(fwm::FoodwebModel{T}, sym::Symbol, val::Number) where T
     return add_param!(fwm, sym, Vector{T}(), val)
 end
 
+function set_dynamic_rule!(
+    fwm::FoodwebModel{T},
+    intx::AnnotatedHyperedge{T},
+    dr::DynamicRule) where T
+    
+    # TODO Consistency checks
+    fwm.dynamic_rules[intx] = dr
+end
+
+function set_dynamic_rule!(
+    fwm::FoodwebModel{T},
+    var::T,
+    dr::DynamicRule) where T
+
+    # TODO Consistency checks
+    fwm.aux_dynamic_rules[var] = dr
+end
+
 # ------------------- #
 #  Overloads of Base  #
 # ------------------- #
