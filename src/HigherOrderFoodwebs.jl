@@ -12,6 +12,8 @@ using OrdinaryDiffEqTsit5
 using OrdinaryDiffEqRosenbrock
 using StochasticDiffEq
 
+using MacroTools: prewalk
+
 # ---------------------- #
 # Core type declarations #
 # ---------------------- #
@@ -42,7 +44,11 @@ export set_value!, get_value, variable_type
 include("./core_interfaces/foodweb_interface.jl")
 export species, richness, interactions, role, roles, has_role
 export isproducer, isconsumer, set_u0!
+export set_dynamic_rule!
 export subject, object, with_role # From SpeciesInteractionNetworks.jl
+
+include("./core_interfaces/rule-macro.jl")
+export @rule, @var, @param
 
 # Passthroughs to the FoodwebVariables type
 export get_symbol, set_u0!, variable_type
