@@ -22,7 +22,7 @@ function values_inorder(vs::FoodwebVariables)::Vector{Float64}
     return vals
 end
 
-function ode_function!(fwm, du_locks, du, u, ps, t)
+function ode_function_threaded!(fwm, du_locks, du, u, ps, t)
 
     # Reset du
     du .= 0.0
@@ -73,6 +73,44 @@ function ode_function!(fwm, du_locks, du, u, ps, t)
     end
 end
 
+function ode_function!(fwm, du, u, ps, t)
+
+    # Reset du
+    du .= 0.0
+
+    for (intx, rule) in fwm.dynamic_rules
+
+        s = get_index(fwm.vars, subject(intx))
+        o = get_index(fwm.vars, object(intx))
+
+        f = rule(u, ps, t)
+    
+        if f isa Tuple{Float64, Float64}        
+
+            du[s] += f[1] 
+            du[o] += f[2]
+        else
+
+            du[s] += f 
+        end
+    end
+
+    for (aux_var, rule) in fwm.aux_dynamic_rules
+
+        aux_index = get_index(fwm.vars, aux_var)
+
+        f = rule(u, ps, t)
+    
+        if f isa Tuple{Float64, Float64}        
+
+            error("Not meaningful for a aux_var rule to return a tuple")
+        else
+
+            du[aux_index] += f 
+        end
+    end
+end
+
 function compile_function_float(fwm)
 
     xs = ones((length ∘ variables)(fwm.vars))
@@ -112,10 +150,17 @@ end
 function SciMLBase.ODEProblem(
     fwm::FoodwebModel, 
     tspan = (0,0), 
+    threaded = true,
     kwargs...)
 
-    du_locks = [ReentrantLock() for i in 1:(length ∘ variables)(fwm.vars)];
-    f(du, u, ps, t) = ode_function!(fwm, du_locks, du, u, ps, t)
+    if threaded
+
+        du_locks = [ReentrantLock() for i in 1:(length ∘ variables)(fwm.vars)];
+        f(du, u, ps, t) = ode_function_threaded!(fwm, du_locks, du, u, ps, t)
+    else
+        
+        f(du, u, ps, t) = ode_function!(fwm, du, u, ps, t)
+    end
 
     if (length ∘ variables)(fwm.vars) > 50 
 
