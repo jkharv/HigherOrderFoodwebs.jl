@@ -3,7 +3,8 @@ function assemble_foodweb(prob::ODEProblem;
     extra_transient_time = 0,
     time_between_invasions = 100,
     invader_density = 0.1,
-    extinction_threshold = 1e-20
+    extinction_threshold = 1e-20,
+    extra_callbacks = [], 
 )
 
     if !(prob.f.sys isa FoodwebModel)
@@ -27,7 +28,7 @@ function assemble_foodweb(prob::ODEProblem;
     et = ExtinctionThresholdCallback(fwm, extinction_threshold)
 
     sol = solve(prob, solver, 
-        callback = CallbackSet(is, et),
+        callback = CallbackSet(is, et, extra_callbacks...),
         tspan = tspan,
         tstops = invasion_times,
         saveat = tend 
