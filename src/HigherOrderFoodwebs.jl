@@ -58,6 +58,7 @@ include("./core_interfaces/community_matrix.jl")
 # The Array interface from Base. No exports needed
 
 include("./core_interfaces/symbolic_indexing.jl")
+# No exports needed, this only gets used internally by SciML stuff.
 
 # --------------------------------------------------------- #
 # Solver callbacks that are generally relevant for foodwebs #
