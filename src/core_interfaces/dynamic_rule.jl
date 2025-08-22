@@ -2,10 +2,8 @@ function Base.show(io::IO, ::MIME"text/plain", dr::DynamicRule)
 
     str = """
     DynamicRule
-        f.f.: $(dr.forwards_function)
-        b.f.: $(dr.backwards_function)
+        f.: $(dr.f)
         Variables: $(dr.vars)
-        Parameters: $(dr.params)
     """
     
     print(io, str)
