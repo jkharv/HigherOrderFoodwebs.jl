@@ -1,22 +1,10 @@
 struct DynamicRule
 
-    forwards_function::Num
-    backwards_function::Num
-    vars::Vector{Num}
+    f::Function
+    vars::Vector{Symbol}
 end
 
-function DynamicRule(forwards_rule::Num, backwards_rule::Num)
+function (dr::DynamicRule)(u, ps, t)
 
-    both = union(
-        Symbolics.get_variables(forwards_rule), 
-        Symbolics.get_variables(backwards_rule)
-    )
-
-    return DynamicRule(
-        forwards_rule,
-        backwards_rule,
-        both
-    )
+    return dr.f(u, ps, t)
 end
-
-DynamicRule(rule::Num) = DynamicRule(rule, rule)

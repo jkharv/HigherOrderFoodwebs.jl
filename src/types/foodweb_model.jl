@@ -1,11 +1,9 @@
-const time = Symbolics.variable(:t; T = Real)
-
 mutable struct FoodwebModel{T}
 
     hg::SpeciesInteractionNetwork{<:Partiteness, <:AnnotatedHyperedge}
 
     dynamic_rules::Dict{AnnotatedHyperedge, DynamicRule}
-    aux_dynamic_rules::Dict{Num, DynamicRule}
+    aux_dynamic_rules::Dict{T, DynamicRule}
    
     vars::FoodwebVariables{T}    
     params::FoodwebVariables{T}
@@ -36,7 +34,7 @@ function FoodwebModel(
     return FoodwebModel{T}(
         hg,
         Dict{AnnotatedHyperedge, DynamicRule}(), # dynamic_rules
-        Dict{Num, DynamicRule}(), # aux_dynamic_rules
+        Dict{T, DynamicRule}(), # aux_dynamic_rules
         FoodwebVariables(species(hg)), # vars
         FoodwebVariables{T}(), # params 
     )

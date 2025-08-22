@@ -1,12 +1,12 @@
-# ------------------------------------------------------------- #
-# Implementations for Num indexing on HigherOrderFoodwebs types #
-# ------------------------------------------------------------- #
+# This interface is used by SciML packages to allow non-integer indexing on the
+# solution types. These are not exported for users of HigherOrderFoodwebs.jl
 
-function SymbolicIndexingInterface.is_variable(fwm::FoodwebModel, sym::Num)
+function SymbolicIndexingInterface.is_variable(
+    fwm::FoodwebModel{T}, sym::T)::Bool where T
 
     for v in variables(fwm)
 
-        if isequal(sym, v)
+        if sym == v
 
             return true
         end
@@ -15,21 +15,24 @@ function SymbolicIndexingInterface.is_variable(fwm::FoodwebModel, sym::Num)
     return false
 end
 
-function SymbolicIndexingInterface.variable_index(fwm::FoodwebModel, sym::Num)
+function SymbolicIndexingInterface.variable_index(
+    fwm::FoodwebModel{T}, sym::T)::Int64 where T
 
     return get_index(fwm.vars, sym)
 end
 
-function SymbolicIndexingInterface.variable_symbols(fwm::FoodwebModel)
+function SymbolicIndexingInterface.variable_symbols(
+    fwm::FoodwebModel{T})::T where T
 
     return variables(fwm.vars)
 end
 
-function SymbolicIndexingInterface.is_parameter(fwm::FoodwebModel, sym::Num)
+function SymbolicIndexingInterface.is_parameter(
+    fwm::FoodwebModel{T}, sym::T)::Bool where T
 
     for v in variables(fwm.params)
 
-        if isequal(sym, v)
+        if sym == v
 
             return true
         end
@@ -38,31 +41,33 @@ function SymbolicIndexingInterface.is_parameter(fwm::FoodwebModel, sym::Num)
     return false   
 end
 
-function SymbolicIndexingInterface.parameter_index(fwm::FoodwebModel, sym::Num)
+function SymbolicIndexingInterface.parameter_index(
+    fwm::FoodwebModel{T}, sym::T)::Int64 where T
 
     return get_index(fwm.params, sym)
 end
 
-function SymbolicIndexingInterface.parameter_symbols(fwm::FoodwebModel)
+function SymbolicIndexingInterface.parameter_symbols(
+    fwm::FoodwebModel{T})::T where T
  
     return variables(fwm.params)
 end
 
-function SymbolicIndexingInterface.is_independent_variable(fwm::FoodwebModel, sym::Num)
+function SymbolicIndexingInterface.is_independent_variable(
+    fwm::FoodwebModel{T}, sym::T)::T where T
 
-    if isnothing(sym)
-        return false
-    end
+    @warn "TODO: DO TIME VAR PROPERLY"
 
-    return sym == time
+    return sym == :time
 end
 
-function SymbolicIndexingInterface.independent_variable_symbols(fwm::FoodwebModel)
+function SymbolicIndexingInterface.independent_variable_symbols(
+    ::FoodwebModel{T})::T where T
 
-    return time
+    return :time
 end
 
-function SymbolicIndexingInterface.is_time_dependent(fwm::FoodwebModel)
+function SymbolicIndexingInterface.is_time_dependent(::FoodwebModel)
 
     return true
 end
@@ -82,7 +87,7 @@ function SymbolicIndexingInterface.all_symbols(fwm::FoodwebModel)
     return vcat(
         variable_symbols(fwm), 
         parameter_symbols(fwm),
-        time 
+        :time 
     )
 end
 
@@ -95,50 +100,4 @@ function SymbolicIndexingInterface.default_values(fwm::FoodwebModel)
     ps = Dict(psyms .=> get_value.(Ref(fwm.params), psyms))
 
     return merge(vars, ps)
-end
-
-# ------------------------------------------------------------------ #
-# Implementations for Symbol/T indexing on HigherOrderFoodwebs types #
-# ------------------------------------------------------------------ #
-
-# Some of these function are unimplented for the case of Symbol/T indexing.
-# This is because some of the function FoodwebModel as their only parameter,
-# Deciding whether to return a Num or a Symbol/T is ambiguous in these cases.
-# When it's ambiguous, we'll always return a Num; hence leaving the Symbol/T
-# versions unimplented.
-
-function SymbolicIndexingInterface.is_variable(fwm::FoodwebModel{T}, sym::T) where T
-
-    for v in fwm.vars.syms
-
-        if v == sym
-
-            return true
-        end
-    end
-
-    return false
-end
-
-function SymbolicIndexingInterface.variable_index(fwm::FoodwebModel{T}, sym::T) where T
-
-    return get_index(fwm.vars, sym)
-end
-
-function SymbolicIndexingInterface.is_parameter(fwm::FoodwebModel{T}, sym::T) where T
-
-    for v in fwm.params.syms
-
-        if v == sym
-
-            return true
-        end
-    end
-
-    return false   
-end
-
-function SymbolicIndexingInterface.parameter_index(fwm::FoodwebModel{T}, sym::T) where T
-
-    return get_index(fwm.params, sym)
 end

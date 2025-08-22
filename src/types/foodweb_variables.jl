@@ -10,9 +10,8 @@ struct FoodwebVariables{T}
 
     type::Vector{VariableType}
     syms::Vector{T}
-    vars::Vector{Num}
-    idxs::Dict{Union{T, Num}, Int64}
     vals::Vector{Float64}
+    idxs::Dict{T, Int64}
 end
 
 function FoodwebVariables{T}()::FoodwebVariables{T} where T
@@ -20,9 +19,8 @@ function FoodwebVariables{T}()::FoodwebVariables{T} where T
     return FoodwebVariables{T}(
         Vector{VariableType}(),
         Vector{T}(),
-        Vector{Num}(),
-        Dict{Union{T, Num}, Int64}(),
-        Vector{Float64}()
+        Vector{Float64}(),
+        Dict{T, Int64}(),
     )
 end
 

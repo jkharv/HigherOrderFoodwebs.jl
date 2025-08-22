@@ -31,24 +31,6 @@ function isconsumer(fwm::FoodwebModel, sp)::Bool
     return !isproducer(fwm, sp)
 end
 
-function SpeciesInteractionNetworks.subject(fwm::FoodwebModel, i::AnnotatedHyperedge)
-
-    s = subject(i)
-    return fwm.vars.vars[fwm.vars.idxs[s]]
-end
-
-function SpeciesInteractionNetworks.object(fwm::FoodwebModel, i::AnnotatedHyperedge)
-
-    s = object(i)
-    return fwm.vars.vars[fwm.vars.idxs[s]]
-end
-
-function SpeciesInteractionNetworks.with_role(fwm::FoodwebModel, i::AnnotatedHyperedge, r::Symbol)
-
-    s = with_role(r, i)
-    return [fwm.vars.vars[fwm.vars.idxs[i]] for i in s]
-end
-
 # ---------------------------------------------------------------------- #
 #  Forwarding (mostly) onto the interface for the FoodwebVariables type  #
 # ---------------------------------------------------------------------- #
@@ -57,21 +39,6 @@ end
 # This is something that might be work revisiting in the future, but for now, 
 # all of the functions below have got to check both objects for the proper
 # entry.
-
-function get_symbol(fwm::FoodwebModel, x::Num)
-
-    if x ∈ fwm.vars
-
-        return get_symbol(fwm.vars, x)
-    elseif x ∈ fwm.params
-
-        return get_symbol(fwm.params, x)
-    else
-
-        error("Could not find $x in $fwm. Parameters are disambiguated and may
-        not have the symbol you expect")
-    end
-end
 
 function get_variable(fwm::FoodwebModel, x::Symbol)
 
@@ -88,7 +55,7 @@ function get_variable(fwm::FoodwebModel, x::Symbol)
     end
 end
 
-function get_value(fwm::FoodwebModel, x::Union{Symbol, Num})::Float64
+function get_value(fwm::FoodwebModel{T}, x::T)::Float64 where T
 
     if x ∈ fwm.vars
 
@@ -103,7 +70,7 @@ function get_value(fwm::FoodwebModel, x::Union{Symbol, Num})::Float64
     end
 end
 
-function variable_type(fwm::FoodwebModel{T}, x::Union{T, Num})::VariableType where T
+function variable_type(fwm::FoodwebModel{T}, x::T)::VariableType where T
 
     if x ∈ fwm.vars
 
@@ -125,7 +92,7 @@ function variable_type(fwm::FoodwebModel, x::Int64)::VariableType
     return variable_type(fwm.vars, x)
 end
 
-function set_u0!(fwm::FoodwebModel{T}, k::Union{T, Num}, val::Float64) where T
+function set_u0!(fwm::FoodwebModel{T}, k::T, val::Float64) where T
     
     set_value!(fwm.vars, k, val)
 end
@@ -138,7 +105,7 @@ function set_u0!(fwm::FoodwebModel{T}, u0::Dict{T, Float64}) where T
     end
 end
 
-function set_u0!(fwm::FoodwebModel, u0::Dict{Num, Float64})
+function set_u0!(fwm::FoodwebModel{T}, u0::Vector{Pair{T, Float64}}) where T
 
     for (k, v) ∈ u0
 
@@ -158,13 +125,11 @@ end
 
 function add_param!(fwm::FoodwebModel{T}, sym::Symbol, spp::Vector{T}, val::Number) where T
 
+    @warn "TODO: This function isn't generic enough and will only work on symbols"
+
     unambiguous_sym = (Symbol ∘ join)([sym, spp...], "_")
-    p = create_param(unambiguous_sym)
 
-    add_var!(fwm.params, unambiguous_sym, p, PARAMETER)
-    fwm.params.vals[get_index(fwm.params, p)] = val
-
-    return p
+    add_var!(fwm.params, unambiguous_sym, PARAMETER, val)
 end
 
 function add_param!(fwm::FoodwebModel{T}, sym::Symbol, spp::T, val::Number) where T

@@ -14,25 +14,19 @@ function CommunityMatrix(fwm::FoodwebModel)
     vars = deepcopy(fwm.vars)
     n = length(vars)
 
-    cm = CommunityMatrix(spzeros(Num, n, n), vars)
+    m = Matrix{Union{Function, Missing}}(missing, n, n)
+    cm = CommunityMatrix(m, vars)
 
     for intrx ∈ interactions(fwm)
 
         sbj = subject(intrx)
         obj = object(intrx)
 
-        ff = fwm.dynamic_rules[intrx].forwards_function
-        bf = fwm.dynamic_rules[intrx].backwards_function
+        ff = fwm.dynamic_rules[intrx].fr
+        bf = fwm.dynamic_rules[intrx].rr
 
         cm[sbj, obj] = ff
         cm[obj, sbj] = bf
-    end
-
-    for eq ∈ fwm.aux_dynamic_rules
-
-        var = get_symbol(fwm, first(eq))
-        dr = last(eq)
-        cm[var, var] = dr.forwards_function
     end
 
     return cm

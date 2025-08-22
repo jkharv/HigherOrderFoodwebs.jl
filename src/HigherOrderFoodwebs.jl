@@ -3,13 +3,8 @@ module HigherOrderFoodwebs
 using SpeciesInteractionNetworks
 using Distributions
 using SparseArrays
-using StaticArrays
 using LinearAlgebra
-using NaNMath
-using SpecialFunctions
 
-using Symbolics
-using SymbolicUtils
 using SciMLBase
 using SymbolicIndexingInterface
 
@@ -34,11 +29,6 @@ export FoodwebModel
 include("./types/community_matrix.jl")
 export CommunityMatrix
 
-# Modules
-
-include("./model_compilation/code.jl")
-using .Code
-
 # --------------- #
 # Core interfaces #
 # --------------- #
@@ -46,7 +36,7 @@ using .Code
 include("./core_interfaces/dynamic_rule.jl")
 
 include("./core_interfaces/foodweb_variables.jl")
-export add_var!, variables, get_symbol, get_variable, get_index
+export add_var!, variables, get_symbol, get_index
 export set_value!, get_value, variable_type
 
 include("./core_interfaces/foodweb_interface.jl")
@@ -55,7 +45,7 @@ export isproducer, isconsumer, set_u0!
 export subject, object, with_role # From SpeciesInteractionNetworks.jl
 
 # Passthroughs to the FoodwebVariables type
-export get_symbol, get_variable, set_u0!, variable_type
+export get_symbol, set_u0!, variable_type
 export add_var!, add_param!
 
 include("./core_interfaces/community_matrix.jl")
@@ -96,14 +86,6 @@ include("./structural_models/optimal_foraging.jl")
 include("./structural_models/nichemodel.jl")
 export nichemodel, optimal_foraging
 
-# --------------------------------------------------------- #
-# Common functions and their derivatives for foodweb models #
-# --------------------------------------------------------- #
-
-include("./registered_symbolics/holling_disk.jl")
-include("./registered_symbolics/logistic.jl")
-export holling_disk, logistic
-
 # ------------------------------------- #
 # Tools for examining realized networks #
 # ------------------------------------- #
@@ -115,8 +97,6 @@ export trophic_flux
 # Model compilation #
 # ----------------- #
 
-include("./model_compilation/jacobian.jl")
 include("./model_compilation/code_compilation.jl")
-public fwm_jacobian
 
 end
