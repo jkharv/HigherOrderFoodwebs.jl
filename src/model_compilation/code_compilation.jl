@@ -22,25 +22,111 @@ function values_inorder(vs::FoodwebVariables)::Vector{Float64}
     return vals
 end
 
-function SciMLBase.ODEProblem(fwm::FoodwebModel, tspan = (0,0); 
-    compile_symbolics = true, 
-    compile_jacobian = false,
-    kwargs...
-    )
+function ode_function!(fwm, du_locks, du, u, ps, t)
 
-        f = compiled_function(fwm)
+    # Reset du
+    du .= 0.0
 
-    if compile_jacobian
+    Threads.@threads for (intx, rule) in collect(fwm.dynamic_rules)
 
-        j = compiled_jacobian(fwm)
-    else
+        s = get_index(fwm.vars, subject(intx))
+        o = get_index(fwm.vars, object(intx))
 
-        j = nothing
+        f = rule(u, ps, t)
+    
+        if f isa Tuple{Float64, Float64}        
+
+            lock(du_locks[s]) do
+
+                du[s] += f[1] 
+            end
+
+            lock(du_locks[o]) do
+
+                du[o] += f[2]
+            end
+        else
+
+            lock(du_locks[s]) do
+
+                du[s] += f 
+            end
+        end
     end
+
+    Threads.@threads for (aux_var, rule) in collect(fwm.aux_dynamic_rules)
+
+        aux_index = get_index(fwm.vars, aux_var)
+
+        f = rule(u, ps, t)
+    
+        if f isa Tuple{Float64, Float64}        
+
+            error("Not meaningful for a aux_var rule to return a tuple")
+        else
+
+            lock(du_locks[aux_index]) do
+
+                du[aux_index] += f 
+            end
+        end
+    end
+end
+
+function compile_function_float(fwm)
+
+    xs = ones((length ∘ variables)(fwm.vars))
+    ps = ones((length ∘ variables)(fwm.params))
+
+    Threads.@threads for rule in (collect ∘ values)(fwm.dynamic_rules)
+
+        rule(xs, ps, 1.0)
+    end
+
+    Threads.@threads for rule in (collect ∘ values)(fwm.aux_dynamic_rules)
+
+        rule(xs, ps, 1.0)
+    end
+
+    return nothing
+end
+
+# TODO move this into an Ext maybe? Make this conditional on having ForwardDiff,
+# so this doesn't have to be a direct dependency?  Check if the individual
+# solvers track deps sperately, cause in the case something like Tsit5 shouldn't
+# depend on ForwardDiff and we can cut some extra dependencies.
+function compile_function_dual(fwm)
+
+    du = zeros((length ∘ variables)(fwm))
+    u = rand((length ∘ variables)(fwm))
+    ps = rand(1)
+
+    Threads.@threads for rule in (collect ∘ values)(fwm.dynamic_rules)
+
+        ForwardDiff.derivative(t -> rule(u, ps, t)[1], 1.0)
+    end
+
+    return nothing
+end
+
+function SciMLBase.ODEProblem(
+    fwm::FoodwebModel, 
+    tspan = (0,0), 
+    kwargs...)
+
+    du_locks = [ReentrantLock() for i in 1:(length ∘ variables)(fwm.vars)];
+    f(du, u, ps, t) = ode_function!(fwm, du_locks, du, u, ps, t)
+
+    if (length ∘ variables)(fwm.vars) > 50 
+
+        @info "Compiling the model code. On large models this can take a long time."
+    end
+
+    compile_function_float(fwm)
 
     # Setting sys = fwm here allows us to access the foodweb model from the
     # prob/sol object and do Num/Symbol indexing.
-    ode_func = ODEFunction{true, SciMLBase.FullSpecialize}(f; jac = j, sys = fwm)
+    ode_func = ODEFunction{true, SciMLBase.FullSpecialize}(f; jac = nothing, sys = fwm)
 
     u0 = values_inorder(fwm.vars)
     ps = values_inorder(fwm.params)
