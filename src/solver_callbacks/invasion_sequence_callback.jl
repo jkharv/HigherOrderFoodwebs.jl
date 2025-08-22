@@ -35,12 +35,16 @@ function (iscb::InvasionSequenceCallbackAffect)(integrator)
         if integrator[invader] > 0.0
  
             iscb.cursor += 1
+
+            @debug "The supposed invader was already present"
             continue
         else
 
             integrator[invader] = iscb.invader_density 
             push!(iscb.invasions, (integrator.t, invader))
             iscb.cursor += 1 
+            
+            @debug "$invader invaded at t= $(integrator.t)"  
             break;
         end
     end
