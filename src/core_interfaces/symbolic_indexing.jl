@@ -22,7 +22,7 @@ function SymbolicIndexingInterface.variable_index(
 end
 
 function SymbolicIndexingInterface.variable_symbols(
-    fwm::FoodwebModel{T})::T where T
+    fwm::FoodwebModel{T})::Vector{T} where T
 
     return variables(fwm.vars)
 end
@@ -48,13 +48,13 @@ function SymbolicIndexingInterface.parameter_index(
 end
 
 function SymbolicIndexingInterface.parameter_symbols(
-    fwm::FoodwebModel{T})::T where T
+    fwm::FoodwebModel{T})::Vector{T} where T
  
     return variables(fwm.params)
 end
 
 function SymbolicIndexingInterface.is_independent_variable(
-    fwm::FoodwebModel{T}, sym::T)::T where T
+    fwm::FoodwebModel{T}, sym::T)::Bool where T
 
     @warn "TODO: DO TIME VAR PROPERLY"
 
@@ -62,7 +62,7 @@ function SymbolicIndexingInterface.is_independent_variable(
 end
 
 function SymbolicIndexingInterface.independent_variable_symbols(
-    ::FoodwebModel{T})::T where T
+    ::FoodwebModel{T})::Vector{T} where T
 
     return :time
 end
@@ -77,12 +77,12 @@ function SymbolicIndexingInterface.constant_structure(::FoodwebModel)
     return true
 end
 
-function SymbolicIndexingInterface.all_variable_symbols(fwm::FoodwebModel)
+function SymbolicIndexingInterface.all_variable_symbols(fwm::FoodwebModel{T})::Vector{T} where T
  
     return variable_symbols(fwm)
 end
 
-function SymbolicIndexingInterface.all_symbols(fwm::FoodwebModel)
+function SymbolicIndexingInterface.all_symbols(fwm::FoodwebModel{T})::Vector{T} where T
 
     return vcat(
         variable_symbols(fwm), 
