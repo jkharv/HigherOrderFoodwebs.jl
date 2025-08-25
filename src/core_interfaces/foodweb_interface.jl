@@ -91,9 +91,6 @@ end
 
 function variable_type(fwm::FoodwebModel, x::Int64)::VariableType
 
-    @warn "This function can return wrong results (or error) if any of the
-           indices represent parameters"
-    
     return variable_type(fwm.vars, x)
 end
 
@@ -129,8 +126,6 @@ function add_var!(fwm::FoodwebModel, v::Symbol, type::VariableType)
 end
 
 function add_param!(fwm::FoodwebModel{T}, sym::Symbol, spp::Vector{T}, val::Number) where T
-
-    @warn "TODO: This function isn't generic enough and will only work on symbols"
 
     unambiguous_sym = (Symbol ∘ join)([sym, spp...], "_")
 
