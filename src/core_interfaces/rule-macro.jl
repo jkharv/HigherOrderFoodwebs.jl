@@ -14,13 +14,12 @@ function function_generator(rename_dict::Dict, fbody)::Expr
         end
     end
 
-    return quote
-
+    return :( 
         function $fsym(u, ps, t)
 
             $fbody
         end
-    end
+    )
 end
 
 function get_index_expr(fwm, rename_dict, variable_syms, isparameter, ex)
@@ -106,8 +105,9 @@ function rule(fwm, intx, body)
             $fwm, 
             $intx,
             DynamicRule(
-                eval(HigherOrderFoodwebs.function_generator($rename_dict, $notmacrocalls)),
-                $variable_syms 
+                HigherOrderFoodwebs.function_generator($rename_dict, $notmacrocalls),
+                $variable_syms,
+                @__MODULE__() 
             )
         )
     end

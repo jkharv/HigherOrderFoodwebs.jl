@@ -1,11 +1,17 @@
 struct DynamicRule
 
-    f::Function
+    f::RuntimeGeneratedFunction
     vars::Vector{Symbol}
+end
+
+function DynamicRule(f::Expr, vars, mod)
+
+    rtf = RuntimeGeneratedFunction(mod, mod, f)
+     
+    return DynamicRule(rtf, vars)
 end
 
 function (dr::DynamicRule)(u, ps, t)
 
-    # World age issues
-    return invokelatest(dr.f, u, ps, t)
+    return dr.f(u, ps, t)
 end
