@@ -106,6 +106,8 @@ export trophic_flux
 # Model compilation #
 # ----------------- #
 
+include("./model_compilation/matchings.jl")
+
 include("./model_compilation/code_compilation.jl")
 
 end
