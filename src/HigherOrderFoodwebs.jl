@@ -10,7 +10,6 @@ using SymbolicIndexingInterface
 
 using OrdinaryDiffEqTsit5
 using OrdinaryDiffEqRosenbrock
-using StochasticDiffEq
 
 using RuntimeGeneratedFunctions
 RuntimeGeneratedFunctions.init(@__MODULE__)
