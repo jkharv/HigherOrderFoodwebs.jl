@@ -1,6 +1,6 @@
 module HigherOrderFoodwebs
 
-using SpeciesInteractionNetworks
+using SpeciesInteractionNetworks 
 using AnnotatedHypergraphs
 using Distributions
 using SparseArrays
@@ -100,8 +100,8 @@ export nichemodel, optimal_foraging
 # Tools for examining realized networks #
 # ------------------------------------- #
 
-include("./realized_networks/trophic_flux.jl")
-export trophic_flux
+include("./realized_networks/realized_network.jl")
+export realized_network 
 
 # ----------------- #
 # Model compilation #
