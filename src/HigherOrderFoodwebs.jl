@@ -1,6 +1,7 @@
 module HigherOrderFoodwebs
 
 using SpeciesInteractionNetworks
+using AnnotatedHypergraphs
 using Distributions
 using SparseArrays
 using LinearAlgebra

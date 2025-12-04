@@ -1,6 +1,6 @@
 mutable struct FoodwebModel{T}
 
-    hg::SpeciesInteractionNetwork{<:Partiteness, <:AnnotatedHyperedge}
+    hg::AnnotatedHypergraph{T}
 
     dynamic_rules::Dict{AnnotatedHyperedge, DynamicRule}
     aux_dynamic_rules::Dict{T, DynamicRule}
@@ -10,7 +10,7 @@ mutable struct FoodwebModel{T}
 end
 
 function FoodwebModel(
-    hg::SpeciesInteractionNetwork{<:Partiteness{T}, <:AnnotatedHyperedge{T}};
+    hg::AnnotatedHypergraph{T};
     add_self_interactions = true) where T
 
     hg = deepcopy(hg)
@@ -20,7 +20,7 @@ function FoodwebModel(
         for sp ∈ species(hg)
 
             # Check if the loop is already there
-            z = findfirst(x -> isloop(x) & has_role(sp, :subject, x) , interactions(hg))
+            z = findfirst(x -> isloop(x) & has_role(sp, x, :subject) , interactions(hg))
 
             # create the loop if it's not there already
             if isnothing(z)

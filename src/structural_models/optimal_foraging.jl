@@ -1,4 +1,4 @@
-function optimal_foraging(hg, sp)::SpeciesInteractionNetwork
+function optimal_foraging(hg, sp)::AnnotatedHypergraph
 
     sp_trophic_intrxs = filter(x -> !isloop(x) && (subject(x) == sp), interactions(hg))
     sp_resources = object.(sp_trophic_intrxs)
@@ -20,13 +20,13 @@ function optimal_foraging(hg, sp)::SpeciesInteractionNetwork
         push!(modified_intrxs, i)
     end
 
-    return SpeciesInteractionNetwork(
+    return AnnotatedHypergraph(
         Unipartite(species(hg)),
         [other_intrxs..., modified_intrxs...]
     )
 end
 
-function optimal_foraging(hg, spp::Vector{Symbol})::SpeciesInteractionNetwork
+function optimal_foraging(hg, spp::Vector{Symbol})::AnnotatedHypergraph
 
     new_hg = hg
 

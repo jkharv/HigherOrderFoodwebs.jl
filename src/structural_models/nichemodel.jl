@@ -38,5 +38,5 @@ function nichemodel(species::Integer=10, connectance::T=0.2) where {T <: Abstrac
 
     spp = Unipartite(Symbol.(["node_$i" for i in 1:species]))
     
-    return SpeciesInteractionNetwork(spp, z)
+    return AnnotatedHypergraph(spp, z)
 end

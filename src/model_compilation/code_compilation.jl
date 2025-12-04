@@ -136,4 +136,3 @@ function values_inorder(vs::FoodwebVariables)::Vector{Float64}
 
     return vals
 end
-
