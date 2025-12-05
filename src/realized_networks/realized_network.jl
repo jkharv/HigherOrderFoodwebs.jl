@@ -1,4 +1,6 @@
-function realized_network(sol, t)::SpeciesInteractionNetwork
+function realized_network(sol, t; 
+    include_reverse_interactions = false
+    )::SpeciesInteractionNetwork
 
     fwm = sol.prob.f.sys
     drs = fwm.dynamic_rules
@@ -19,7 +21,11 @@ function realized_network(sol, t)::SpeciesInteractionNetwork
 
             f, r = dr(sol(t), ps, t)
             m[s, o] = f
-            m[o, s] = r
+
+            if include_reverse_interactions
+
+                m[o, s] = r
+            end
         end         
     end
 
