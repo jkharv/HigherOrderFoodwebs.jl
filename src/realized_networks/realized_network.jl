@@ -1,5 +1,6 @@
 function realized_network(sol, t; 
-    include_reverse_interactions = false
+    include_reverse_interactions = false,
+    include_loops = false,
     )::SpeciesInteractionNetwork
 
     fwm = sol.prob.f.sys
@@ -14,19 +15,20 @@ function realized_network(sol, t;
         s = get_index(fwm.vars, subject(i))
         o = get_index(fwm.vars, object(i))
 
-        if isloop(i)
+        if isloop(i) & include_loops
 
             m[s, o] = dr(sol(t), ps, t)
-        else
+        elseif !isloop(i) & include_reverse_interactions
 
             f, r = dr(sol(t), ps, t)
             m[s, o] = f
+            m[o, s] = r
+        elseif !isloop(i) & !include_reverse_interactions
 
-            if include_reverse_interactions
-
-                m[o, s] = r
-            end
-        end         
+            f, r = dr(sol(t), ps, t)
+            m[s, o] = f
+        end
+                 
     end
 
     return SpeciesInteractionNetwork((Unipartite ∘ species)(fwm), Quantitative(m))
