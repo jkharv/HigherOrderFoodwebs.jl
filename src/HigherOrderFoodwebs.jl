@@ -101,7 +101,7 @@ export nichemodel, optimal_foraging
 # ------------------------------------- #
 
 include("./realized_networks/realized_network.jl")
-export realized_network 
+export realized_network, turnover_network, simulate_sampling
 
 # ----------------- #
 # Model compilation #
