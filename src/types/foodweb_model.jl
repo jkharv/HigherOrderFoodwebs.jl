@@ -1,11 +1,34 @@
+"""
+    FoodwebModel{T}
+
+Centerpiece of `HigherOrderFoodwebs` brings together all the components of a
+foodweb model into a single struct.
+"""
 mutable struct FoodwebModel{T}
 
+    """
+    `AnnotatedHypergraph` representing trophic/non-trophic relationship between
+    species in the foodweb.
+    """
     hg::AnnotatedHypergraph{T}
 
+    """
+    Stores the `DynamicRule` associated with each `AnnotatedHyperedge`.
+    """
     dynamic_rules::Dict{AnnotatedHyperedge, DynamicRule}
+    """
+    `DynamicRules` representing variables that don't appear in the
+    `AnnotatedHypergraph` such as `TRAIT_VARIABLE`s and `ENVIRONMENT_VARIABLE`s.
+    """
     aux_dynamic_rules::Dict{T, DynamicRule}
    
+    """
+    The model's variables.
+    """
     vars::FoodwebVariables{T}    
+    """
+    The model's parameters.
+    """
     params::FoodwebVariables{T}
 end
 

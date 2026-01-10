@@ -1,6 +1,11 @@
+"""
+    DynamicRule{RuntimeGeneratedFunction, Vector{Symbol}}
+
+Represents the dynamical rule describing one interaction in a foodweb.
+"""
 struct DynamicRule
 
-    f::RuntimeGeneratedFunction
+    f::RuntimeGeneratedFunction 
     vars::Vector{Symbol}
 end
 
