@@ -5,6 +5,7 @@ using AnnotatedHypergraphs
 using Distributions
 using SparseArrays
 using LinearAlgebra
+using Combinatorics
 
 using SciMLBase
 using SymbolicIndexingInterface
@@ -102,6 +103,12 @@ export nichemodel, optimal_foraging
 
 include("./realized_networks/realized_network.jl")
 export realized_network, turnover_network, simulate_sampling
+
+# ------ #
+# Motifs #
+# ------ #
+include("./motifs/motifs.jl")
+export findmotif
 
 # ----------------- #
 # Model compilation #
