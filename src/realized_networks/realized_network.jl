@@ -84,3 +84,28 @@ function simulate_sampling(
 
     return SpeciesInteractionNetwork(copy(net.nodes), Probabilistic(edges))
 end
+
+"""
+    rescale_network(
+    web::SpeciesInteractionNetwork{Unipartite{T}, Quantitative{U}}
+    )::SpeciesInteractionNetwork{Unipartite{T}, Probabilistic{U}} where {T,U}
+
+    Rescales the weights of a Quantitative network to be between 0 and 1 and returns
+    a Probabilistic web.
+"""
+function rescale_network(
+    web::SpeciesInteractionNetwork{Unipartite{T}, Quantitative{U}}
+    )::SpeciesInteractionNetwork{Unipartite{T}, Probabilistic{U}} where {T,U}
+
+    intxs = copy(web.edges.edges)
+
+    max = maximum(intxs)
+    min = minimum(intxs)
+
+    for i in findall(!iszero, intxs)
+ 
+        intxs[i] = (intxs[i] - min)/(max-min)
+    end
+
+    return SpeciesInteractionNetwork(copy(web.nodes), Probabilistic(intxs))
+end
