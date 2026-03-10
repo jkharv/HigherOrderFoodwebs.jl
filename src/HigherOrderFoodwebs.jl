@@ -103,6 +103,7 @@ export nichemodel, optimal_foraging
 
 include("./realized_networks/realized_network.jl")
 export realized_network, turnover_network, simulate_sampling, rescale_network
+export trim_network
 
 # ------ #
 # Motifs #
@@ -117,5 +118,11 @@ export findmotif
 include("./model_compilation/matchings.jl")
 
 include("./model_compilation/code_compilation.jl")
+
+# ---------------- #
+# Reorganize later #
+# ---------------- #
+include("./trophic_levels.jl")
+export trophic_levels
 
 end
