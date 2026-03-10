@@ -90,22 +90,44 @@ end
     web::SpeciesInteractionNetwork{Unipartite{T}, Quantitative{U}}
     )::SpeciesInteractionNetwork{Unipartite{T}, Probabilistic{U}} where {T,U}
 
-    Rescales the weights of a Quantitative network to be between 0 and 1 and returns
-    a Probabilistic web.
+Rescales the weights of a Quantitative network to be between 0 and 1 and returns
+a Probabilistic web. Weights are rescaled such that the interaction probabilities
+for a consumer and all of it's resources sum to one.
 """
 function rescale_network(
     web::SpeciesInteractionNetwork{Unipartite{T}, Quantitative{U}}
     )::SpeciesInteractionNetwork{Unipartite{T}, Probabilistic{U}} where {T,U}
 
-    intxs = copy(web.edges.edges)
+    m = spzeros(Float64, size(web.edges.edges))
+   
+    for (i, row) in (enumerate ∘ eachrow)(web.edges.edges)
 
-    max = maximum(intxs)
-    min = minimum(intxs)
+        if sum(row) == 0
+            continue
+        end
 
-    for i in findall(!iszero, intxs)
- 
-        intxs[i] = (intxs[i] - min)/(max-min)
+        m[i, :] = (row / sum(row))
     end
 
-    return SpeciesInteractionNetwork(copy(web.nodes), Probabilistic(intxs))
+    return SpeciesInteractionNetwork(copy(web.nodes), Probabilistic(m))
+end
+
+"""
+    trim_network(
+    web::SpeciesInteractionNetwork{<:Unipartite{T}, U},
+    spp::Vector{Symbol}
+    )::SpeciesInteractionNetwork{<:Unipartite{T}, U} where {T, U}
+
+Returns a copy of `web` trimmed to contain only the species in `spp`. Species
+names remain unchanged.
+"""
+function trim_network(
+    web::SpeciesInteractionNetwork{<:Unipartite{T}, U},
+    spp::Vector{Symbol}
+    )::SpeciesInteractionNetwork{<:Unipartite{T}, U} where {T, U}
+
+    x = copy(web.edges.edges)[indexin(spp, species(web)), indexin(spp, species(web))]
+    intxs = typeof(web.edges)(x)
+
+    return SpeciesInteractionNetwork(Unipartite(spp), intxs)
 end
