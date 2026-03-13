@@ -32,10 +32,13 @@ function trophic_ordering(web::SpeciesInteractionNetwork)
     return ordering
 end
 
-function trophic_levels(net::SpeciesInteractionNetwork{Unipartite{T}, Binary{Bool}};
+function trophic_levels(net::SpeciesInteractionNetwork{Unipartite{T}, U};
     max_error = 0.01, 
-    max_iterations = 100
-    ) where T
+    max_iterations = 100,
+    type = :mean
+    ) where {T, U <: Union{Binary{Bool}, Probabilistic{Float64}}}
+
+    @assert type in [:mean, :maximum, :minimum]
 
     tls = Dict(species(net) .=> 0.0)
 
@@ -46,29 +49,42 @@ function trophic_levels(net::SpeciesInteractionNetwork{Unipartite{T}, Binary{Boo
 
     tls_old = copy(tls)
 
-    to = trophic_ordering(net)
+    ordering = trophic_ordering(net)
 
     for i in 1:max_iterations
 
         tls_old = copy(tls)
 
-        for sp in to
-            
-            acc = 0 
+        for sp in ordering
 
-            for r in successors(net, sp)
+            weights = [net[sp, r] for r in successors(net, sp)]            
+            weights = weights/sum(weights)
+            tl_diet = [tls[r] for r in successors(net, sp)]
 
-                acc += tls[r]
-                acc = acc / (length ∘ successors)(net, sp)
+            if isempty(tl_diet)
+
+                tls[sp] = 1                
+
+            elseif type == :mean
+
+                tls[sp] = sum(weights .* tl_diet) + 1
+
+            elseif type == :maximum
+
+                tls[sp] = maximum(tl_diet) + 1
+
+            elseif type == :minimum
+
+                tls[sp] = minimum(tl_diet) + 1
             end
 
-            tls[sp] = acc + 1.0
+
         end
 
         err = maximum(abs.((collect ∘ values)(tls_old) - (collect ∘ values)(tls)))
 
         if err < max_error
-            println(i)
+            println("Stopped early!")
             break
         end
 
