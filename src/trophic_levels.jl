@@ -1,93 +1,73 @@
-function producers(web)
+"""
+    trophic_levels(web::SpeciesInteractionNetwork) 
 
-    return filter(x-> generality(web, x) == 0, species(web))
-end
+Calculates the trophic level of each species in a food web according to the
+algorithm presented in Levine (1980). Returns a `Dict{T, Float64}`
 
-function trophic_ordering(web::SpeciesInteractionNetwork)
+## References
 
-    ordering  = filter(x-> (length ∘ successors)(web, x) == 0.0, species(web))
-    remaining = setdiff((copy ∘ species)(web), ordering)
-  
-    n = 0    
+Levine, S. 1980. Several measures of trophic structure applicable to complex
+food webs. - Journal of Theoretical Biology 83: 195–207.
+"""
+function trophic_levels(web::SpeciesInteractionNetwork)::Dict{Symbol, Float64}
 
-    while !isempty(remaining) & (n < 50)
+    if count(x-> generality(web, x) == 0, species(web)) == 0
+
+        error("Trophic level is only defined with at least one basal species.")
+    end
+
+    m = Matrix(copy(web.edges.edges))
+
+    # *Basal or unconnected
+    non_basal_indices = Vector{Int64}()
+    basal_indices = Vector{Int64}()
+    for (i, row) in (enumerate ∘ eachrow)(m)
+
+        if sum(row) > 0
+
+            push!(non_basal_indices, i)
+        else
+
+            push!(basal_indices, i)
+        end
+    end
+
+    Q = Matrix{Float64}(undef, size(m)...)
+
+    for (i, row) in (enumerate ∘ eachrow)(m)
+
+        if sum(row) > 0
+    
+            Q[i, :] = row / sum(row)
+        else
+
+            Q[i, :] = zeros(Float64, length(row))
+        end
+    end
+
+    for i in 1:size(Q)[1]
+
+        Q[i,i] = 0.0
+    end
+
+    # Partition a matrix without the basal species.
+    Q = Q[non_basal_indices, non_basal_indices]
    
-        n = n + 1
+    i = Matrix(1.0I, size(Q))
+    N = inv(i - Q)
 
-        for sp in ordering 
+    tls = Dict{Symbol, Float64}()
 
-            candidates = (collect ∘ setdiff)(predecessors(web, sp), ordering)
+    for (i, row) in (enumerate ∘ eachrow)(N)
 
-            if isempty(candidates)
-                continue
-            end
-
-            sort!(candidates, by = x -> generality(web, x))
-            push!(ordering, first(candidates))
-            remaining = setdiff(remaining, ordering)
-        end
+        sp = non_basal_indices[i]
         
+        tls[species(web)[sp]] = sum(row) + 1.0
     end
 
-    return ordering
-end
+    for i in basal_indices
 
-function trophic_levels(net::SpeciesInteractionNetwork{Unipartite{T}, U};
-    max_error = 0.01, 
-    max_iterations = 100,
-    type = :mean
-    ) where {T, U <: Union{Binary{Bool}, Probabilistic{Float64}}}
-
-    @assert type in [:mean, :maximum, :minimum]
-
-    tls = Dict(species(net) .=> 0.0)
-
-    for sp in producers(net)
-
-        tls[sp] = 1.0
-    end
-
-    tls_old = copy(tls)
-
-    ordering = trophic_ordering(net)
-
-    for i in 1:max_iterations
-
-        tls_old = copy(tls)
-
-        for sp in ordering
-
-            weights = [net[sp, r] for r in successors(net, sp)]            
-            weights = weights/sum(weights)
-            tl_diet = [tls[r] for r in successors(net, sp)]
-
-            if isempty(tl_diet)
-
-                tls[sp] = 1                
-
-            elseif type == :mean
-
-                tls[sp] = sum(weights .* tl_diet) + 1
-
-            elseif type == :maximum
-
-                tls[sp] = maximum(tl_diet) + 1
-
-            elseif type == :minimum
-
-                tls[sp] = minimum(tl_diet) + 1
-            end
-
-
-        end
-
-        err = maximum(abs.((collect ∘ values)(tls_old) - (collect ∘ values)(tls)))
-
-        if err < max_error
-            println("Stopped early!")
-            break
-        end
-
+        tls[species(web)[i]] = 1.0
     end
 
     return tls
