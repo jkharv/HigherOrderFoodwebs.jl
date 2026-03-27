@@ -1,74 +1,70 @@
 """
-    trophic_levels(web::SpeciesInteractionNetwork) 
+    trophic_levels(web::SpeciesInteractionNetwork)::Dict{Symbol, Float64} 
 
 Calculates the trophic level of each species in a food web according to the
-algorithm presented in Levine (1980). Returns a `Dict{T, Float64}`
+algorithm presented in MacKay (2020).
 
 ## References
 
-Levine, S. 1980. Several measures of trophic structure applicable to complex
-food webs. - Journal of Theoretical Biology 83: 195–207.
+MacKay, R. S., Johnson, S. and Sansom, B. 2020. How directed is a directed
+network? - R Soc Open Sci. 7: 201138.
+
 """
 function trophic_levels(web::SpeciesInteractionNetwork)::Dict{Symbol, Float64}
 
-    if count(x-> generality(web, x) == 0, species(web)) == 0
+    A = convert(SparseMatrixCSC{Float64}, web.edges.edges)
 
-        error("Trophic level is only defined with at least one basal species.")
+    L = laplacian(A)
+    v = imbalance_vector(A)
+
+    h = qr(L) \ v
+
+    # Move everthing up to have minimum value of 1
+    h = h .+ (abs(minimum(h)) + 1)
+    h = Dict(species(web) .=> h)
+
+    # Set all the basal species to have a trophic level of 1
+    for sp in basal_species(web)
+
+        h[sp] = 1.0
     end
 
-    m = Matrix(copy(web.edges.edges))
+    return h
+end
 
-    # *Basal or unconnected
-    non_basal_indices = Vector{Int64}()
-    basal_indices = Vector{Int64}()
-    for (i, row) in (enumerate ∘ eachrow)(m)
+function basal_species(web)::Vector{Symbol}
 
-        if sum(row) > 0
+    return filter(x-> generality(web, x) == 0, species(web))
+end
 
-            push!(non_basal_indices, i)
-        else
-
-            push!(basal_indices, i)
-        end
-    end
-
-    Q = Matrix{Float64}(undef, size(m)...)
-
-    for (i, row) in (enumerate ∘ eachrow)(m)
-
-        if sum(row) > 0
+function laplacian(A::SparseMatrixCSC{Float64})::SparseMatrixCSC{Float64}
     
-            Q[i, :] = row / sum(row)
-        else
+    D = spdiagm(weight_vector(A))
+    
+    return D - A - transpose(A)
+end
 
-            Q[i, :] = zeros(Float64, length(row))
-        end
+function weight_vector(A::SparseMatrixCSC{Float64})::Vector{Float64}
+
+    return abs.(sum.(eachrow(A))) + abs.(sum.(eachcol(A)))
+end
+
+function imbalance_vector(A::SparseMatrixCSC{Float64})::Vector{Float64}
+
+    in  = abs.(sum.(eachrow(A)))
+    out = abs.(sum.(eachcol(A)))
+
+    return in - out
+end
+
+function remove_loops(web::SpeciesInteractionNetwork{T, U})::SpeciesInteractionNetwork{T, U} where {T,U}
+
+    m = copy(web.edges.edges)
+
+    for i in diagind(m)
+
+        m[i] = zero(eltype(m))
     end
 
-    for i in 1:size(Q)[1]
-
-        Q[i,i] = 0.0
-    end
-
-    # Partition a matrix without the basal species.
-    Q = Q[non_basal_indices, non_basal_indices]
-   
-    i = Matrix(1.0I, size(Q))
-    N = inv(i - Q)
-
-    tls = Dict{Symbol, Float64}()
-
-    for (i, row) in (enumerate ∘ eachrow)(N)
-
-        sp = non_basal_indices[i]
-        
-        tls[species(web)[sp]] = sum(row) + 1.0
-    end
-
-    for i in basal_indices
-
-        tls[species(web)[i]] = 1.0
-    end
-
-    return tls
+    return SpeciesInteractionNetwork{T, U}(copy(web.nodes), typeof(web.edges)(m))
 end
