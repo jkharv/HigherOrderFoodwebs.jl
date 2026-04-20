@@ -28,7 +28,6 @@ function realized_network(sol, t;
             f, r = dr(sol(t), ps, t)
             m[s, o] = f
         end
-                 
     end
 
     return SpeciesInteractionNetwork((Unipartite ∘ species)(fwm), Quantitative(m))
@@ -102,11 +101,24 @@ function rescale_network(
    
     for (i, row) in (enumerate ∘ eachrow)(web.edges.edges)
 
-        if sum(row) == 0
+        m[i, :] = row
+        
+        # If it's got a really small magnitude and is negative, it's probably a
+        # floating point error. Not doing this very occasionally triggered the
+        # assert for 0 < x < 1 in the constructor for Probabilistic.
+        for j in eachindex(m[i, :])
+
+            if (abs(m[i, j]) < 1e-15) & (m[i, j] < 0)
+
+                m[i, j] = 0.0
+            end
+        end
+
+        if sum(m[i, :]) == 0
             continue
         end
 
-        m[i, :] = (row / sum(row))
+        m[i, :] = m[i, :] / sum(m[i, :])
     end
 
     return SpeciesInteractionNetwork(copy(web.nodes), Probabilistic(m))
