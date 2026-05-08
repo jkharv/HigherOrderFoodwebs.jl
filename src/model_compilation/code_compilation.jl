@@ -60,13 +60,6 @@ function SciMLBase.ODEProblem(
 
     f = FoodwebModelFunction(fwm)
 
-    if (length ∘ variables)(fwm.vars) > 50 
-
-        @info "Compiling the model code. On large models this can take a long time."
-    end
-
-    compile_function_float(fwm)
-
     # Setting sys = fwm here allows us to access the foodweb model from the
     # prob/sol object and do Num/Symbol indexing.
     ode_func = ODEFunction{true, SciMLBase.FullSpecialize}(f; jac = nothing, sys = fwm)
@@ -75,42 +68,6 @@ function SciMLBase.ODEProblem(
     ps = values_inorder(fwm.params)
 
     return ODEProblem(ode_func, u0, tspan, ps; kwargs...)
-end
-
-# TODO move this into an Ext maybe? Make this conditional on having ForwardDiff,
-# so this doesn't have to be a direct dependency?  Check if the individual
-# solvers track deps sperately, cause in the case something like Tsit5 shouldn't
-# depend on ForwardDiff and we can cut some extra dependencies.
-function compile_function_dual(fwm)
-
-    du = zeros((length ∘ variables)(fwm))
-    u = rand((length ∘ variables)(fwm))
-    ps = rand(1)
-
-    Threads.@threads for rule in (collect ∘ values)(fwm.dynamic_rules)
-
-        ForwardDiff.derivative(t -> rule(u, ps, t)[1], 1.0)
-    end
-
-    return nothing
-end
-
-function compile_function_float(fwm)
-
-    xs = ones((length ∘ variables)(fwm.vars))
-    ps = ones((length ∘ variables)(fwm.params))
-
-    Threads.@threads for rule in (collect ∘ values)(fwm.dynamic_rules)
-
-        rule(xs, ps, 1.0)
-    end
-
-    Threads.@threads for rule in (collect ∘ values)(fwm.aux_dynamic_rules)
-
-        rule(xs, ps, 1.0)
-    end
-
-    return nothing
 end
 
 # TODO: This function should return variables in the order of their indices.
