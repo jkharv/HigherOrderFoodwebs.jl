@@ -152,7 +152,7 @@ end
 # This is purely here to provide a helpful error message.
 macro var(ex...)
 
-    error("@var is only valid withing a @rule block")
+    error("@var is only valid within a @rule block")
 end
 
 # The dispatch is all done in @rule so the only time these get
@@ -160,5 +160,5 @@ end
 # This is purely here to provide a helpful error message.
 macro param(ex...)
 
-    error("@param is only valid withing a @rule block")
+    error("@param is only valid within a @rule block")
 end
