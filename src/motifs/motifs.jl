@@ -8,22 +8,22 @@ of the incidence matrix will be `nothing`, otherwise \$(Sn, Em)\$ will be a
 `Set{Symbol}` representating the roles that \$Sn\$ plays in \$Em\$.
 """
 function role_incidence_matrix(web::AnnotatedHypergraph)::Matrix{Union{Set{Symbol}, Nothing}}
-    
-    s = richness(web) 
+
+    s = richness(web)
     l = (length ∘ interactions)(web)
     m = Matrix{Union{Set{Symbol}, Nothing}}(nothing, s, l)
-    
-    # Cols are interactions 
-    for (n, intx) in enumerate(interactions(web))
+
+    # Cols are interactions
+    for (j, intx) in (enumerate ∘ interactions)(web)
 
         # Rows are species
         for sp in species(intx)
-            
-            indx = findfirst(x -> x == sp, species(web))  
+
+            indx = findfirst(x -> x == sp, species(web))
             r = (Set ∘ roles)(sp, intx)
 
-            m[indx, n] = r
-        end 
+            m[indx, j] = r
+        end
     end
 
     return m
@@ -41,12 +41,12 @@ function incidence_matrix_permutations(m::Matrix{T})::Vector{Matrix{T}} where T
 
     mps = Vector{Matrix{T}}(undef, length(row_p) * length(col_p))
 
-    i = 1 
+    i = 1
     for rp in row_p
         for cp in col_p
 
             mps[i] = m[rp, cp]
-            i += 1    
+            i += 1
         end
     end
 
@@ -62,26 +62,24 @@ be found as a subset (⊆) within it.
 """
 function is_motif_match(motif, subgraph)
 
-    for (m, s) in zip(motif, subgraph) 
+    for (m, s) in zip(motif, subgraph)
 
-        if isnothing(m) | isnothing(s)
-
-            if m == s
+        if isnothing(s)
+            if isnothing(m)
                 continue
             else
                 return false
             end
+        elseif isnothing(m)
+            continue
+        elseif m ⊆ s
+            continue
         else
-
-            if m ⊆ s
-                continue
-            else
-                return false
-            end
+            return false
         end
     end
 
-    return true 
+    return true
 end
 
 """
@@ -94,12 +92,12 @@ The outer `Vector` in the return type holds each match. The inner `Vector` holds
 the `AnnotatedHyperedge`s in `web` belonging to a particular subgraph which
 matches to `motif`
 
-This functions satisfies the F1 definition of motif matching. Furthermore, an 
+This functions satisfies the F1 definition of motif matching. Furthermore, an
 `AnnotatedHyperedge` in the motif is considered to match an `AnnotatedHyperedge`
 in `web` when it can be found as a subset (⊆) within it.
 """
 function SpeciesInteractionNetworks.findmotif(
-    motif::AnnotatedHypergraph, 
+    motif::AnnotatedHypergraph,
     web::AnnotatedHypergraph)::Vector{Vector{AnnotatedHyperedge}}
 
     if richness(web) >= 30
@@ -110,13 +108,13 @@ function SpeciesInteractionNetworks.findmotif(
         1:(length ∘ interactions)(web),
         (length ∘ interactions)(motif)
     )
-    spp_combinations  = combinations(1:richness(web), richness(motif))
 
+    spp_combinations = combinations(1:richness(web), richness(motif))
     perms = (incidence_matrix_permutations ∘ role_incidence_matrix)(motif)
-    m = role_incidence_matrix(web)
-    
-    hits = []
 
+    m = role_incidence_matrix(web)
+
+    hits = []
     hits_lock = ReentrantLock()
 
     Threads.@threads for intxs in collect(intx_combinations)
@@ -133,6 +131,6 @@ function SpeciesInteractionNetworks.findmotif(
             end
         end
     end
-    
-    return hits 
+
+    return hits
 end
