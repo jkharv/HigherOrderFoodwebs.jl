@@ -32,9 +32,7 @@ mutable struct FoodwebModel{T}
     params::FoodwebVariables{T}
 end
 
-function FoodwebModel(
-    hg::AnnotatedHypergraph{T};
-    add_self_interactions = true) where T
+function FoodwebModel(hg::AnnotatedHypergraph{T}; add_self_interactions = true) where T
 
     hg = deepcopy(hg)
 
